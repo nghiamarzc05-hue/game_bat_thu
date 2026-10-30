@@ -11,7 +11,7 @@ Game nhập vai 2D phong cách **Nông Trại & Săn Bắt Thú Bảo Miền Tâ
 ## 🌟 Tính Năng Nổi Bật
 
 ### 🌾 1. Nông Trại & Bếp Nấu Miền Tây
-* **Trồng chọt & Thu hoạch**: Gieo hạt Lúa Vàng, Bắp Nếp, Chuối Xiêm, Sen Hồng.
+* **Trồng trọt & Thu hoạch**: Gieo hạt Lúa Vàng, Bắp Nếp, Chuối Xiêm, Sen Hồng.
 * **Bếp Nấu Bà Tư**: Chế biến *Cơm Lúa Trắng, Bánh Bắp Ngọt, Chuối Nướng Mật, Chè Sen Nhung* giúp hồi máu cấp tốc hoặc tăng Máu tối đa cho Thú Bảo.
 
 ### 🐾 2. Hệ Thống Thú Bảo (15 Loài · 6 Hệ Thuộc Tính)
