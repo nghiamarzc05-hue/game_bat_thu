@@ -50,7 +50,7 @@
   .item-card { transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); }
   .item-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.2) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
 
-  /* Mobile Touch Controls & Responsive HUD */
+  /* Mobile Touch Controls & Responsive Handheld RPG Layout */
   #mobile-controls {
     display: none;
     position: absolute;
@@ -58,123 +58,183 @@
     pointer-events: none;
     z-index: 35;
   }
-  @media (pointer: coarse), (max-width: 960px) {
+  #mobile-center-dock {
+    display: none;
+  }
+
+  @keyframes pulseAction {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(250, 204, 21, 0.55); }
+    50% { transform: scale(1.08); box-shadow: 0 0 28px rgba(250, 204, 21, 0.95); }
+  }
+  .pulse-btn {
+    animation: pulseAction 0.9s ease-in-out infinite;
+  }
+
+  /* Chế độ Ép Xoay Ngang 90 Độ khi điện thoại đang cầm dọc */
+  #wrap.force-landscape-rot {
+    position: fixed !important;
+    top: 0 !important;
+    left: 100vw !important;
+    width: 100vh !important;
+    height: 100vw !important;
+    transform-origin: top left !important;
+    transform: rotate(90deg) !important;
+    z-index: 10;
+  }
+
+  @media (pointer: coarse), (max-width: 1024px) {
     #mobile-controls { display: block; }
     .modal-box { width: 92vw !important; max-width: 440px !important; padding: 14px !important; }
-    .hud-btn { width: 34px !important; height: 34px !important; font-size: 12.5px !important; }
-    .hud-pill { padding: 4px 7px !important; font-size: 10px !important; }
+    .hud-btn { width: 34px !important; height: 34px !important; font-size: 13px !important; flex-shrink: 0; }
+    .hud-pill { padding: 4px 8px !important; font-size: 10.5px !important; flex-shrink: 0; }
     #desktop-hint { display: none !important; }
     #minimap-container { display: none !important; }
   }
 
-  /* Khi điện thoại để DỌC (Portrait) */
-  @media (max-width: 768px) and (orientation: portrait), (max-aspect-ratio: 1/1) and (max-width: 960px) {
-    #hud-top-bar {
-      flex-direction: column !important;
-      align-items: stretch !important;
-      gap: 6px !important;
-      top: 6px !important;
-      left: 6px !important;
-      right: 6px !important;
-    }
-    #hud-top-left {
-      width: 100% !important;
-      max-width: 100% !important;
-      overflow-x: auto !important;
-      justify-content: flex-start !important;
-      padding-bottom: 2px !important;
-    }
-    #hud-top-right {
-      width: 100% !important;
-      max-width: 100% !important;
-      overflow-x: auto !important;
-      justify-content: space-between !important;
-      padding-bottom: 2px !important;
-    }
-    .modal-box {
-      max-height: 75vh !important;
-      width: 94vw !important;
-    }
-    #mobile-dpad {
-      bottom: 18px !important;
-      left: 14px !important;
-      width: 124px !important;
-      height: 124px !important;
-      transform: scale(0.95);
-      transform-origin: bottom left;
-    }
-    #mobile-act-container {
-      bottom: 20px !important;
-      right: 14px !important;
-      transform: scale(0.95);
-      transform-origin: bottom right;
-    }
+  /* Giao diện Chuẩn Game Mobile DỌC (Portrait Handheld Console Mode) */
+  #wrap.portrait-mode {
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 6px 6px 10px 6px !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+  }
+  #wrap.portrait-mode #hud-top-bar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 5px !important;
+    flex-shrink: 0;
+  }
+  #wrap.portrait-mode #hud-top-left {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    justify-content: space-between !important;
+    padding-bottom: 2px !important;
+  }
+  #wrap.portrait-mode #hud-top-right {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    justify-content: space-between !important;
+    padding: 2px 2px !important;
+  }
+  #wrap.portrait-mode #gc {
+    border-radius: 16px !important;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.85), 0 0 0 1.5px rgba(148,163,184,0.22) !important;
+    margin: auto 0 !important;
+  }
+  #wrap.portrait-mode #mobile-controls {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 154px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 6px 12px !important;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.82) 0%, rgba(9, 13, 22, 0.95) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 22px;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+    pointer-events: auto !important;
+    flex-shrink: 0;
+  }
+  #wrap.portrait-mode #mobile-dpad {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 128px !important;
+    height: 128px !important;
+    flex-shrink: 0;
+  }
+  #wrap.portrait-mode #mobile-center-dock {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 1;
+    padding: 0 6px;
+    pointer-events: auto;
+  }
+  #wrap.portrait-mode #mobile-act-container {
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    width: 136px !important;
+    height: 132px !important;
+    flex-shrink: 0;
   }
 
-  /* Khi điện thoại xoay NGANG (Landscape) */
-  @media (max-height: 600px) and (orientation: landscape) {
-    #hud-top-bar {
-      top: 4px !important;
-      left: 8px !important;
-      right: 8px !important;
-      gap: 4px !important;
-    }
-    #hud-top-left {
-      max-width: 55vw !important;
-      overflow-x: auto !important;
-    }
-    #hud-top-right {
-      max-width: 45vw !important;
-      overflow-x: auto !important;
-    }
-    .hud-btn { width: 30px !important; height: 30px !important; font-size: 11.5px !important; }
-    .hud-pill { padding: 3px 6px !important; font-size: 9.5px !important; }
-    .modal-box {
-      max-height: 88vh !important;
-      padding: 12px 16px !important;
-    }
-    .modal-content {
-      max-height: 62vh !important;
-    }
-    #mobile-dpad {
-      bottom: 12px !important;
-      left: 12px !important;
-      width: 116px !important;
-      height: 116px !important;
-      transform: scale(0.85);
-      transform-origin: bottom left;
-    }
-    #mobile-act-container {
-      bottom: 14px !important;
-      right: 14px !important;
-      transform: scale(0.85);
-      transform-origin: bottom right;
-    }
+  /* Giao diện Chuẩn Game Mobile NGANG (Landscape Fullscreen Mode) */
+  #wrap.landscape-mobile #hud-top-bar {
+    top: 6px !important;
+    left: 10px !important;
+    right: 10px !important;
+    gap: 6px !important;
+  }
+  #wrap.landscape-mobile #hud-top-left {
+    max-width: 54% !important;
+    overflow-x: auto !important;
+  }
+  #wrap.landscape-mobile #hud-top-right {
+    max-width: 46% !important;
+    overflow-x: auto !important;
+  }
+  #wrap.landscape-mobile .hud-btn { width: 32px !important; height: 32px !important; font-size: 12px !important; }
+  #wrap.landscape-mobile .hud-pill { padding: 3px 7px !important; font-size: 10px !important; }
+  #wrap.landscape-mobile .modal-box {
+    max-height: 88% !important;
+    width: 440px !important;
+    max-width: 86% !important;
+    padding: 12px 16px !important;
+  }
+  #wrap.landscape-mobile .modal-content {
+    max-height: 60vh !important;
+  }
+  #wrap.landscape-mobile #mobile-dpad {
+    bottom: 16px !important;
+    left: 18px !important;
+    width: 124px !important;
+    height: 124px !important;
+  }
+  #wrap.landscape-mobile #mobile-act-container {
+    bottom: 16px !important;
+    right: 18px !important;
+    width: 136px !important;
+    height: 132px !important;
   }
 
   #hud-top-left::-webkit-scrollbar, #hud-top-right::-webkit-scrollbar { display: none; }
 
   .touch-btn {
     pointer-events: auto;
-    touch-action: manipulation;
+    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 23, 42, 0.82);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    border: 1.5px solid rgba(255, 255, 255, 0.24);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     border-radius: 50%;
-    transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+    transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
   }
   .touch-btn:active {
     transform: scale(0.88);
-    background: rgba(56, 189, 248, 0.4) !important;
-    border-color: rgba(56, 189, 248, 0.7) !important;
+    background: rgba(56, 189, 248, 0.45) !important;
+    border-color: rgba(56, 189, 248, 0.8) !important;
   }
 </style>
 </head>
@@ -183,29 +243,29 @@
 
 <!-- TOP HUD -->
 <div id="hud-top-bar" style="position:absolute;top:10px;left:10px;right:10px;z-index:30;display:flex;justify-content:space-between;align-items:center;pointer-events:none;gap:8px">
-  <div id="hud-top-left" style="display:flex;gap:6px;pointer-events:auto">
-    <div class="glass hud-pill" style="padding:6px 12px;border-radius:30px;display:flex;align-items:center;gap:6px;border-color:rgba(234,179,8,.4)">
-      <i class="fa-solid fa-coins" style="color:#eab308;font-size:12px"></i>
-      <span id="hud-gold" style="color:#fde047;font-weight:800;font-size:13px">500</span>
-      <span style="color:#94a3b8;font-size:10px">Tiền</span>
+  <div id="hud-top-left" style="display:flex;gap:5px;pointer-events:auto;align-items:center">
+    <div class="glass hud-pill" style="padding:5px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(234,179,8,.4)">
+      <i class="fa-solid fa-coins" style="color:#eab308;font-size:11.5px"></i>
+      <span id="hud-gold" style="color:#fde047;font-weight:800;font-size:12.5px">500</span>
     </div>
-    <div class="glass hud-pill" style="padding:6px 12px;border-radius:30px;display:flex;align-items:center;gap:6px;border-color:rgba(56,189,248,.45);background:rgba(8,47,73,.35)">
-      <i class="fa-solid fa-gem" style="color:#38bdf8;font-size:12px"></i>
-      <span id="hud-diamond" style="color:#7dd3fc;font-weight:800;font-size:13px">20</span>
-      <span style="color:#94a3b8;font-size:10px">KC</span>
+    <div class="glass hud-pill" style="padding:5px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(56,189,248,.45);background:rgba(8,47,73,.35)">
+      <i class="fa-solid fa-gem" style="color:#38bdf8;font-size:11.5px"></i>
+      <span id="hud-diamond" style="color:#7dd3fc;font-weight:800;font-size:12.5px">20</span>
     </div>
-    <div class="glass hud-pill" style="padding:6px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(168,85,247,.4)">
-      <span id="hud-zone" style="color:#d8b4fe;font-weight:700;font-size:11px">🏡 Nông Trại</span>
+    <div id="hud-active-pet" onclick="inspectPetData(G.pets[G.activeIdx], false, `<button class='btn' style='background:linear-gradient(135deg, #7c3aed, #4c1d95);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700' onclick='openMenu(\&quot;pets\&quot;)'>🐾 Vào Chuồng Thú</button>`)" class="glass hud-pill btn" style="padding:3px 9px;border-radius:30px;display:flex;align-items:center;gap:6px;border-color:rgba(56,189,248,.4)" title="Bấm xem thú"></div>
+    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(168,85,247,.4)">
+      <span id="hud-zone" style="color:#d8b4fe;font-weight:700;font-size:10.5px">🏡 Nông Trại</span>
     </div>
-    <div class="glass hud-pill" style="padding:6px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(74,222,128,.4)">
-      <span id="hud-petcount" style="color:#86efac;font-weight:700;font-size:11px">🐾 Thú: 1</span>
+    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(74,222,128,.4)">
+      <span id="hud-petcount" style="color:#86efac;font-weight:700;font-size:10.5px">🐾 Thú: 1</span>
     </div>
-    <div id="hud-active-pet" onclick="inspectPetData(G.pets[G.activeIdx], false, `<button class='btn' style='background:linear-gradient(135deg, #7c3aed, #4c1d95);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700' onclick='openMenu(\&quot;pets\&quot;)'>🐾 Vào Chuồng Thú</button>`)" class="glass hud-pill btn" style="padding:4px 10px;border-radius:30px;display:flex;align-items:center;gap:7px;border-color:rgba(56,189,248,.4)" title="Bấm xem thú"></div>
-    <div class="glass hud-pill" style="padding:6px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(250,204,21,.35)">
-      <span id="hud-weather" style="color:#fef08a;font-weight:700;font-size:11px">☀️ Ban Ngày</span>
+    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(250,204,21,.35)">
+      <span id="hud-weather" style="color:#fef08a;font-weight:700;font-size:10.5px">☀️ Ban Ngày</span>
     </div>
   </div>
-  <div id="hud-top-right" style="display:flex;gap:6px;pointer-events:auto">
+  <div id="hud-top-right" style="display:flex;gap:5px;pointer-events:auto;align-items:center">
+    <button id="btn-orient" onclick="toggleMobileOrientation()" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.5);background:rgba(2,132,199,.25)" title="Xoay Ngang / Dọc Màn Hình"><i class="fa-solid fa-rotate"></i></button>
+    <button onclick="cycleCameraZoom()" class="glass hud-btn" style="color:#fde047;border-color:rgba(250,204,21,.4)" title="Đổi Góc Nhìn Camera (Gần / Vừa / Toàn Cảnh)"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
     <button onclick="openMenu('giftcode')" class="glass hud-btn" style="color:#f472b6;border-color:rgba(244,114,182,.4)" title="Nhập Giftcode Nhận Thưởng"><i class="fa-solid fa-gift"></i></button>
     <button onclick="openMenu('fishing')" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.35)" title="Câu Cá & Dụng Cụ"><i class="fa-solid fa-fish"></i></button>
     <button onclick="openMenu('mounts')" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.35)" title="Nhà Xe & Thú Cưỡi"><i class="fa-solid fa-motorcycle"></i></button>
@@ -227,24 +287,53 @@
     <canvas id="minimap" width="160" height="112" style="display:block;border-radius:5px"></canvas>
   </div>
 </div>
+
 <div id="mobile-controls">
-  <!-- D-Pad Left Side -->
-  <div id="mobile-dpad" style="position:absolute;bottom:24px;left:20px;width:130px;height:130px">
-    <button id="btn-up" class="touch-btn" style="position:absolute;top:0;left:42px;width:46px;height:46px;font-size:18px"><i class="fa-solid fa-chevron-up"></i></button>
-    <button id="btn-down" class="touch-btn" style="position:absolute;bottom:0;left:42px;width:46px;height:46px;font-size:18px"><i class="fa-solid fa-chevron-down"></i></button>
-    <button id="btn-left" class="touch-btn" style="position:absolute;top:42px;left:0;width:46px;height:46px;font-size:18px"><i class="fa-solid fa-chevron-left"></i></button>
-    <button id="btn-right" class="touch-btn" style="position:absolute;top:42px;right:0;width:46px;height:46px;font-size:18px"><i class="fa-solid fa-chevron-right"></i></button>
-    <div style="position:absolute;top:42px;left:42px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;pointer-events:none">
-      <div style="width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.2)"></div>
+  <!-- Cần Gạt Analog 360° + D-Pad Hybrid Bên Trái -->
+  <div id="mobile-dpad" style="position:absolute;bottom:20px;left:20px;width:128px;height:128px;pointer-events:auto;touch-action:none">
+    <div id="joy-base" style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle, rgba(30,41,59,0.72) 0%, rgba(15,23,42,0.92) 100%);border:2px solid rgba(148,163,184,0.28);box-shadow:0 8px 24px rgba(0,0,0,0.55), inset 0 0 18px rgba(56,189,248,0.12)">
+      <i class="fa-solid fa-caret-up" style="position:absolute;top:6px;left:50%;transform:translateX(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
+      <i class="fa-solid fa-caret-down" style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
+      <i class="fa-solid fa-caret-left" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
+      <i class="fa-solid fa-caret-right" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
+    </div>
+    <div id="joy-knob" style="position:absolute;top:50%;left:50%;width:52px;height:52px;margin-left:-26px;margin-top:-26px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #38bdf8, #0284c7);border:2px solid rgba(255,255,255,0.75);box-shadow:0 4px 16px rgba(2,132,199,0.65);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform 0.04s linear">
+      <i class="fa-solid fa-arrows-up-down-left-right" style="color:rgba(255,255,255,0.85);font-size:15px"></i>
     </div>
   </div>
 
-  <!-- Action Button Right Side -->
-  <div id="mobile-act-container" style="position:absolute;bottom:30px;right:22px;display:flex;flex-direction:column;gap:12px;align-items:center">
-    <button id="btn-act" class="touch-btn" style="width:68px;height:68px;background:linear-gradient(135deg,#0284c7,#0369a1);border-color:rgba(56,189,248,.6);box-shadow:0 8px 24px rgba(2,132,199,.4);font-size:24px" title="Tương Tác / Gieo Hạt / Thu Hoạch">
-      <i class="fa-solid fa-hand"></i>
+  <!-- Bảng Trung Tâm Khi Cầm Dọc (Hiển thị mục tiêu gần & Phím tắt nhanh) -->
+  <div id="mobile-center-dock">
+    <div id="mobile-context-badge" style="background:rgba(15,23,42,0.9);border:1px solid rgba(56,189,248,0.35);padding:5px 10px;border-radius:14px;font-size:11px;font-weight:700;color:#e2e8f0;text-align:center;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+      🏡 Nông Trại
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="toggleMobileOrientation()" class="btn" style="background:rgba(2,132,199,0.3);border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:5px 10px;border-radius:12px;font-size:10.5px;font-weight:700;display:flex;align-items:center;gap:4px">
+        <i class="fa-solid fa-rotate"></i> Xoay Ngang
+      </button>
+    </div>
+  </div>
+
+  <!-- Cụm Nút Hành Động Thông Minh Bên Phải (RPG Skill Wheel Layout) -->
+  <div id="mobile-act-container" style="position:absolute;bottom:18px;right:18px;width:136px;height:132px;pointer-events:none">
+    <!-- Nút vệ tinh 1: Đổi Xe Nhanh (Bên trái dưới) -->
+    <button id="btn-quick-mount" onclick="quickToggleMount()" class="touch-btn" style="position:absolute;bottom:6px;left:0;width:42px;height:42px;font-size:17px;background:rgba(15,23,42,0.88);border-color:rgba(56,189,248,0.45)" title="Lên / Xuống Xe Nhanh">
+      🛵
     </button>
-    <span style="font-size:10px;font-weight:700;color:#94a3b8;text-shadow:0 2px 4px #000">TƯƠNG TÁC</span>
+    <!-- Nút vệ tinh 2: Mở Túi Đồ Nhanh (Ở giữa chéo) -->
+    <button id="btn-quick-bag" onclick="openMenu('bag')" class="touch-btn" style="position:absolute;top:14px;left:16px;width:42px;height:42px;font-size:16px;background:rgba(15,23,42,0.88);border-color:rgba(251,191,36,0.45)" title="Mở Túi Đồ">
+      🎒
+    </button>
+    <!-- Nút vệ tinh 3: Bếp Nấu / Cửa Hàng Nhanh (Phía trên phải) -->
+    <button id="btn-quick-shop" onclick="openMenu('shop')" class="touch-btn" style="position:absolute;top:0;right:12px;width:42px;height:42px;font-size:16px;background:rgba(15,23,42,0.88);border-color:rgba(52,211,153,0.45)" title="Mở Chợ Phiên">
+      🛒
+    </button>
+
+    <!-- Nút Tương Tác Chính (Tự động đổi icon theo ngữ cảnh) -->
+    <button id="btn-act" class="touch-btn" style="position:absolute;bottom:14px;right:4px;width:72px;height:72px;background:linear-gradient(135deg,#0284c7,#0369a1);border:2px solid rgba(56,189,248,.75);box-shadow:0 8px 24px rgba(2,132,199,.5);flex-direction:column;gap:1px" title="Tương Tác Thông Minh">
+      <span id="btn-act-icon" style="font-size:24px;line-height:1">✋</span>
+      <span id="btn-act-label" style="font-size:8.5px;font-weight:800;color:#fff;letter-spacing:0.3px;text-shadow:0 1px 3px #000">TƯƠNG TÁC</span>
+    </button>
   </div>
 </div>
 
@@ -624,39 +713,146 @@ function spawnWildPetsForMap(mapId){
   });
 }
 
-function _isBlockedPx(px,py){
+function _isBlockedPx(px,py,isPlayer=false){
   const tx=Math.round(px/TS), ty=Math.round(py/TS);
   if(tx<1||tx>=COLS-1||ty<1||ty>=ROWS-1) return true;
-  if(MAPS[G.map].portals.some(p=>p.tx===tx&&p.ty===tx)) return true;
-  if(G.map==='farm'&&G.plots.some(p=>p.tx===tx&&p.ty===ty)) return true;
+  if(!isPlayer){
+    if(MAPS[G.map].portals.some(p=>p.tx===tx&&p.ty===ty)) return true;
+    if(G.map==='farm'&&G.plots.some(p=>p.tx===tx&&p.ty===ty)) return true;
+  }
   return false;
 }
 
 const P={tx:14,ty:8, px:14*TS,py:8*TS, spd:2.8, dir:'down', moving:false, walkFrame:0, targetPx:null, targetPy:null, marker:null};
 const canvas=document.getElementById('gc'), ctx=canvas.getContext('2d');
 const DPR = Math.max(2, window.devicePixelRatio || 2);
-canvas.width = CW * DPR;
-canvas.height = CH * DPR;
+
+// Hệ thống Camera & Khung Nhìn Động (Hỗ trợ Màn Hình Dọc & Xoay Ngang chuẩn RPG)
+let VIEW_W = CW, VIEW_H = CH;
+let forceLandscape = false;
+const cam = { x: 0, y: 0, zoom: 1.0, mode: 'auto' }; // mode: 'auto' | 'close' | 'full'
+
+function isRotated90(){
+  return forceLandscape && (window.innerHeight > window.innerWidth);
+}
+
+function toggleMobileOrientation(){
+  forceLandscape = !forceLandscape;
+  if(forceLandscape){
+    try { document.documentElement.requestFullscreen?.().catch(()=>{}); } catch(e){}
+    try { window.screen?.orientation?.lock?.('landscape').catch(()=>{}); } catch(e){}
+    notify('🔄 Đã bật chế độ Màn Hình Ngang (16:9)!');
+  } else {
+    try { window.screen?.orientation?.unlock?.(); } catch(e){}
+    notify('📱 Đã chuyển về chế độ Màn Hình Tự Động (Dọc/Ngang)!');
+  }
+  resizeGameView();
+}
+
+function cycleCameraZoom(){
+  if(cam.mode === 'auto') cam.mode = 'close';
+  else if(cam.mode === 'close') cam.mode = 'full';
+  else cam.mode = 'auto';
+  resizeGameView();
+  const labels = {
+    'auto': '✨ Góc nhìn: Tự Động Thông Minh',
+    'close': '🔍 Góc nhìn: Cận Cảnh Rõ Nét (Zoom 1.4x)',
+    'full': '🗺️ Góc nhìn: Toàn Bản Đồ'
+  };
+  notify(labels[cam.mode]);
+}
+
+function quickToggleMount(){
+  const owned = G.ownedMounts || ['walk'];
+  const priority = ['dream', 'bike', 'pig'];
+  const best = priority.find(m => owned.includes(m));
+  if(!best){
+    openMenu('mounts');
+    notify('🛵 Ghé Nhà Xe để sắm thú cưỡi/xe máy chạy cho lẹ nghen Út!');
+    return;
+  }
+  if(G.mount === 'walk'){
+    G.mount = best;
+    notify(`${MOUNT_TYPES[best].icon} Đã lên ${MOUNT_TYPES[best].name}!`);
+  } else {
+    G.mount = 'walk';
+    notify('🚶 Đã xuống xe đi bộ!');
+  }
+  saveGame(true);
+}
+
+function updateCamera(){
+  const effZoom = cam.zoom || 1.0;
+  const visW = VIEW_W / effZoom;
+  const visH = VIEW_H / effZoom;
+  const targetX = (P.px + TS/2) - visW / 2;
+  const targetY = (P.py + TS/2) - visH / 2;
+  const maxCamX = Math.max(0, CW - visW);
+  const maxCamY = Math.max(0, CH - visH);
+  const clampedX = Math.max(0, Math.min(maxCamX, targetX));
+  const clampedY = Math.max(0, Math.min(maxCamY, targetY));
+  cam.x += (clampedX - cam.x) * 0.2;
+  cam.y += (clampedY - cam.y) * 0.2;
+  if(Math.abs(clampedX - cam.x) < 0.4) cam.x = clampedX;
+  if(Math.abs(clampedY - cam.y) < 0.4) cam.y = clampedY;
+}
 
 // Tự động căn chỉnh kích thước Canvas chuẩn theo màn hình Mobile (Dọc & Xoay Ngang) & Desktop
 function resizeGameView(){
-  const w = window.innerWidth, h = window.innerHeight;
-  // Dành khoảng thở cho thanh HUD nếu màn hình điện thoại để dọc
-  const isPortrait = (h > w) && (w <= 768);
-  const availW = w;
-  const availH = isPortrait ? Math.max(h - 50, h * 0.92) : h;
+  const wrapEl = document.getElementById('wrap');
+  const rawW = window.innerWidth, rawH = window.innerHeight;
+  const isTouchOrSmall = (rawW <= 1024 || rawH <= 768 || ('ontouchstart' in window));
+  const rotated90 = isRotated90();
 
-  const scale = Math.min(availW / CW, availH / CH);
-  const targetW = Math.round(CW * scale);
-  const targetH = Math.round(CH * scale);
-  canvas.style.width = targetW + 'px';
-  canvas.style.height = targetH + 'px';
+  if(wrapEl){
+    wrapEl.classList.toggle('force-landscape-rot', rotated90);
+  }
 
-  // Nếu màn hình dọc, đẩy nhẹ canvas xuống để không bị thanh HUD đè
+  const w = rotated90 ? rawH : rawW;
+  const h = rotated90 ? rawW : rawH;
+  const isPortrait = (!forceLandscape) && (h > w) && (w <= 820);
+
+  if(wrapEl){
+    wrapEl.classList.toggle('portrait-mode', isPortrait);
+    wrapEl.classList.toggle('landscape-mobile', !isPortrait && isTouchOrSmall);
+  }
+
   if(isPortrait){
-    canvas.style.marginTop = '28px';
+    if(cam.mode === 'full'){
+      VIEW_W = CW; VIEW_H = CH; cam.zoom = 1.0;
+    } else if(cam.mode === 'close'){
+      VIEW_W = 480; VIEW_H = 544; cam.zoom = 1.38;
+    } else {
+      VIEW_W = 480; VIEW_H = 544; cam.zoom = 1.15;
+    }
   } else {
-    canvas.style.marginTop = '0px';
+    VIEW_W = CW; VIEW_H = CH;
+    if(cam.mode === 'close'){
+      cam.zoom = 1.38;
+    } else if(cam.mode === 'auto' && isTouchOrSmall && w < 920){
+      cam.zoom = 1.16;
+    } else {
+      cam.zoom = 1.0;
+    }
+  }
+
+  if(canvas.width !== VIEW_W * DPR || canvas.height !== VIEW_H * DPR){
+    canvas.width = VIEW_W * DPR;
+    canvas.height = VIEW_H * DPR;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+  }
+
+  if(isPortrait){
+    const availW = Math.max(260, w - 12);
+    const availH = Math.max(240, h - 252);
+    const scale = Math.min(availW / VIEW_W, availH / VIEW_H);
+    canvas.style.width = Math.round(VIEW_W * scale) + 'px';
+    canvas.style.height = Math.round(VIEW_H * scale) + 'px';
+  } else {
+    const scale = Math.min(w / VIEW_W, h / VIEW_H);
+    canvas.style.width = Math.round(VIEW_W * scale) + 'px';
+    canvas.style.height = Math.round(VIEW_H * scale) + 'px';
   }
 }
 window.addEventListener('resize', resizeGameView);
@@ -790,52 +986,141 @@ window.addEventListener('keydown',e=>{
 });
 window.addEventListener('keyup',e=>keys[e.code]=false);
 
-// Xử lý các phím ảo D-Pad & Nút Tương Tác trên màn hình cảm ứng Mobile
-function bindMobileTouchBtn(btnId, keyCode){
-  const btn = document.getElementById(btnId);
-  if(!btn) return;
-  const press = (e) => { e.preventDefault(); e.stopPropagation(); keys[keyCode] = true; };
-  const release = (e) => { e.preventDefault(); e.stopPropagation(); keys[keyCode] = false; };
-  btn.addEventListener('touchstart', press, { passive: false });
-  btn.addEventListener('touchend', release, { passive: false });
-  btn.addEventListener('touchcancel', release, { passive: false });
-  btn.addEventListener('mousedown', press);
-  btn.addEventListener('mouseup', release);
-  btn.addEventListener('mouseleave', release);
-}
-bindMobileTouchBtn('btn-up', 'KeyW');
-bindMobileTouchBtn('btn-down', 'KeyS');
-bindMobileTouchBtn('btn-left', 'KeyA');
-bindMobileTouchBtn('btn-right', 'KeyD');
+// Hệ thống Cần Gạt Analog 360° (Virtual Thumbstick) & Nút Hành Động Đa Điểm trên Mobile
+const joyState = { active: false, vx: 0, vy: 0 };
+(function initMobileJoystick(){
+  const dpadEl = document.getElementById('mobile-dpad');
+  const knobEl = document.getElementById('joy-knob');
+  if(!dpadEl) return;
+
+  function updateJoyFromPoint(clientX, clientY){
+    const rect = dpadEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    if(isRotated90()){
+      const tmp = dx;
+      dx = dy;
+      dy = -tmp;
+    }
+    const dist = Math.hypot(dx, dy);
+    const maxR = 38;
+    if(dist > 4){
+      const clamped = Math.min(maxR, dist);
+      const ang = Math.atan2(dy, dx);
+      const kx = Math.cos(ang) * clamped;
+      const ky = Math.sin(ang) * clamped;
+      if(knobEl) knobEl.style.transform = `translate(${kx.toFixed(1)}px, ${ky.toFixed(1)}px)`;
+      joyState.active = true;
+      joyState.vx = Math.cos(ang);
+      joyState.vy = Math.sin(ang);
+    } else {
+      joyState.active = false;
+      joyState.vx = 0;
+      joyState.vy = 0;
+      if(knobEl) knobEl.style.transform = 'translate(0px, 0px)';
+    }
+  }
+
+  function resetJoy(){
+    joyState.active = false;
+    joyState.vx = 0;
+    joyState.vy = 0;
+    if(knobEl) knobEl.style.transform = 'translate(0px, 0px)';
+  }
+
+  dpadEl.addEventListener('touchstart', e => {
+    e.preventDefault(); e.stopPropagation();
+    const t = e.targetTouches[0] || e.touches[0];
+    if(t) updateJoyFromPoint(t.clientX, t.clientY);
+  }, { passive: false });
+
+  dpadEl.addEventListener('touchmove', e => {
+    e.preventDefault(); e.stopPropagation();
+    const t = e.targetTouches[0] || e.touches[0];
+    if(t) updateJoyFromPoint(t.clientX, t.clientY);
+  }, { passive: false });
+
+  dpadEl.addEventListener('touchend', e => {
+    e.preventDefault(); e.stopPropagation();
+    if(!e.targetTouches || e.targetTouches.length === 0) resetJoy();
+  }, { passive: false });
+
+  dpadEl.addEventListener('touchcancel', e => {
+    e.preventDefault(); e.stopPropagation();
+    resetJoy();
+  }, { passive: false });
+
+  let mouseDownJoy = false;
+  dpadEl.addEventListener('mousedown', e => {
+    e.preventDefault(); e.stopPropagation();
+    mouseDownJoy = true;
+    updateJoyFromPoint(e.clientX, e.clientY);
+  });
+  window.addEventListener('mousemove', e => {
+    if(mouseDownJoy) updateJoyFromPoint(e.clientX, e.clientY);
+  });
+  window.addEventListener('mouseup', () => {
+    if(mouseDownJoy){ mouseDownJoy = false; resetJoy(); }
+  });
+})();
 
 const actBtn = document.getElementById('btn-act');
 if(actBtn){
-  const doAction = (e) => {
+  let lastActTouch = 0;
+  actBtn.addEventListener('touchstart', (e) => {
     e.preventDefault(); e.stopPropagation();
-    if(fishingState.active){
-      handleFishingInteraction();
-    } else {
-      interact();
-    }
-  };
-  actBtn.addEventListener('touchstart', doAction, { passive: false });
-  actBtn.addEventListener('click', doAction);
+    lastActTouch = Date.now();
+    if(fishingState.active) handleFishingInteraction();
+    else interact();
+  }, { passive: false });
+  actBtn.addEventListener('click', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if(Date.now() - lastActTouch < 550) return;
+    if(fishingState.active) handleFishingInteraction();
+    else interact();
+  });
 }
+
 canvas.style.cursor='crosshair';
 function handleCanvasPointerDown(clientX, clientY){
-  const r=canvas.getBoundingClientRect();
-  const mx=(clientX-r.left)*(CW/r.width), my=(clientY-r.top)*(CH/r.height);
+  const r = canvas.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+
+  // Tọa độ trong không gian Khung Nhìn (Viewport Space: 0..VIEW_W, 0..VIEW_H)
+  let vx, vy;
+  if(isRotated90()){
+    vx = (clientY - r.top) * (VIEW_W / r.height);
+    vy = (r.right - clientX) * (VIEW_H / r.width);
+  } else {
+    vx = (clientX - r.left) * (VIEW_W / r.width);
+    vy = (clientY - r.top) * (VIEW_H / r.height);
+  }
+
+  // Tọa độ trong không gian Thế Giới (World Space: 0..CW, 0..CH) có tính Camera
+  const mx = cam.x + vx / (cam.zoom || 1);
+  const my = cam.y + vy / (cam.zoom || 1);
+
   if(battle.active){
     if(canvas._btns){
       for(let i=0;i<canvas._btns.length;i++){
         const b=canvas._btns[i];
-        if(mx>=b.x&&mx<=b.x+b.w&&my>=b.y&&my<=b.y+b.h){ b.fn(); return; }
+        if(vx>=b.x&&vx<=b.x+b.w&&vy>=b.y&&vy<=b.y+b.h){ b.fn(); return; }
       }
     }
     return;
   }
 
-  // Tương tác nút bấm ngoài màn hình (nút câu cá, nút kéo cần)
+  // Tương tác nút bấm cố định trên màn hình (như nút [GIẬT CÂU NGAY!] ở góc dưới)
+  if(canvas._screenBtns){
+    for(let i=0;i<canvas._screenBtns.length;i++){
+      const b=canvas._screenBtns[i];
+      if(vx>=b.x&&vx<=b.x+b.w&&vy>=b.y&&vy<=b.y+b.h){ b.fn(); return; }
+    }
+  }
+
+  // Tương tác nút bấm trong thế giới (như nhãn [🎣 Quăng Câu] trên đầu nhân vật)
   if(canvas._worldBtns){
     for(let i=0;i<canvas._worldBtns.length;i++){
       const b=canvas._worldBtns[i];
@@ -848,7 +1133,7 @@ function handleCanvasPointerDown(clientX, clientY){
       handleFishingInteraction();
       return;
     } else {
-      // Đang câu cá mà người chơi click chuột ra chỗ khác để di chuyển: hủy câu an toàn không mất mồi
+      // Đang câu cá mà người chơi chạm ra chỗ khác để di chuyển: hủy câu an toàn không mất mồi
       cancelFishingAction(true);
     }
   }
@@ -857,14 +1142,14 @@ function handleCanvasPointerDown(clientX, clientY){
   const ap = G.pets[G.activeIdx];
   if(ap && P.fpx !== undefined){
     const fDist = Math.hypot(mx - (P.fpx + 12), my - (P.fpy + 12));
-    if(fDist < 30){
+    if(fDist < 28){
       inspectPetData(ap, false, `<button class="btn" style="background:linear-gradient(135deg, #7c3aed, #4c1d95);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700" onclick="openMenu('pets')">🐾 Vào Chuồng Thú</button>`);
       return;
     }
   }
 
   // Bấm xem thuộc tính Thú hoang dã ngoài map
-  const clickedWild = wildPets.find(wp => wp.alive && Math.hypot(mx - (wp.px + TS/2), my - (wp.py + TS/2)) < 26);
+  const clickedWild = wildPets.find(wp => wp.alive && Math.hypot(mx - (wp.px + TS/2), my - (wp.py + TS/2)) < 28);
   if(clickedWild){
     inspectPetData(clickedWild.tmpl, true, `<button class="btn" style="background:linear-gradient(135deg, #b91c1c, #991b1b);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700" onclick="closeAllMenus();startBattle(wildPets.find(w=>w.id===${clickedWild.id}))">⚔️ Giao Đấu Ngay</button>`);
     return;
@@ -909,12 +1194,17 @@ function handleCanvasPointerDown(clientX, clientY){
   }
 }
 
-canvas.addEventListener('click', e => handleCanvasPointerDown(e.clientX, e.clientY));
+let lastCanvasTouchTime = 0;
 canvas.addEventListener('touchstart', e => {
-  if(e.touches && e.touches.length > 0){
-    handleCanvasPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+  if(e.changedTouches && e.changedTouches.length > 0){
+    lastCanvasTouchTime = Date.now();
+    handleCanvasPointerDown(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
   }
 }, { passive: true });
+canvas.addEventListener('click', e => {
+  if(Date.now() - lastCanvasTouchTime < 550) return;
+  handleCanvasPointerDown(e.clientX, e.clientY);
+});
 
 function rr(c,x,y,w,h,r){ c.beginPath(); if(c.roundRect) c.roundRect(x,y,w,h,r); else { c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r); } c.closePath(); }
 
@@ -2064,9 +2354,30 @@ function spawnBattleVFX(type, el, sx, sy, tx, ty, text, col){
   battleVFX.push({type, el, sx, sy, tx, ty, text, col: col||elCol(el), t:0, dur: type==='popup'?0.9:0.58, sparks});
 }
 
+function getBattleLayout(){
+  const isCompact = (VIEW_W < 700);
+  const bx = isCompact ? 10 : 55;
+  const by = isCompact ? 10 : 22;
+  const bw = VIEW_W - bx * 2;
+  const bh = VIEW_H - by * 2;
+  const cardW = isCompact ? Math.floor((bw - 30) / 2) : 290;
+  const cardH = isCompact ? 196 : 200;
+  const cardY = isCompact ? (by + 58) : (by + 44);
+  const pCardX = isCompact ? (bx + 10) : (bx + 25);
+  const eCardX = isCompact ? (bx + bw - 10 - cardW) : (bx + bw - 315);
+  const pCX = pCardX + cardW / 2;
+  const eCX = eCardX + cardW / 2;
+  const petY = cardY + 56;
+  return { isCompact, bx, by, bw, bh, cardW, cardH, cardY, pCardX, eCardX, pCX, eCX, petY };
+}
+
 function drawBattle(){
-  canvas._btns=[]; const bx=55,by=22,bw=CW-110,bh=CH-44, t=Date.now()/1000, m=G.map;
-  // Phông nền Sàn Đấu Toàn Cảnh Điện Ảnh theo Vùng Đất (Cinematic Biome Battle Backdrop)
+  canvas._btns=[];
+  const bl = getBattleLayout();
+  const { isCompact, bx, by, bw, bh, cardW, cardH, cardY, pCardX, eCardX, pCX, eCX } = bl;
+  const t=Date.now()/1000, m=G.map;
+
+  // Phông nền Sàn Đấu Toàn Cảnh Điện Ảnh theo Vùng Đất
   ctx.save();
   rr(ctx,bx,by,bw,bh,18); ctx.clip();
   const skyGrad=ctx.createLinearGradient(bx,by,bx,by+bh*0.62);
@@ -2080,11 +2391,8 @@ function drawBattle(){
   ctx.fillStyle=skyGrad; ctx.fillRect(bx,by,bw,bh);
 
   // Trăng rằm & Sao lấp lánh trên bầu trời sàn đấu
-  ctx.fillStyle='rgba(254,249,195,.18)'; ctx.beginPath(); ctx.arc(bx+bw-110,by+62,34,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fef08a'; ctx.beginPath(); ctx.arc(bx+bw-110,by+62,20,0,Math.PI*2); ctx.fill();
-  // Dãy núi xa mờ ở đường chân trời
-  ctx.fillStyle='rgba(15,23,42,.55)';
-  ctx.beginPath(); ctx.moveTo(bx,by+195); ctx.lineTo(bx+180,by+125); ctx.lineTo(bx+380,by+180); ctx.lineTo(bx+610,by+115); ctx.lineTo(bx+bw,by+195); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='rgba(254,249,195,.18)'; ctx.beginPath(); ctx.arc(bx+bw-70,by+52,28,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fef08a'; ctx.beginPath(); ctx.arc(bx+bw-70,by+52,16,0,Math.PI*2); ctx.fill();
   // Mặt đất sàn đấu theo vùng
   const grdGrad=ctx.createLinearGradient(bx,by+185,bx,by+bh);
   const mc = MAPS[m].bg[0];
@@ -2094,10 +2402,6 @@ function drawBattle(){
   ctx.restore();
 
   ctx.strokeStyle='rgba(129,140,248,.65)'; ctx.lineWidth=2.2; rr(ctx,bx,by,bw,bh,18); ctx.stroke();
-  
-  // Title
-  ctx.fillStyle='#fde047'; ctx.font='bold 16px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(`⚔️  SÀN ĐẤU LINH THÚ · ${MAPS[m].name.toUpperCase()}  ⚔️`, bx+bw/2, by+30);
 
   const pShakeX = (battle.pShake>0) ? (Math.random()-0.5)*12 : 0;
   const eShakeX = (battle.eShake>0) ? (Math.random()-0.5)*12 : 0;
@@ -2108,81 +2412,92 @@ function drawBattle(){
   const isPlayerTurn = (battle.turn === 'player' && !battle.busy);
   const turnText = battle.busy
     ? '⏳ Đang ra chiêu...'
-    : (battle.turn==='player' ? '👉 LƯỢT CỦA BẠN: Chọn hành động!' : '⚠️ LƯỢT ĐỐI THỦ: Đang chuẩn bị phản kích!');
+    : (battle.turn==='player' ? '👉 LƯỢT CỦA BẠN: Chọn chiêu!' : '⚠️ LƯỢT ĐỐI THỦ: Đang phản kích!');
   const turnCol = battle.busy ? '#94a3b8' : (battle.turn==='player' ? '#4ade80' : '#f87171');
 
-  ctx.fillStyle='rgba(0,0,0,.65)'; rr(ctx,bx+bw/2-160,by+12,320,24,12); ctx.fill();
-  ctx.strokeStyle=turnCol; ctx.lineWidth=1.5; rr(ctx,bx+bw/2-160,by+12,320,24,12); ctx.stroke();
-  ctx.fillStyle=turnCol; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(turnText, bx+bw/2, by+28);
+  if(isCompact){
+    ctx.fillStyle='#fde047'; ctx.font='bold 12.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(`⚔️ SÀN ĐẤU · ${MAPS[m].name.toUpperCase()} ⚔️`, bx+bw/2, by+22);
+    ctx.fillStyle='rgba(0,0,0,.65)'; rr(ctx,bx+bw/2-135,by+29,270,22,11); ctx.fill();
+    ctx.strokeStyle=turnCol; ctx.lineWidth=1.4; rr(ctx,bx+bw/2-135,by+29,270,22,11); ctx.stroke();
+    ctx.fillStyle=turnCol; ctx.font='bold 10.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(turnText, bx+bw/2, by+44);
+  } else {
+    ctx.fillStyle='rgba(0,0,0,.65)'; rr(ctx,bx+bw/2-160,by+12,320,24,12); ctx.fill();
+    ctx.strokeStyle=turnCol; ctx.lineWidth=1.5; rr(ctx,bx+bw/2-160,by+12,320,24,12); ctx.stroke();
+    ctx.fillStyle=turnCol; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(turnText, bx+bw/2, by+28);
+  }
 
   // Player Pet Panel
   const pp=battle.pet, pCol=elCol(pp.el);
   const isPActive = (battle.turn==='player' && !battle.busy);
   ctx.fillStyle=battle.pShake>0?'rgba(239,68,68,.25)':(isPActive?'rgba(30,58,138,.35)':'rgba(15,23,42,.55)');
-  rr(ctx,bx+25,by+44,290,200,14); ctx.fill();
+  rr(ctx,pCardX,cardY,cardW,cardH,14); ctx.fill();
   ctx.strokeStyle=isPActive ? '#60a5fa' : (pCol+'88');
-  ctx.lineWidth=isPActive ? 2.5 : 1.8; rr(ctx,bx+25,by+44,290,200,14); ctx.stroke();
-  // Vòng ma pháp nguyên tố + Hào quang Tư chất S/A dưới chân thú mình
-  ctx.fillStyle=pCol+'33'; ctx.beginPath(); ctx.ellipse(bx+170,by+142,50,15,0,0,Math.PI*2); ctx.fill();
+  ctx.lineWidth=isPActive ? 2.5 : 1.8; rr(ctx,pCardX,cardY,cardW,cardH,14); ctx.stroke();
+  ctx.fillStyle=pCol+'33'; ctx.beginPath(); ctx.ellipse(pCX,cardY+98,isCompact?40:50,14,0,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle=(pp.pot==='S'||pp.pot==='A')?'#fde047':pCol+'99'; ctx.lineWidth=1.8;
-  ctx.beginPath(); ctx.ellipse(bx+170,by+142,50+Math.sin(t*4)*3,15,0,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(pCX,cardY+98,(isCompact?40:50)+Math.sin(t*4)*3,14,0,0,Math.PI*2); ctx.stroke();
+  const spSize = isCompact ? 84 : 100;
   ctx.save();
-  ctx.translate(bx+170+pShakeX, by+100+Math.sin(t*4)*3);
-  ctx.scale(-1, 1); // Lật ngang để Thú phe ta luôn quay mặt sang PHẢI (đối diện đối thủ)
-  if (!drawPetSprite(ctx, pp.name, -50, -50, 100, 100, Math.floor(t*3)%3)) {
-    ctx.scale(-1, 1); // Trả lại nếu vẽ emoji
-    ctx.font='66px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(pp.icon,0,0);
+  ctx.translate(pCX+pShakeX, cardY+56+Math.sin(t*4)*3);
+  ctx.scale(-1, 1);
+  if (!drawPetSprite(ctx, pp.name, -spSize/2, -spSize/2, spSize, spSize, Math.floor(t*3)%3)) {
+    ctx.scale(-1, 1);
+    ctx.font=(isCompact?'52px':'66px')+' serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(pp.icon,0,0);
   }
   ctx.restore();
-  ctx.fillStyle='#e2e8f0'; ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(`${pp.name} [Tư chất ${pp.pot}]`,bx+170,by+166);
+  ctx.fillStyle='#e2e8f0'; ctx.font=`bold ${isCompact?11.5:13}px sans-serif`; ctx.textAlign='center';
+  ctx.fillText(`${pp.name} [${pp.pot}]`,pCX,cardY+122);
   const pelBadge=`${elIcon(pp.el)} ${pp.el} · Cấp ${pp.level}`;
-  ctx.fillStyle=pCol+'dd'; rr(ctx,bx+110,by+172,120,16,8); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='bold 9px sans-serif'; ctx.fillText(pelBadge,bx+170,by+183);
-  hpBar(ctx,bx+80,by+205,180,14,battle.playerHP,battle.playerMaxHP);
-  // Nút xem chi tiết thuộc tính Thú phe ta trong trận
-  const pInspectX=bx+25+290-78, pInspectY=by+44+10;
-  ctx.fillStyle='rgba(0,0,0,.5)'; rr(ctx,pInspectX,pInspectY,68,20,10); ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1; rr(ctx,pInspectX,pInspectY,68,20,10); ctx.stroke();
-  ctx.fillStyle='#93c5fd'; ctx.font='bold 9.5px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('🔍 Xem TT', pInspectX+34, pInspectY+13.5);
-  canvas._btns.push({x:pInspectX, y:pInspectY, w:68, h:20, fn:()=>inspectPetData(battle.pet, false)});
+  ctx.fillStyle=pCol+'dd'; rr(ctx,pCX-56,cardY+128,112,16,8); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 9px sans-serif'; ctx.fillText(pelBadge,pCX,cardY+139);
+  const hpW = Math.min(180, cardW - 24);
+  hpBar(ctx,pCX-hpW/2,cardY+156,hpW,14,battle.playerHP,battle.playerMaxHP);
+
+  const pInspectX=pCardX+cardW-66, pInspectY=cardY+8;
+  ctx.fillStyle='rgba(0,0,0,.55)'; rr(ctx,pInspectX,pInspectY,58,20,10); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1; rr(ctx,pInspectX,pInspectY,58,20,10); ctx.stroke();
+  ctx.fillStyle='#93c5fd'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('🔍 TT', pInspectX+29, pInspectY+13.5);
+  canvas._btns.push({x:pInspectX, y:pInspectY, w:58, h:20, fn:()=>inspectPetData(battle.pet, false)});
 
   // Enemy Pet Panel
   const ep=battle.enemy, eCol=elCol(ep.el);
-  ctx.fillStyle=battle.eShake>0?'rgba(239,68,68,.22)':'rgba(15,23,42,.55)'; rr(ctx,bx+bw-315,by+44,290,200,14); ctx.fill();
-  ctx.strokeStyle=eCol+'88'; ctx.lineWidth=1.8; rr(ctx,bx+bw-315,by+44,290,200,14); ctx.stroke();
-  // Vòng ma pháp nguyên tố dưới chân thú hoang
-  ctx.fillStyle=eCol+'33'; ctx.beginPath(); ctx.ellipse(bx+bw-170,by+142,50,15,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=battle.eShake>0?'rgba(239,68,68,.22)':'rgba(15,23,42,.55)'; rr(ctx,eCardX,cardY,cardW,cardH,14); ctx.fill();
+  ctx.strokeStyle=eCol+'88'; ctx.lineWidth=1.8; rr(ctx,eCardX,cardY,cardW,cardH,14); ctx.stroke();
+  ctx.fillStyle=eCol+'33'; ctx.beginPath(); ctx.ellipse(eCX,cardY+98,isCompact?40:50,14,0,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle=(ep.pot==='S'||ep.pot==='A')?'#fde047':eCol+'99'; ctx.lineWidth=1.8;
-  ctx.beginPath(); ctx.ellipse(bx+bw-170,by+142,50+Math.cos(t*4)*3,15,0,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(eCX,cardY+98,(isCompact?40:50)+Math.cos(t*4)*3,14,0,0,Math.PI*2); ctx.stroke();
   ctx.save();
-  ctx.translate(bx+bw-170+eShakeX, by+100+Math.cos(t*4)*3);
-  ctx.scale(1, 1); // Giữ nguyên hướng gốc để Thú hoang luôn quay mặt sang TRÁI (đối diện thú mình)
-  if (!drawPetSprite(ctx, ep.name, -50, -50, 100, 100, Math.floor(t*3+1)%3)) {
-    ctx.font='66px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ep.icon,0,0);
+  ctx.translate(eCX+eShakeX, cardY+56+Math.cos(t*4)*3);
+  ctx.scale(1, 1);
+  if (!drawPetSprite(ctx, ep.name, -spSize/2, -spSize/2, spSize, spSize, Math.floor(t*3+1)%3)) {
+    ctx.font=(isCompact?'52px':'66px')+' serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ep.icon,0,0);
   }
   ctx.restore();
-  ctx.fillStyle='#fca5a5'; ctx.font='bold 13px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(`${ep.name} [Tư chất ${ep.pot}]`,bx+bw-170,by+166);
+  ctx.fillStyle='#fca5a5'; ctx.font=`bold ${isCompact?11.5:13}px sans-serif`; ctx.textAlign='center';
+  ctx.fillText(`${ep.name} [${ep.pot}]`,eCX,cardY+122);
   const eelBadge=`${elIcon(ep.el)} ${ep.el} · Hoang Dã`;
-  ctx.fillStyle=eCol+'dd'; rr(ctx,bx+bw-230,by+172,120,16,8); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='bold 9px sans-serif'; ctx.fillText(eelBadge,bx+bw-170,by+183);
-  hpBar(ctx,bx+bw-260,by+205,180,14,battle.enemyHP,battle.enemyMaxHP);
-  // Nút xem chi tiết thuộc tính Thú đối thủ trong trận
-  const eInspectX=bx+bw-315+290-78, eInspectY=by+44+10;
-  ctx.fillStyle='rgba(0,0,0,.5)'; rr(ctx,eInspectX,eInspectY,68,20,10); ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1; rr(ctx,eInspectX,eInspectY,68,20,10); ctx.stroke();
-  ctx.fillStyle='#fca5a5'; ctx.font='bold 9.5px sans-serif'; ctx.textAlign='center';
-  ctx.fillText('🔍 Xem TT', eInspectX+34, eInspectY+13.5);
-  canvas._btns.push({x:eInspectX, y:eInspectY, w:68, h:20, fn:()=>inspectPetData(battle.enemy, true)});
+  ctx.fillStyle=eCol+'dd'; rr(ctx,eCX-56,cardY+128,112,16,8); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 9px sans-serif'; ctx.fillText(eelBadge,eCX,cardY+139);
+  hpBar(ctx,eCX-hpW/2,cardY+156,hpW,14,battle.enemyHP,battle.enemyMaxHP);
+
+  const eInspectX=eCardX+cardW-66, eInspectY=cardY+8;
+  ctx.fillStyle='rgba(0,0,0,.55)'; rr(ctx,eInspectX,eInspectY,58,20,10); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1; rr(ctx,eInspectX,eInspectY,58,20,10); ctx.stroke();
+  ctx.fillStyle='#fca5a5'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('🔍 TT', eInspectX+29, eInspectY+13.5);
+  canvas._btns.push({x:eInspectX, y:eInspectY, w:58, h:20, fn:()=>inspectPetData(battle.enemy, true)});
 
   // Tia sét đối đầu ở giữa (VS) + Gợi ý khắc hệ
-  ctx.fillStyle='#facc15'; ctx.font='bold 26px sans-serif'; ctx.fillText('⚡VS⚡',bx+bw/2,by+125);
+  ctx.fillStyle='#facc15'; ctx.font=`bold ${isCompact?16:26}px sans-serif`; ctx.fillText(isCompact?'⚡':'⚡VS⚡',bx+bw/2,cardY+78);
   const mult = getElMult(pp.el, ep.el);
-  if(mult>1.1){ ctx.fillStyle='#4ade80'; ctx.font='bold 11px sans-serif'; ctx.fillText('🔥 Khắc Hệ (+45% ST)',bx+bw/2,by+150); }
-  else if(mult<0.9){ ctx.fillStyle='#f87171'; ctx.font='bold 11px sans-serif'; ctx.fillText('🛡️ Bị Khắc (-25% ST)',bx+bw/2,by+150); }
+  if(!isCompact){
+    if(mult>1.1){ ctx.fillStyle='#4ade80'; ctx.font='bold 11px sans-serif'; ctx.fillText('🔥 Khắc Hệ (+45% ST)',bx+bw/2,cardY+104); }
+    else if(mult<0.9){ ctx.fillStyle='#f87171'; ctx.font='bold 11px sans-serif'; ctx.fillText('🛡️ Bị Khắc (-25% ST)',bx+bw/2,cardY+104); }
+  }
 
   // Vẽ Hiệu Ứng Tung Chiêu / Quăng Nơm / Hạt Nổ / Sát Thương Bay Lên (Battle VFX)
   for(let i=battleVFX.length-1; i>=0; i--){
@@ -2190,12 +2505,10 @@ function drawBattle(){
     const p=Math.min(1, v.t/v.dur);
     if(v.type==='skill'){
       const cx=v.sx+(v.tx-v.sx)*p, cy=v.sy+(v.ty-v.sy)*p - Math.sin(p*Math.PI)*35;
-      // Tia đạn chưởng nguyên tố
       const g=ctx.createRadialGradient(cx,cy,2,cx,cy,34);
       g.addColorStop(0,'#fff'); g.addColorStop(0.4,v.col); g.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,34,0,Math.PI*2); ctx.fill();
       ctx.font='28px serif'; ctx.fillText(elIcon(v.el),cx,cy+8);
-      // Bùng nổ vòng sóng chấn động & 12 hạt năng lượng tại mục tiêu
       if(p>0.55){
         const k=(p-0.55)/0.45;
         const r=k*95;
@@ -2228,44 +2541,59 @@ function drawBattle(){
   }
 
   // Log box
-  ctx.fillStyle='rgba(0,0,0,.6)'; rr(ctx,bx+25,by+255,bw-50,36,8); ctx.fill();
-  ctx.fillStyle='#fde047'; ctx.font='bold 13px sans-serif'; ctx.fillText(battle.log,bx+bw/2,by+278);
+  const logY = cardY + cardH + 10;
+  ctx.fillStyle='rgba(0,0,0,.65)'; rr(ctx,bx+12,logY,bw-24,36,8); ctx.fill();
+  ctx.fillStyle='#fde047'; ctx.font=`bold ${isCompact?11.5:13}px sans-serif`; ctx.textAlign='center';
+  ctx.fillText(battle.log,bx+bw/2,logY+23);
 
-  // 4 Action Buttons có hiệu ứng Gradient, Viền bóng 3D & Chống spam chiêu theo lượt
+  // 4 Action Buttons: Tự động xếp Lưới 2x2 Cực To trên màn hình dọc hoặc 1 Hàng ngang trên màn hình rộng
   const skillName = PET_SKILLS[pp.name] || '✨ Tuyệt Chiêu';
   const isSkillCD = (battle.skillCooldown > 0);
   const btns=[
-    {l:'⚔️ Đánh Thường', g:['#b91c1c','#7f1d1d'], b:'rgba(248,113,113,.4)', f:doBattleAttack, enabled:isPlayerTurn},
-    {l:isSkillCD ? `⏳ ${skillName} (${battle.skillCooldown})` : skillName, g:isSkillCD?['#475569','#334155']:['#7e22ce','#4c1d95'], b:isSkillCD?'rgba(148,163,184,.2)':'rgba(192,132,252,.45)', f:doBattleSkill, enabled:isPlayerTurn && !isSkillCD},
-    {l:'🪤 Quăng Nơm',  g:['#b45309','#78350f'], b:'rgba(251,191,36,.4)', f:doBattleCatch, enabled:isPlayerTurn},
-    {l:'🏃 Tẩu Thoát',   g:['#334155','#1e293b'], b:'rgba(148,163,184,.3)', f:doBattleRun, enabled:isPlayerTurn}
+    {l:'⚔️ Đánh Thường', g:['#b91c1c','#7f1d1d'], b:'rgba(248,113,113,.5)', f:doBattleAttack, enabled:isPlayerTurn},
+    {l:isSkillCD ? `⏳ ${skillName} (${battle.skillCooldown})` : skillName, g:isSkillCD?['#475569','#334155']:['#7e22ce','#4c1d95'], b:isSkillCD?'rgba(148,163,184,.2)':'rgba(192,132,252,.55)', f:doBattleSkill, enabled:isPlayerTurn && !isSkillCD},
+    {l:'🪤 Quăng Nơm',  g:['#b45309','#78350f'], b:'rgba(251,191,36,.5)', f:doBattleCatch, enabled:isPlayerTurn},
+    {l:'🏃 Tẩu Thoát',   g:['#334155','#1e293b'], b:'rgba(148,163,184,.4)', f:doBattleRun, enabled:isPlayerTurn}
   ];
+
   btns.forEach((b,i)=>{
-    const bx2=bx+25+i*(bw-50)/4+4, bw4=(bw-50)/4-8;
+    let bx2, by2, bw4, bh4;
+    if(isCompact){
+      const col = i % 2, row = Math.floor(i / 2);
+      bw4 = Math.floor((bw - 32) / 2);
+      bh4 = 52;
+      bx2 = bx + 12 + col * (bw4 + 8);
+      by2 = logY + 46 + row * (bh4 + 10);
+    } else {
+      bw4 = (bw - 50)/4 - 8;
+      bh4 = 48;
+      bx2 = bx + 25 + i*(bw-50)/4 + 4;
+      by2 = logY + 46;
+    }
+
     const canClick = b.enabled;
-    const btnG = ctx.createLinearGradient(bx2, by+302, bx2, by+346);
+    const btnG = ctx.createLinearGradient(bx2, by2, bx2, by2 + bh4);
     if(canClick){
       btnG.addColorStop(0, b.g[0]); btnG.addColorStop(1, b.g[1]);
     } else {
       btnG.addColorStop(0, '#1e293b'); btnG.addColorStop(1, '#0f172a');
     }
-    ctx.fillStyle=btnG; rr(ctx,bx2,by+302,bw4,44,12); ctx.fill();
+    ctx.fillStyle=btnG; rr(ctx,bx2,by2,bw4,bh4,12); ctx.fill();
     ctx.strokeStyle=canClick ? b.b : 'rgba(255,255,255,.08)';
-    ctx.lineWidth=1.5; rr(ctx,bx2,by+302,bw4,44,12); ctx.stroke();
+    ctx.lineWidth=1.8; rr(ctx,bx2,by2,bw4,bh4,12); ctx.stroke();
 
-    // Vệt sáng viền nút
     if(canClick){
-      ctx.fillStyle='rgba(255,255,255,.15)'; rr(ctx,bx2+2,by+304,bw4-4,16,8); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.15)'; rr(ctx,bx2+2,by2+2,bw4-4,18,8); ctx.fill();
       ctx.fillStyle='#ffffff';
     } else {
       ctx.fillStyle='#64748b';
     }
-    ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+    ctx.font=`bold ${isCompact?13:12.5}px sans-serif`; ctx.textAlign='center';
     ctx.shadowColor='#000'; ctx.shadowBlur=canClick?4:0;
-    ctx.fillText(b.l,bx2+bw4/2,by+329);
+    ctx.fillText(b.l,bx2+bw4/2,by2+bh4/2+5);
     ctx.shadowBlur=0;
     if(canClick){
-      canvas._btns.push({x:bx2,y:by+302,w:bw4,h:44,fn:b.f});
+      canvas._btns.push({x:bx2,y:by2,w:bw4,h:bh4,fn:b.f});
     }
   });
 }
@@ -2278,22 +2606,122 @@ function drawMinimap(){
     mmCtx.fillRect(tx*tW,ty*tH,tW+0.5,tH+0.5);
   }
   if(G.map==='farm'){
-    // Vẽ Nhà Bà Tư, Ao Cá & Khu Ruộng trên Minimap
     mmCtx.fillStyle='#ca8a04'; mmCtx.fillRect(2*tW,2*tH,4*tW,2.5*tH);
     mmCtx.fillStyle='#0284c7'; mmCtx.beginPath(); mmCtx.ellipse(4*tW,12.5*tH,2*tW,1.3*tH,0,0,Math.PI*2); mmCtx.fill();
     G.plots.forEach(p=>{ mmCtx.fillStyle=p.crop?(p.timer<=0?'#facc15':'#4ade80'):'#78350f'; mmCtx.fillRect(p.tx*tW,p.ty*tH,tW-0.5,tH-0.5); });
   }
-  // Cổng dịch chuyển trên Minimap
   MAPS[G.map].portals.forEach(pt=>{
     mmCtx.fillStyle='#818cf8'; mmCtx.beginPath(); mmCtx.arc(pt.tx*tW+tW/2,pt.ty*tH+tH/2,2.5,0,Math.PI*2); mmCtx.fill();
   });
 
   wildPets.forEach(wp=>{ if(wp.alive){ mmCtx.fillStyle=elCol(wp.tmpl.el); mmCtx.beginPath(); mmCtx.arc((wp.px/TS)*tW+tW/2,(wp.py/TS)*tH+tH/2,2.2,0,Math.PI*2); mmCtx.fill(); }});
-  // Vòng radar quanh vị trí Út
   const px=P.tx*tW+tW/2, py=P.ty*tH+tH/2;
   mmCtx.strokeStyle=`rgba(253,224,71,${0.8 - (t%1.5)/1.5*0.8})`; mmCtx.lineWidth=1;
   mmCtx.beginPath(); mmCtx.arc(px,py,3+(t%1.5)*6,0,Math.PI*2); mmCtx.stroke();
   mmCtx.fillStyle='#fde047'; mmCtx.beginPath(); mmCtx.arc(px,py,3,0,Math.PI*2); mmCtx.fill();
+}
+
+// Hệ thống nhận diện mục tiêu thông minh quanh nhân vật Út (Smart Context Detection)
+function getNearbyContext(){
+  if(fishingState.active){
+    if(fishingState.state === 'bite'){
+      return { type:'fish_bite', icon:'⚡', label:'GIẬT CÂU!', badge:'❗ Cá đang cắn câu!', bg:'linear-gradient(135deg,#ef4444,#b91c1c)', border:'#fef08a', pulse:true };
+    }
+    return { type:'fish_wait', icon:'⏳', label:'THU CẦN', badge:'🎣 Đang chờ cá cắn...', bg:'linear-gradient(135deg,#0284c7,#0369a1)', border:'#38bdf8', pulse:false };
+  }
+
+  const pcx = P.px + TS/2, pcy = P.py + TS/2;
+
+  // 1. Cổng dịch chuyển gần nhất
+  let bestPt = null, bestPtDist = Infinity;
+  MAPS[G.map].portals.forEach(pt => {
+    const d = Math.hypot((pt.tx*TS + TS/2) - pcx, (pt.ty*TS + TS/2) - pcy);
+    if(d <= TS * 1.5 && d < bestPtDist){ bestPt = pt; bestPtDist = d; }
+  });
+  if(bestPt){
+    return { type:'portal', target:bestPt, icon:'🚪', label:'QUA CỔNG', badge:bestPt.label, bg:'linear-gradient(135deg,#7c3aed,#4c1d95)', border:'#c4b5fd', pulse:true };
+  }
+
+  // 2. Trong Nông Trại: Bếp Bà Tư & Ô đất trồng trọt
+  if(G.map === 'farm'){
+    if(P.tx >= 1 && P.tx <= 6 && P.ty >= 2 && P.ty <= 5){
+      return { type:'cook', icon:'🍳', label:'BẾP BÀ TƯ', badge:'🏡 Bếp Nấu Bà Tư', bg:'linear-gradient(135deg,#ea580c,#9a3412)', border:'#fdba74', pulse:true };
+    }
+
+    // Tìm ô đất dưới chân hoặc sát cạnh gần nhất
+    let bestPlot = G.plots.find(p => p.tx === P.tx && p.ty === P.ty);
+    if(!bestPlot){
+      let minPlotDist = Infinity;
+      G.plots.forEach(p => {
+        const d = Math.hypot((p.tx*TS + TS/2) - pcx, (p.ty*TS + TS/2) - pcy);
+        if(d <= TS * 1.35 && d < minPlotDist){ bestPlot = p; minPlotDist = d; }
+      });
+    }
+    if(bestPlot){
+      if(!bestPlot.crop){
+        return { type:'plot_empty', target:bestPlot, icon:'🌱', label:'GIEO HẠT', badge:'🌱 Ô đất trống', bg:'linear-gradient(135deg,#16a34a,#14532d)', border:'#86efac', pulse:false };
+      } else if(bestPlot.timer <= 0){
+        const cName = CROPS[CROPS[bestPlot.crop].yield].name;
+        return { type:'plot_ripe', target:bestPlot, icon:'🌾', label:'THU HOẠCH', badge:`✨ ${cName} đã chín!`, bg:'linear-gradient(135deg,#ca8a04,#854d0e)', border:'#fde047', pulse:true };
+      } else {
+        const cName = CROPS[bestPlot.crop].name;
+        return { type:'plot_growing', target:bestPlot, icon:'⏳', label:formatCropTime(bestPlot.timer), badge:`🌱 ${cName}: ${formatCropTime(bestPlot.timer)}`, bg:'linear-gradient(135deg,#475569,#1e293b)', border:'#94a3b8', pulse:false };
+      }
+    }
+  }
+
+  // 3. Đứng sát bờ nước câu cá
+  const waterCheck = isPlayerNearWater();
+  if(waterCheck.ok){
+    return { type:'fish_start', target:waterCheck, icon:'🎣', label:'QUĂNG CÂU', badge:'🎣 Bờ nước câu cá', bg:'linear-gradient(135deg,#0284c7,#075985)', border:'#7dd3fc', pulse:false };
+  }
+
+  // 4. Thú hoang ở gần
+  const nearWild = wildPets.find(wp => wp.alive && Math.hypot((wp.px+TS/2)-pcx, (wp.py+TS/2)-pcy) <= TS * 2.2);
+  if(nearWild){
+    return { type:'wild_pet', target:nearWild, icon:'⚔️', label:'GIAO ĐẤU', badge:`⚔️ ${nearWild.tmpl.name} [${nearWild.tmpl.pot}]`, bg:'linear-gradient(135deg,#dc2626,#7f1d1d)', border:'#fca5a5', pulse:true };
+  }
+
+  return { type:'none', icon:'✋', label:'TƯƠNG TÁC', badge:MAPS[G.map].name, bg:'linear-gradient(135deg,#0284c7,#0369a1)', border:'rgba(56,189,248,0.65)', pulse:false };
+}
+
+function updateMobileContextUI(){
+  const ctrlEl = document.getElementById('mobile-controls');
+  const wrapEl = document.getElementById('wrap');
+  const isPortrait = wrapEl && wrapEl.classList.contains('portrait-mode');
+
+  if(ctrlEl){
+    if(battle.active){
+      if(isPortrait){
+        ctrlEl.style.opacity = '0.25';
+        ctrlEl.style.pointerEvents = 'none';
+      } else {
+        ctrlEl.style.display = 'none';
+      }
+      return;
+    } else {
+      ctrlEl.style.opacity = '1';
+      ctrlEl.style.display = '';
+      ctrlEl.style.pointerEvents = isPortrait ? 'auto' : 'none';
+    }
+  }
+
+  const ctxInfo = getNearbyContext();
+  const actBtnEl = document.getElementById('btn-act');
+  const iconEl = document.getElementById('btn-act-icon');
+  const labelEl = document.getElementById('btn-act-label');
+  const badgeEl = document.getElementById('mobile-context-badge');
+
+  if(iconEl && iconEl.textContent !== ctxInfo.icon) iconEl.textContent = ctxInfo.icon;
+  if(labelEl && labelEl.textContent !== ctxInfo.label) labelEl.textContent = ctxInfo.label;
+  if(actBtnEl){
+    actBtnEl.style.background = ctxInfo.bg;
+    actBtnEl.style.borderColor = ctxInfo.border;
+    actBtnEl.classList.toggle('pulse-btn', !!ctxInfo.pulse);
+  }
+  if(badgeEl && badgeEl.textContent !== ctxInfo.badge){
+    badgeEl.textContent = ctxInfo.badge;
+  }
 }
 
 let lastTime=0;
@@ -2310,9 +2738,8 @@ function update(now){
     if(fishingState.state === 'waiting' && fishingState.timer >= fishingState.biteTimer){
       fishingState.state = 'bite';
       fishingState.timer = 0;
-      notify('❗ CẮN CÂU RỒI ÚT ƠI! Bấm [🎣 GIẬT CÂU] hoặc phím SPACE/E mau lên!');
+      notify('❗ CẮN CÂU RỒI ÚT ƠI! Bấm [⚡ GIẬT CÂU] ngay!');
     } else if(fishingState.state === 'bite'){
-      // Nếu sau 3 giây không giật câu, cá ăn hết mồi và trốn thoát
       if(fishingState.timer >= 3.0){
         fishingState.active = false;
         fishingState.state = 'idle';
@@ -2327,34 +2754,54 @@ function update(now){
     if(!wp.alive) return;
     if(wp.immuneTimer > 0) wp.immuneTimer -= dt;
     wp.aiTimer+=dt; if(wp.aiTimer>=wp.aiInterval){ wp.aiTimer=0; wp.aiState=Math.random()<0.4?'idle':'walk'; const a=Math.random()*Math.PI*2; wp.vx=Math.cos(a)*wp.spd; wp.vy=Math.sin(a)*wp.spd; }
-    if(wp.aiState==='walk'){ const npx=wp.px+wp.vx, npy=wp.py+wp.vy; if(!_isBlockedPx(npx,npy)){ wp.px=npx; wp.py=npy; wp.walkFrame+=dt*4; } else { wp.aiState='idle'; } }
+    if(wp.aiState==='walk'){ const npx=wp.px+wp.vx, npy=wp.py+wp.vy; if(!_isBlockedPx(npx,npy,false)){ wp.px=npx; wp.py=npy; wp.walkFrame+=dt*4; } else { wp.aiState='idle'; } }
     wp.exclAlpha = Math.hypot(wp.px-P.px, wp.py-P.py)<TS*2.5 ? 1 : 0;
     if((!wp.immuneTimer || wp.immuneTimer<=0) && Math.hypot(wp.px-P.px, wp.py-P.py)<TS*1.1) startBattle(wp);
   });
 
-  let dx=0,dy=0;
-  if(keys['KeyW']||keys['ArrowUp']) dy=-1; else if(keys['KeyS']||keys['ArrowDown']) dy=1;
-  else if(keys['KeyA']||keys['ArrowLeft']) dx=-1; else if(keys['KeyD']||keys['ArrowRight']) dx=1;
+  // Hỗ trợ di chuyển 8 hướng bằng bàn phím VÀ 360° mượt mà bằng Cần Gạt Analog (Virtual Thumbstick)
+  let dx=0, dy=0;
+  if(keys['KeyW']||keys['ArrowUp']) dy -= 1;
+  if(keys['KeyS']||keys['ArrowDown']) dy += 1;
+  if(keys['KeyA']||keys['ArrowLeft']) dx -= 1;
+  if(keys['KeyD']||keys['ArrowRight']) dx += 1;
 
-  // Nếu người chơi di chuyển bằng phím khi đang câu cá: tự động thu cần hủy câu và không mất mồi
+  if(joyState.active && (Math.abs(joyState.vx) > 0.08 || Math.abs(joyState.vy) > 0.08)){
+    dx = joyState.vx;
+    dy = joyState.vy;
+  } else if(dx !== 0 && dy !== 0){
+    const inv = 1 / Math.SQRT2;
+    dx *= inv; dy *= inv;
+  }
+
+  // Nếu người chơi di chuyển khi đang câu cá: tự động thu cần hủy câu và không mất mồi
   if(fishingState.active && (dx || dy)){
     cancelFishingAction(true);
   }
 
-  // Cập nhật tốc độ di chuyển theo Thú Cưỡi hiện tại (hoặc Thuyền khi qua Hồ Sen/Biển)
+  // Cập nhật tốc độ di chuyển theo Thú Cưỡi hiện tại
   const effMount = getEffectiveMount();
   P.spd = (MOUNT_TYPES[effMount] ? MOUNT_TYPES[effMount].spd : 2.8);
 
   if(dx||dy){
     P.targetPx=null;
-    P.dir = dy<0?'up':(dy>0?'down':(dx<0?'left':'right'));
+    if(Math.abs(dx) > Math.abs(dy)) P.dir = dx<0?'left':'right';
+    else P.dir = dy<0?'up':'down';
+
     const npx=P.px+dx*P.spd, npy=P.py+dy*P.spd;
-    if(!_isBlockedPx(npx,npy)){ P.px=npx; P.py=npy; P.tx=Math.floor((P.px+TS/2)/TS); P.ty=Math.floor((P.py+TS/2)/TS); }
+    if(!_isBlockedPx(npx,npy,true)){
+      P.px=npx; P.py=npy;
+    } else if(!_isBlockedPx(npx,P.py,true)){
+      P.px=npx;
+    } else if(!_isBlockedPx(P.px,npy,true)){
+      P.py=npy;
+    }
+    P.tx=Math.floor((P.px+TS/2)/TS); P.ty=Math.floor((P.py+TS/2)/TS);
     P.moving=true; P.walkFrame+=0.18;
   } else if(P.targetPx!==null){
     const dX=P.targetPx-P.px, dY=P.targetPy-P.py, dist=Math.hypot(dX,dY);
     if(Math.abs(dX)>Math.abs(dY)) P.dir = dX<0?'left':'right'; else P.dir = dY<0?'up':'down';
-    if(dist<P.spd+1){ P.px=P.targetPx; P.py=P.targetPy; P.targetPx=null; P.moving=false; interact(); }
+    if(dist<P.spd+1){ P.px=P.targetPx; P.py=P.targetPy; P.tx=Math.floor((P.px+TS/2)/TS); P.ty=Math.floor((P.py+TS/2)/TS); P.targetPx=null; P.moving=false; interact(); }
     else { P.px+=dX/dist*P.spd; P.py+=dY/dist*P.spd; P.tx=Math.floor((P.px+TS/2)/TS); P.ty=Math.floor((P.py+TS/2)/TS); P.moving=true; P.walkFrame+=0.14; }
   } else P.moving=false;
 
@@ -2363,37 +2810,51 @@ function update(now){
 
 let zoneBanner = { title:'', t:0, dur:1.8 };
 function interact(){
-  if(fishingState.active){
+  const ctxInfo = getNearbyContext();
+  if(ctxInfo.type === 'fish_bite' || ctxInfo.type === 'fish_wait'){
     handleFishingInteraction();
     return;
   }
-  const pt=MAPS[G.map].portals.find(p=>p.tx===P.tx&&p.ty===P.ty); if(pt){ G.map=pt.to; P.tx=14; P.ty=8; P.px=14*TS; P.py=8*TS; P.fpx=P.px-24; P.fpy=P.py+4; zoneBanner={title:MAPS[G.map].name, t:0, dur:1.8}; document.getElementById('hud-zone').textContent=MAPS[G.map].name; spawnWildPetsForMap(G.map); notify(`🚪 Bước vào ${MAPS[G.map].name}`); return; }
-  if(G.map==='farm'){
-    if(P.tx>=2&&P.tx<=5&&P.ty>=3&&P.ty<=5){ openMenu('cook'); return; }
-    const plot=G.plots.find(p=>p.tx===P.tx&&p.ty===P.ty);
-    if(plot){
-      if(!plot.crop){
-        openSeedSelectModal(plot);
-      }
-      else if(plot.timer<=0){
-        const yi=CROPS[plot.crop].yield, amt=CROPS[plot.crop].amt;
-        G.inv[yi]=(G.inv[yi]||0)+amt;
-        spawnWorldVFX(plot.tx*TS+16, plot.ty*TS+16, `+${amt} ${CROPS[yi].icon} ${CROPS[yi].name}`, '#fde047');
-        notify(`✅ Thu hoạch ${amt}x ${CROPS[yi].name}!`);
-        plot.crop=null; plot.timer=0;
-        updateHUD();
-        saveGame(true);
-      } else {
-        notify(`⏳ Cây đang lớn, chín sau ${formatCropTime(plot.timer)} nữa!`);
-      }
-      return;
-    }
+  if(ctxInfo.type === 'portal'){
+    const pt = ctxInfo.target;
+    G.map=pt.to; P.tx=14; P.ty=8; P.px=14*TS; P.py=8*TS; P.fpx=P.px-24; P.fpy=P.py+4;
+    zoneBanner={title:MAPS[G.map].name, t:0, dur:1.8};
+    document.getElementById('hud-zone').textContent=MAPS[G.map].name;
+    spawnWildPetsForMap(G.map);
+    notify(`🚪 Bước vào ${MAPS[G.map].name}`);
+    return;
   }
-
-  // Nếu đang đứng gần mé nước: bấm E/Space kích hoạt quăng câu
-  const waterCheck = isPlayerNearWater();
-  if(waterCheck.ok){
-    startFishingAction(waterCheck.spotX, waterCheck.spotY);
+  if(ctxInfo.type === 'cook'){
+    openMenu('cook');
+    return;
+  }
+  if(ctxInfo.type === 'plot_empty'){
+    openSeedSelectModal(ctxInfo.target);
+    return;
+  }
+  if(ctxInfo.type === 'plot_ripe'){
+    const plot = ctxInfo.target;
+    const yi=CROPS[plot.crop].yield, amt=CROPS[plot.crop].amt;
+    G.inv[yi]=(G.inv[yi]||0)+amt;
+    spawnWorldVFX(plot.tx*TS+16, plot.ty*TS+16, `+${amt} ${CROPS[yi].icon} ${CROPS[yi].name}`, '#fde047');
+    notify(`✅ Thu hoạch ${amt}x ${CROPS[yi].name}!`);
+    plot.crop=null; plot.timer=0;
+    updateHUD();
+    saveGame(true);
+    return;
+  }
+  if(ctxInfo.type === 'plot_growing'){
+    const plot = ctxInfo.target;
+    notify(`⏳ ${CROPS[plot.crop].name} đang lớn, chín sau ${formatCropTime(plot.timer)} nữa!`);
+    return;
+  }
+  if(ctxInfo.type === 'fish_start'){
+    startFishingAction(ctxInfo.target.spotX, ctxInfo.target.spotY);
+    return;
+  }
+  if(ctxInfo.type === 'wild_pet'){
+    startBattle(ctxInfo.target);
+    return;
   }
 }
 
@@ -2413,6 +2874,7 @@ function startBattle(wp){
   battle.skillCooldown=0;
   battle.log=`⚠️ Đụng ${wp.tmpl.name} hoang dã! Lượt của bạn.`;
   P.targetPx=null;
+  joyState.active=false; joyState.vx=0; joyState.vy=0;
 }
 
 function endBattle(res){
@@ -2460,17 +2922,17 @@ function endBattle(res){
 
 function doBattleAttack(){
   if(!battle.active || battle.turn!=='player' || battle.busy) return;
-  battle.busy = true; // Khóa tương tác chống click liên tục
+  battle.busy = true;
 
-  // Giảm cooldown kỹ năng nếu có
   if(battle.skillCooldown > 0) battle.skillCooldown--;
 
+  const bl = getBattleLayout();
   const mult=getElMult(battle.pet.el, battle.enemy.el);
   const dmg=Math.max(1, Math.round((battle.pet.atk+Math.floor(Math.random()*6))*mult));
   battle.enemyHP=Math.max(0,battle.enemyHP-dmg);
   battle.eShake=0.45;
-  spawnBattleVFX('slash', battle.pet.el, 225, 135, CW-225, 135);
-  spawnBattleVFX('popup', battle.pet.el, CW-225, 95, CW-225, 50, `-${dmg} ⚔️`, '#fde047');
+  spawnBattleVFX('slash', battle.pet.el, bl.pCX, bl.petY, bl.eCX, bl.petY);
+  spawnBattleVFX('popup', battle.pet.el, bl.eCX, bl.petY-30, bl.eCX, bl.petY-75, `-${dmg} ⚔️`, '#fde047');
   battle.log=`⚔️ ${battle.pet.name} đánh thường gây ${dmg} sát thương!`;
 
   if(battle.enemyHP<=0){
@@ -2483,8 +2945,9 @@ function doBattleAttack(){
 
 function doBattleSkill(){
   if(!battle.active || battle.turn!=='player' || battle.busy || battle.skillCooldown>0) return;
-  battle.busy = true; // Khóa tương tác chống click liên tục
+  battle.busy = true;
 
+  const bl = getBattleLayout();
   const mult=getElMult(battle.pet.el, battle.enemy.el);
   const sName=PET_SKILLS[battle.pet.name]||'✨ Tuyệt Chiêu';
   const dmg=Math.max(1, Math.round(battle.pet.atk*2.2*mult));
@@ -2492,13 +2955,11 @@ function doBattleSkill(){
   battle.eShake=0.7;
   battle.flashAlpha=0.35;
   battle.flashCol=elCol(battle.pet.el);
-  
-  // Thiết lập Cooldown 2 lượt sau khi tung tuyệt chiêu
   battle.skillCooldown = 2;
 
-  spawnBattleVFX('skill', battle.pet.el, 225, 135, CW-225, 135);
+  spawnBattleVFX('skill', battle.pet.el, bl.pCX, bl.petY, bl.eCX, bl.petY);
   const tag = mult>1.1 ? ' 💥KHẮC HỆ!' : (mult<0.9 ? ' 🛡️Kháng' : '');
-  spawnBattleVFX('popup', battle.pet.el, CW-225, 90, CW-225, 45, `-${dmg}${tag}`, mult>1.1?'#4ade80':elCol(battle.pet.el));
+  spawnBattleVFX('popup', battle.pet.el, bl.eCX, bl.petY-35, bl.eCX, bl.petY-80, `-${dmg}${tag}`, mult>1.1?'#4ade80':elCol(battle.pet.el));
   battle.log=`✨ ${battle.pet.name} thi triển [${sName}]! Gây ${dmg} ST!${tag}`;
 
   if(battle.enemyHP<=0){
@@ -2515,7 +2976,8 @@ function doBattleCatch(){
 
   if(battle.skillCooldown > 0) battle.skillCooldown--;
 
-  spawnBattleVFX('catch', 'Thổ', 225, 135, CW-225, 135);
+  const bl = getBattleLayout();
+  spawnBattleVFX('catch', 'Thổ', bl.pCX, bl.petY, bl.eCX, bl.petY);
   let catchBonus = 0;
   if((G.inv['rare_net']||0) > 0){
     catchBonus = 0.4;
@@ -2524,11 +2986,11 @@ function doBattleCatch(){
   }
   const catchRate = Math.min(0.98, 0.3 + (1 - battle.enemyHP/battle.enemyMaxHP) * 0.6 + catchBonus);
   if(Math.random() < catchRate) {
-    spawnBattleVFX('popup', 'Mộc', CW-225, 90, CW-225, 45, '🎉 TÓM GỌN!', '#4ade80');
+    spawnBattleVFX('popup', 'Mộc', bl.eCX, bl.petY-35, bl.eCX, bl.petY-80, '🎉 TÓM GỌN!', '#4ade80');
     battle.log=`🎉 Quăng nơm chính xác, đã tóm gọn ${battle.enemy.name}!`;
     setTimeout(()=>endBattle('caught'), 1000);
   } else {
-    spawnBattleVFX('popup', 'Hỏa', CW-225, 90, CW-225, 45, '💨 Sẩy rồi!', '#f87171');
+    spawnBattleVFX('popup', 'Hỏa', bl.eCX, bl.petY-35, bl.eCX, bl.petY-80, '💨 Sẩy rồi!', '#f87171');
     battle.log=`😤 Quăng nơm trượt rồi, ${battle.enemy.name} giãy thoát!`;
     battle.turn = 'enemy';
     setTimeout(enemyTurnAction, 1000);
@@ -2539,17 +3001,15 @@ function doBattleRun(){
   if(!battle.active || battle.turn!=='player' || battle.busy) return;
   battle.busy = true;
 
-  // Đẩy nhẹ thú hoang lùi ra xa và cấp thời gian miễn nhiễm 2.5s để không bị dính lại
   if(battle.wildRef){
     const dx = battle.wildRef.px - P.px;
     const dy = battle.wildRef.py - P.py;
     const dist = Math.hypot(dx, dy) || 1;
     battle.wildRef.px += (dx / dist) * (TS * 3.5);
     battle.wildRef.py += (dy / dist) * (TS * 3.5);
-    battle.wildRef.immuneTimer = 2.8; // Miễn nhiễm đụng độ 2.8s
+    battle.wildRef.immuneTimer = 2.8;
   }
 
-  // Khôi phục trạng thái đi lại cho người chơi
   P.targetPx = null;
   P.targetPy = null;
   P.moving = false;
@@ -2564,6 +3024,7 @@ function doBattleRun(){
 // LƯỢT ĐỐI THỦ PHẢN CÔNG
 function enemyTurnAction(){
   if(!battle.active) return;
+  const bl = getBattleLayout();
   const mult=getElMult(battle.enemy.el, battle.pet.el);
   const dmg=Math.max(1, Math.round((battle.enemy.atk+Math.floor(Math.random()*4))*mult));
   battle.playerHP=Math.max(0, battle.playerHP-dmg);
@@ -2571,14 +3032,13 @@ function enemyTurnAction(){
   G.pets[G.activeIdx].hp=battle.playerHP;
   battle.pShake=0.5;
 
-  spawnBattleVFX('skill', battle.enemy.el, CW-225, 135, 225, 135);
-  spawnBattleVFX('popup', battle.enemy.el, 225, 95, 225, 50, `-${dmg} 🔥`, '#f87171');
+  spawnBattleVFX('skill', battle.enemy.el, bl.eCX, bl.petY, bl.pCX, bl.petY);
+  spawnBattleVFX('popup', battle.enemy.el, bl.pCX, bl.petY-30, bl.pCX, bl.petY-75, `-${dmg} 🔥`, '#f87171');
   battle.log=`🔥 ${battle.enemy.name} phản đòn gây ${dmg} sát thương lên ${battle.pet.name}!`;
 
   if(battle.playerHP<=0){
     setTimeout(()=>endBattle('lose'), 1000);
   } else {
-    // Trả lượt lại cho người chơi & mở khóa nút
     setTimeout(()=>{
       if(battle.active){
         battle.turn = 'player';
@@ -3621,60 +4081,57 @@ function drawFishingWorld(){
   ctx.restore();
 }
 
-// Vẽ nút tương tác hoặc gợi ý câu cá khi đứng gần bờ nước
-function drawFishingPrompt(){
-  if(battle.active) return;
-  canvas._worldBtns = [];
-
-  if(fishingState.active){
-    // Đang câu cá: hiển thị nút [🎣 GIẬT CÂU] nổi bật ở góc dưới giữa màn hình
-    const btnW = 160, btnH = 42;
-    const btnX = CW / 2 - btnW / 2, btnY = CH - 62;
-    const isBiting = (fishingState.state === 'bite');
-
-    ctx.save();
-    const btnG = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
-    if(isBiting){
-      btnG.addColorStop(0, '#ef4444'); btnG.addColorStop(1, '#b91c1c');
-    } else {
-      btnG.addColorStop(0, '#0284c7'); btnG.addColorStop(1, '#0369a1');
-    }
-    ctx.fillStyle = btnG;
-    rr(ctx, btnX, btnY, btnW, btnH, 14); ctx.fill();
-    ctx.strokeStyle = isBiting ? '#fef08a' : 'rgba(56,189,248,0.6)';
-    ctx.lineWidth = isBiting ? 2.5 : 1.5;
-    rr(ctx, btnX, btnY, btnW, btnH, 14); ctx.stroke();
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
-    ctx.fillText(isBiting ? '⚡ GIẬT CÂU NGAY!' : '⏳ Đang Chờ Cá...', btnX + btnW / 2, btnY + 26);
-    ctx.shadowBlur = 0;
-    ctx.restore();
-
-    canvas._worldBtns.push({ x: btnX, y: btnY, w: btnW, h: btnH, fn: handleFishingInteraction });
-    return;
-  }
-
-  // Khi chưa quăng câu: nếu người chơi đang đứng sát bờ nước, hiện nút gợi ý [🎣 Quăng Cần Câu]
+// Vẽ gợi ý câu cá trên đầu nhân vật (World Space)
+function drawFishingWorldPrompt(){
+  if(battle.active || fishingState.active) return;
   const water = isPlayerNearWater();
   if(water.ok){
     const px = P.px + 16, py = P.py - 24;
     ctx.save();
-    ctx.fillStyle = 'rgba(15,23,42,0.85)';
-    rr(ctx, px - 65, py - 12, 130, 24, 12); ctx.fill();
-    ctx.strokeStyle = 'rgba(56,189,248,0.55)'; ctx.lineWidth = 1.2;
-    rr(ctx, px - 65, py - 12, 130, 24, 12); ctx.stroke();
+    ctx.fillStyle = 'rgba(15,23,42,0.88)';
+    rr(ctx, px - 68, py - 13, 136, 25, 12); ctx.fill();
+    ctx.strokeStyle = 'rgba(56,189,248,0.65)'; ctx.lineWidth = 1.4;
+    rr(ctx, px - 68, py - 13, 136, 25, 12); ctx.stroke();
     ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('🎣 Phím E: Quăng Câu', px, py + 4);
+    ctx.fillText('🎣 Chạm / Nút Hành Động', px, py + 4);
     ctx.restore();
 
     canvas._worldBtns.push({
-      x: px - 65, y: py - 12, w: 130, h: 24,
+      x: px - 68, y: py - 13, w: 136, h: 25,
       fn: () => startFishingAction(water.spotX, water.spotY)
     });
   }
+}
+
+// Vẽ nút [⚡ GIẬT CÂU NGAY!] ở góc dưới giữa Viewport (Screen Space)
+function drawFishingScreenPrompt(){
+  if(battle.active || !fishingState.active) return;
+  const btnW = 180, btnH = 44;
+  const btnX = VIEW_W / 2 - btnW / 2, btnY = VIEW_H - 58;
+  const isBiting = (fishingState.state === 'bite');
+
+  ctx.save();
+  const btnG = ctx.createLinearGradient(btnX, btnY, btnX, btnY + btnH);
+  if(isBiting){
+    btnG.addColorStop(0, '#ef4444'); btnG.addColorStop(1, '#b91c1c');
+  } else {
+    btnG.addColorStop(0, '#0284c7'); btnG.addColorStop(1, '#0369a1');
+  }
+  ctx.fillStyle = btnG;
+  rr(ctx, btnX, btnY, btnW, btnH, 14); ctx.fill();
+  ctx.strokeStyle = isBiting ? '#fef08a' : 'rgba(56,189,248,0.6)';
+  ctx.lineWidth = isBiting ? 2.5 : 1.5;
+  rr(ctx, btnX, btnY, btnW, btnH, 14); ctx.stroke();
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 13.5px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
+  ctx.fillText(isBiting ? '⚡ GIẬT CÂU NGAY!' : '⏳ Đang Chờ Cá...', btnX + btnW / 2, btnY + 27);
+  ctx.shadowBlur = 0;
+  ctx.restore();
+
+  canvas._screenBtns.push({ x: btnX, y: btnY, w: btnW, h: btnH, fn: handleFishingInteraction });
 }
 
 function renderPets(){
@@ -3819,49 +4276,91 @@ setInterval(()=>{
 setInterval(()=>{ saveGame(true); }, 30000);
 
 function render(){
+  updateCamera();
+  canvas._worldBtns = [];
+  canvas._screenBtns = [];
+
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  ctx.clearRect(0,0,CW,CH); drawTiles(); drawPlots(); drawPortals();
-  drawWildPets(); if(P.marker){ ctx.strokeStyle='#facc15'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(P.marker.px+TS/2,P.marker.py+TS/2,10,0,Math.PI*2); ctx.stroke(); P.marker.alpha-=0.05; if(P.marker.alpha<=0)P.marker=null; }
-  drawFollowerPet(P.px,P.py); drawPlayer(P.px,P.py);
+  ctx.clearRect(0, 0, VIEW_W, VIEW_H);
+
+  // 1. VẼ KHÔNG GIAN THẾ GIỚI (WORLD SPACE - Có Camera Follow & Zoom)
+  ctx.save();
+  ctx.scale(cam.zoom, cam.zoom);
+  ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
+
+  drawTiles();
+  drawPlots();
+
+  // Vẽ viền sáng mục tiêu quanh ô đất đang đứng gần (giúp Mobile dùng Joystick biết rõ đang chọn ô nào)
+  if(G.map === 'farm' && !battle.active){
+    const nearCtx = getNearbyContext();
+    if(nearCtx.targetPlot){
+      const tp = nearCtx.targetPlot;
+      ctx.save();
+      ctx.strokeStyle = nearCtx.col || '#4ade80';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      rr(ctx, tp.tx * TS + 1, tp.ty * TS + 1, TS - 2, TS - 2, 6);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  drawPortals();
+  drawWildPets();
+  if(P.marker){
+    ctx.strokeStyle='#facc15'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(P.marker.px+TS/2,P.marker.py+TS/2,10,0,Math.PI*2); ctx.stroke();
+    P.marker.alpha-=0.05; if(P.marker.alpha<=0)P.marker=null;
+  }
+  drawFollowerPet(P.px,P.py);
+  drawPlayer(P.px,P.py);
   drawFishingWorld();
+  drawFishingWorldPrompt();
   drawSkyAndLighting();
 
+  ctx.restore();
+
+  // 2. VẼ KHÔNG GIAN MÀN HÌNH (SCREEN / VIEWPORT SPACE)
   // Vignette overlay
-  const g = ctx.createRadialGradient(CW/2, CH/2, CH/3, CW/2, CH/2, CW*0.6);
-  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.4)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, CW, CH);
+  const g = ctx.createRadialGradient(VIEW_W/2, VIEW_H/2, VIEW_H/3, VIEW_W/2, VIEW_H/2, VIEW_W*0.65);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.38)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, VIEW_W, VIEW_H);
 
   // Hiệu ứng Bảng Tên Vùng Đất Điện Ảnh khi chuyển map (zoneBanner)
   if(zoneBanner.title && zoneBanner.t < zoneBanner.dur){
     zoneBanner.t += 0.018;
     const p = zoneBanner.t / zoneBanner.dur;
     const a = p < 0.2 ? p/0.2 : (p > 0.75 ? (1-p)/0.25 : 1);
+    const bw = Math.min(290, VIEW_W - 32);
     ctx.save();
     ctx.globalAlpha = Math.max(0, a);
     ctx.fillStyle = 'rgba(15,23,42,0.88)';
-    rr(ctx, CW/2-145, 76, 290, 42, 12); ctx.fill();
+    rr(ctx, VIEW_W/2 - bw/2, 68, bw, 42, 12); ctx.fill();
     ctx.strokeStyle = '#fde047'; ctx.lineWidth = 1.5;
-    rr(ctx, CW/2-145, 76, 290, 42, 12); ctx.stroke();
-    ctx.fillStyle = '#fde047'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(`✨ ${zoneBanner.title} ✨`, CW/2, 102);
+    rr(ctx, VIEW_W/2 - bw/2, 68, bw, 42, 12); ctx.stroke();
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`✨ ${zoneBanner.title} ✨`, VIEW_W/2, 94);
     ctx.restore();
   }
 
-  // Vẽ nút & thông báo câu cá khi đứng gần bờ nước
-  drawFishingPrompt();
+  // Vẽ nút [⚡ GIẬT CÂU NGAY!] ở giữa dưới màn hình
+  drawFishingScreenPrompt();
 
   if(battle.active){
     drawBattle();
     if(battle.flashAlpha > 0){
+      const bl = getBattleLayout();
       ctx.save();
       ctx.globalAlpha = battle.flashAlpha;
       ctx.fillStyle = battle.flashCol || '#fff';
-      rr(ctx, 55, 22, CW-110, CH-44, 18); ctx.fill();
+      rr(ctx, bl.bx, bl.by, bl.bw, bl.bh, 18); ctx.fill();
       ctx.restore();
       battle.flashAlpha = Math.max(0, battle.flashAlpha - 0.025);
     }
   }
   drawMinimap();
+  updateMobileContextUI();
 }
 function loop(now){ update(now||0); render(); requestAnimationFrame(loop); }
 
