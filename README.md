@@ -11,7 +11,7 @@ Game nhập vai 2D phong cách **Nông Trại & Săn Bắt Thú Bảo Miền Tâ
 ## 🌟 Tính Năng Nổi Bật
 
 ### 🌾 1. Nông Trại & Bếp Nấu Miền Tây
-* **Trồng trọt & Thu hoạch**: Gieo hạt Lúa Vàng, Bắp Nếp, Chuối Xiêm, Sen Hồng.
+* **Trồng chọt & Thu hoạch**: Gieo hạt Lúa Vàng, Bắp Nếp, Chuối Xiêm, Sen Hồng.
 * **Bếp Nấu Bà Tư**: Chế biến *Cơm Lúa Trắng, Bánh Bắp Ngọt, Chuối Nướng Mật, Chè Sen Nhung* giúp hồi máu cấp tốc hoặc tăng Máu tối đa cho Thú Bảo.
 
 ### 🐾 2. Hệ Thống Thú Bảo (15 Loài · 6 Hệ Thuộc Tính)
@@ -25,11 +25,21 @@ Game nhập vai 2D phong cách **Nông Trại & Săn Bắt Thú Bảo Miền Tâ
 
 ### ⚔️ 3. Cơ Chế Chiến Đấu & Bắt Thú
 * **Đụng là đánh**: Đi lại gần đụng thú hoang trên map để mở màn hình chiến đấu.
-* **Hành động phong phú**: *Đánh Luôn*, *Tung Chiêu*, *Quăng Nơm (Bắt thú)*, *Tẩu Thoát*.
+* **Quy tắc chiến đấu theo lượt nghiêm ngặt**: Ra chiêu ➔ Đợi đối thủ phản đòn ➔ Đến lượt kế tiếp. Có thời gian hồi chiêu (Cooldown 2 lượt) cho Tuyệt kỹ để chống spam chiêu.
+* **Hành động chiến đấu**: *Đánh Thường*, *Tuyệt Chiêu* (Hồi chiêu 2 lượt), *Quăng Nơm* (Bắt thú), *Tẩu Thoát* an toàn khi yếu máu.
 * **Tự động hồi máu**: Thú bảo tự hồi **2% MaxHP/giây** khi đứng ngoài trận đấu.
 
-### 🗺️ 4. Thế Giới 8 Bản Đồ (Biomes)
+### 🌤️ 4. Thế Giới 8 Bản Đồ & Hệ Thống Thời Tiết Động (Dynamic Weather)
 * **8 Bản đồ**: 🏡 Nông Trại, 🌾 Đồng Ruộng, 🌫️ Rừng Sương Mù, 🪷 Hồ Sen, ⛏️ Hầm Mỏ, 🏔️ Núi Cao, 🌿 Đồng Cỏ, 🌊 Biển Khơi.
+* **Chu kỳ thời gian**: Ngày ☀️ -> Hoàng Hôn 🌇 -> Đêm Trăng 🌙 -> Bình Minh 🌅 (Út có đèn lồng ấm áp soi đường khi trời tối).
+* **Các kiểu thời tiết sống động**:
+  - ☀️ **Nắng Đẹp**: Tia nắng chiếu xiên (God-rays / Volumetric Sunbeams) xuyên qua tán dừa.
+  - 🍃 **Gió Lộng Nam Bộ**: Những luồng gió thổi cuốn theo lá cây và làm rặng dừa đung đưa mạnh mẽ.
+  - 🌦️ **Mưa Bóng Mây**: Giọt mưa nhẹ hạt rơi nghiêng, mặt đất có vũng nước bắn tung tóe.
+  - 🌧️ **Mưa Dông Sấm Chớp**: Bầu trời tối sầm, gió rít giật mạnh và tia sét chớp sáng rạch ngang chân trời.
+  - 🌫️ **Sương Mù Buổi Sớm**: Từng dải sương khói bồng bềnh trôi nhẹ trên mặt đất và mặt sông.
+  - ☁️ **Trời Râm Mát**: Ánh sáng dịu nhẹ dễ chịu.
+  - 🌈 **Cầu Vồng Sau Mưa**: Cơ hội hiếm xuất hiện vòng cung cầu vồng 7 sắc rực rỡ bắc ngang bầu trời sau mỗi cơn mưa!
 * **Hiệu ứng đồ họa**: Vignette tối góc, hạt sáng/đom đóm lơ lửng, cổng dịch chuyển huyền ảo, Minimap góc dưới màn hình.
 
 ### 💾 5. Hệ Thống Lưu Game & Hướng Dẫn Tân Thủ
