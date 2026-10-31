@@ -768,8 +768,15 @@ function handleCanvasPointerDown(clientX, clientY){
 
   const ttx=Math.floor(mx/TS), tty=Math.floor(my/TS);
   if(ttx>0&&ttx<COLS-1&&tty>0&&tty<ROWS-1){
-    // Nếu đang ở Nông Trại và click trúng ô đất trồng trọt
+    // Nếu đang ở Nông Trại
     if(G.map === 'farm'){
+      // 1. Click vào Nhà Tranh hoặc NPC Bà Tư (tx: 2..5, ty: 2..5) -> Mở Bếp Bà Tư
+      if(ttx >= 2 && ttx <= 5 && tty >= 2 && tty <= 5){
+        openMenu('cook');
+        return;
+      }
+
+      // 2. Click trúng ô đất trồng trọt
       const clickedPlot = G.plots.find(p => p.tx === ttx && p.ty === tty);
       if(clickedPlot){
         if(!clickedPlot.crop){
@@ -2911,7 +2918,10 @@ function renderCook(){
   let h='';
   Object.keys(FOODS).forEach(k=>{
     const f=FOODS[k], can=Object.entries(f.recipe).every(([rk,rv])=>(G.inv[rk]||0)>=rv), owned=G.inv[k]||0;
-    const recStr=Object.entries(f.recipe).map(([rk,rv])=>`${rv}x ${CROPS[rk].icon} ${CROPS[rk].name}`).join(' + ');
+    const recStr=Object.entries(f.recipe).map(([rk,rv])=>{
+      const it = CROPS[rk] || FISHING_LOOT[rk] || FOODS[rk] || { name: rk, icon: '📦' };
+      return `${rv}x ${it.icon} ${it.name}`;
+    }).join(' + ');
     h+=`
     <div class="item-card" style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:12px;border-radius:16px">
       <div style="font-size:36px;width:48px;height:48px;background:rgba(0,0,0,.3);border-radius:12px;display:flex;align-items:center;justify-content:center">${f.icon}</div>
