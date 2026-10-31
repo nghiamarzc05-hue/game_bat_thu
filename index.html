@@ -515,6 +515,11 @@
         <b style="font-size:12.5px;color:#c7d2fe">Cẩm Nang</b>
         <span style="font-size:10px;color:#94a3b8">Hướng dẫn chơi</span>
       </div>
+      <div onclick="openMenu('account')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#0284c7,#0369a1);border-color:#38bdf8">👤</div>
+        <b style="font-size:12.5px;color:#38bdf8">Tài Khoản</b>
+        <span id="menu-acc-status" style="font-size:10px;color:#94a3b8">Khách Chơi</span>
+      </div>
       <div onclick="closeAllMenus();saveGame()" class="app-grid-card">
         <div class="app-grid-icon" style="background:linear-gradient(135deg,#22c55e,#15803d)">💾</div>
         <b style="font-size:12.5px;color:#86efac">Lưu Game</b>
@@ -526,6 +531,80 @@
         <span style="font-size:10px;color:#94a3b8">Xóa dữ liệu cũ</span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- MODAL TÀI KHOẢN & ĐỒNG BỘ ONLINE -->
+<div id="modal-account" class="glass modal-box" style="width:440px;max-width:94vw">
+  <div class="modal-header">
+    <h3 style="color:#38bdf8"><i class="fa-solid fa-user-shield"></i> Tài Khoản & Đồng Bộ</h3>
+    <button onclick="closeAllMenus()">×</button>
+  </div>
+  <div class="scrollbar modal-content" style="max-height:74vh;padding:4px 0">
+
+    <!-- Trạng thái hiện tại -->
+    <div id="acc-profile-box" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:14px;border-radius:16px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div id="acc-avatar" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0284c7,#0369a1);border:1.5px solid #38bdf8;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <b id="acc-username-disp" style="font-size:14px;color:#f8fafc">Khách Chơi (Chưa Đăng Nhập)</b>
+          <span id="acc-badge" style="font-size:9.5px;padding:2px 6px;border-radius:6px;background:rgba(148,163,184,0.2);color:#94a3b8;font-weight:700">Khách</span>
+        </div>
+        <div id="acc-desc-disp" style="font-size:11px;color:#94a3b8;margin-top:2px">Tiến trình đang lưu trên thiết bị này. Đăng nhập để lưu đa máy!</div>
+      </div>
+    </div>
+
+    <!-- Tùy chọn 1: Đăng Ký / Đăng Nhập Tài Khoản -->
+    <div id="acc-auth-form" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;background:rgba(0,0,0,0.3);border-radius:12px;padding:3px;border:1px solid rgba(255,255,255,0.08)">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="btn" style="flex:1;padding:7px;border-radius:9px;font-size:11.5px;font-weight:800;background:#0284c7;color:#fff">Đăng Nhập</button>
+        <button id="tab-reg" onclick="switchAuthTab('reg')" class="btn" style="flex:1;padding:7px;border-radius:9px;font-size:11.5px;font-weight:800;background:transparent;color:#94a3b8">Đăng Ký Mới</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:3px;display:block">Tên Tài Khoản / Tên Nhân Vật:</label>
+          <input id="acc-input-user" type="text" placeholder="Ví dụ: ut_mientay" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:3px;display:block">Mật Khẩu:</label>
+          <input id="acc-input-pass" type="password" placeholder="Nhập mật khẩu bảo vệ" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
+        </div>
+        <div id="acc-msg" style="font-size:11px;font-weight:700;display:none;padding:6px 10px;border-radius:8px"></div>
+        <button id="btn-submit-auth" onclick="handleAuthSubmit()" class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1);border:1px solid rgba(56,189,248,0.5);color:#fff;font-weight:800;padding:9px;border-radius:10px;font-size:12.5px;margin-top:2px">
+          Đăng Nhập Tài Khoản
+        </button>
+      </div>
+    </div>
+
+    <!-- Khi đã đăng nhập: hiển thị nút Đăng Xuất -->
+    <div id="acc-logged-box" style="display:none;flex-direction:column;gap:8px">
+      <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(74,222,128,0.3);padding:10px 12px;border-radius:12px;font-size:11.5px;color:#86efac">
+        ✅ Tài khoản đã kết nối thành công! Dữ liệu của Út được tự động lưu vào tài khoản này.
+      </div>
+      <button onclick="handleLogout()" class="btn" style="background:linear-gradient(135deg,#dc2626,#991b1b);border:1px solid rgba(248,113,113,0.4);color:#fff;font-weight:700;padding:8px;border-radius:10px;font-size:12px">
+        <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất (Chuyển về Chơi Khách)
+      </button>
+    </div>
+
+    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:10px 0">
+
+    <!-- Tính năng: Chuyển dữ liệu sang máy khác qua Mã Đồng Bộ (Tiện lợi tức thì) -->
+    <div style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px">
+      <b style="font-size:12px;color:#fde047;display:flex;align-items:center;gap:6px">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Chuyển Dữ Liệu Qua Máy Khác (Mã Đồng Bộ)
+      </b>
+      <div style="font-size:11px;color:#94a3b8;margin:4px 0 8px">Copy mã này dán qua điện thoại hay máy tính khác để nhận lại toàn bộ thú và tiền:</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="exportSaveCode()" class="btn" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#f8fafc;font-size:11px;font-weight:700;padding:7px;border-radius:8px">
+          📋 Xuất Mã Đồng Bộ
+        </button>
+        <button onclick="importSaveCode()" class="btn" style="flex:1;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;font-size:11px;font-weight:700;padding:7px;border-radius:8px">
+          📥 Nhập Mã Đồng Bộ
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -3362,22 +3441,20 @@ const SAVE_KEY = 'MIEN_TAY_RPG_SAVE_V1';
 
 function saveGame(isAuto = false){
   try {
-    const saveData = {
-      gold: G.gold,
-      diamond: G.diamond ?? 20,
-      mount: G.mount || 'walk',
-      ownedMounts: G.ownedMounts || ['walk'],
-      usedCodes: G.usedCodes || [],
-      lastHourlyHeal: G.lastHourlyHeal || Date.now(),
-      fishing: G.fishing || { rod:1, line:1, hook:1, bait:5 },
-      map: G.map,
-      inv: G.inv,
-      pets: G.pets,
-      activeIdx: G.activeIdx,
-      plots: G.plots,
-      player: { tx: P.tx, ty: P.ty, px: P.px, py: P.py }
-    };
+    const saveData = getGameSaveDataObj();
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+
+    // Nếu đang đăng nhập tài khoản thì tự động đồng bộ vào Database của tài khoản đó
+    const curUser = getCurrentUser();
+    if(curUser){
+      const db = getAllAccounts();
+      if(db[curUser]){
+        db[curUser].gameData = saveData;
+        db[curUser].lastSaved = Date.now();
+        localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
+      }
+    }
+
     if(!isAuto) notify('💾 Đã lưu tiến trình game thành công!');
   } catch(e) {
     if(!isAuto) notify('❌ Lỗi lưu game!');
@@ -3432,6 +3509,259 @@ function resetSaveGame(){
   }
 }
 
+// HỆ THỐNG TÀI KHOẢN & ĐỒNG BỘ ĐA MÁY
+const ACCOUNTS_DB_KEY = 'MIEN_TAY_RPG_ACCOUNTS_V1';
+const CURRENT_USER_KEY = 'MIEN_TAY_RPG_CURRENT_USER';
+let currentAuthTab = 'login';
+
+function getAllAccounts(){
+  try {
+    const raw = localStorage.getItem(ACCOUNTS_DB_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+
+function getCurrentUser(){
+  return localStorage.getItem(CURRENT_USER_KEY) || null;
+}
+
+function switchAuthTab(tab){
+  currentAuthTab = tab;
+  const tabLogin = document.getElementById('tab-login');
+  const tabReg = document.getElementById('tab-reg');
+  const btnSubmit = document.getElementById('btn-submit-auth');
+  const msgEl = document.getElementById('acc-msg');
+  if(msgEl) msgEl.style.display = 'none';
+
+  if(tab === 'login'){
+    if(tabLogin){ tabLogin.style.background = '#0284c7'; tabLogin.style.color = '#fff'; }
+    if(tabReg){ tabReg.style.background = 'transparent'; tabReg.style.color = '#94a3b8'; }
+    if(btnSubmit) btnSubmit.textContent = 'Đăng Nhập Tài Khoản';
+  } else {
+    if(tabReg){ tabReg.style.background = '#0284c7'; tabReg.style.color = '#fff'; }
+    if(tabLogin){ tabLogin.style.background = 'transparent'; tabLogin.style.color = '#94a3b8'; }
+    if(btnSubmit) btnSubmit.textContent = 'Đăng Ký Tài Khoản Mới';
+  }
+}
+
+function renderAccountModal(){
+  const user = getCurrentUser();
+  const nameDisp = document.getElementById('acc-username-disp');
+  const badgeDisp = document.getElementById('acc-badge');
+  const descDisp = document.getElementById('acc-desc-disp');
+  const avatarDisp = document.getElementById('acc-avatar');
+  const formBox = document.getElementById('acc-auth-form');
+  const loggedBox = document.getElementById('acc-logged-box');
+  const menuAccStatus = document.getElementById('menu-acc-status');
+
+  if(user){
+    if(nameDisp) nameDisp.textContent = `Tài Khoản: ${user}`;
+    if(badgeDisp){
+      badgeDisp.textContent = 'Đã Đăng Nhập';
+      badgeDisp.style.background = 'rgba(34,197,94,0.2)';
+      badgeDisp.style.color = '#86efac';
+    }
+    if(descDisp) descDisp.textContent = 'Dữ liệu được bảo vệ và đồng bộ theo tên tài khoản của bạn.';
+    if(avatarDisp){
+      avatarDisp.textContent = '👑';
+      avatarDisp.style.background = 'linear-gradient(135deg,#15803d,#166534)';
+      avatarDisp.style.borderColor = '#4ade80';
+    }
+    if(formBox) formBox.style.display = 'none';
+    if(loggedBox) loggedBox.style.display = 'flex';
+    if(menuAccStatus){
+      menuAccStatus.textContent = user;
+      menuAccStatus.style.color = '#4ade80';
+    }
+  } else {
+    if(nameDisp) nameDisp.textContent = 'Khách Chơi (Chưa Đăng Nhập)';
+    if(badgeDisp){
+      badgeDisp.textContent = 'Khách';
+      badgeDisp.style.background = 'rgba(148,163,184,0.2)';
+      badgeDisp.style.color = '#94a3b8';
+    }
+    if(descDisp) descDisp.textContent = 'Tiến trình đang lưu trên thiết bị này. Đăng nhập để lưu đa máy!';
+    if(avatarDisp){
+      avatarDisp.textContent = '👤';
+      avatarDisp.style.background = 'linear-gradient(135deg,#0284c7,#0369a1)';
+      avatarDisp.style.borderColor = '#38bdf8';
+    }
+    if(formBox) formBox.style.display = 'flex';
+    if(loggedBox) loggedBox.style.display = 'none';
+    if(menuAccStatus){
+      menuAccStatus.textContent = 'Khách Chơi';
+      menuAccStatus.style.color = '#94a3b8';
+    }
+  }
+}
+
+function handleAuthSubmit(){
+  const userEl = document.getElementById('acc-input-user');
+  const passEl = document.getElementById('acc-input-pass');
+  const msgEl = document.getElementById('acc-msg');
+  if(!userEl || !passEl || !msgEl) return;
+
+  const username = userEl.value.trim().toLowerCase();
+  const password = passEl.value.trim();
+
+  if(!username || !password){
+    msgEl.style.display = 'block';
+    msgEl.style.background = 'rgba(239,68,68,0.2)';
+    msgEl.style.color = '#f87171';
+    msgEl.textContent = '⚠️ Vui lòng điền đầy đủ Tên tài khoản và Mật khẩu!';
+    return;
+  }
+
+  if(username.length < 3){
+    msgEl.style.display = 'block';
+    msgEl.style.background = 'rgba(239,68,68,0.2)';
+    msgEl.style.color = '#f87171';
+    msgEl.textContent = '⚠️ Tên tài khoản tối thiểu phải có 3 ký tự!';
+    return;
+  }
+
+  const db = getAllAccounts();
+
+  if(currentAuthTab === 'reg'){
+    // Đăng ký mới
+    if(db[username]){
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(239,68,68,0.2)';
+      msgEl.style.color = '#f87171';
+      msgEl.textContent = '❌ Tên tài khoản này đã có người sử dụng, hãy chọn tên khác!';
+      return;
+    }
+    // Thu thập dữ liệu hiện tại để lưu vào tài khoản mới
+    const currentSave = getGameSaveDataObj();
+    db[username] = {
+      password: password,
+      createdAt: Date.now(),
+      gameData: currentSave
+    };
+    localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
+    localStorage.setItem(CURRENT_USER_KEY, username);
+
+    msgEl.style.display = 'block';
+    msgEl.style.background = 'rgba(34,197,94,0.2)';
+    msgEl.style.color = '#86efac';
+    msgEl.textContent = '🎉 Đăng ký tài khoản thành công! Dữ liệu đã được liên kết.';
+    notify(`🎉 Chào mừng Út [${username}] đã tạo tài khoản thành công!`);
+    userEl.value = ''; passEl.value = '';
+    renderAccountModal();
+  } else {
+    // Đăng nhập
+    const acc = db[username];
+    if(!acc){
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(239,68,68,0.2)';
+      msgEl.style.color = '#f87171';
+      msgEl.textContent = '❌ Tài khoản không tồn tại! Hãy bấm "Đăng Ký Mới" nếu chưa có tài khoản.';
+      return;
+    }
+    if(acc.password !== password){
+      msgEl.style.display = 'block';
+      msgEl.style.background = 'rgba(239,68,68,0.2)';
+      msgEl.style.color = '#f87171';
+      msgEl.textContent = '❌ Sai mật khẩu đăng nhập rồi Út ơi!';
+      return;
+    }
+
+    // Đăng nhập thành công: Nạp tiến trình của tài khoản đó
+    localStorage.setItem(CURRENT_USER_KEY, username);
+    if(acc.gameData){
+      applyGameSaveDataObj(acc.gameData);
+    }
+    notify(`👑 Đăng nhập thành công! Chào mừng Út [${username}] trở lại!`);
+    userEl.value = ''; passEl.value = '';
+    renderAccountModal();
+    saveGame(true);
+  }
+}
+
+function handleLogout(){
+  if(confirm('Út có chắc muốn đăng xuất không? Game sẽ chuyển về chế độ Chơi Khách.')){
+    // Lưu lại tiến trình trước khi out
+    saveGame(true);
+    localStorage.removeItem(CURRENT_USER_KEY);
+    notify('👋 Đã đăng xuất! Bạn đang ở chế độ Chơi Khách.');
+    renderAccountModal();
+  }
+}
+
+function getGameSaveDataObj(){
+  return {
+    gold: G.gold,
+    diamond: G.diamond ?? 20,
+    mount: G.mount || 'walk',
+    ownedMounts: G.ownedMounts || ['walk'],
+    usedCodes: G.usedCodes || [],
+    lastHourlyHeal: G.lastHourlyHeal || Date.now(),
+    fishing: G.fishing || { rod:1, line:1, hook:1, bait:5 },
+    map: G.map,
+    inv: G.inv,
+    pets: G.pets,
+    activeIdx: G.activeIdx,
+    plots: G.plots,
+    player: { tx: P.tx, ty: P.ty, px: P.px, py: P.py }
+  };
+}
+
+function applyGameSaveDataObj(data){
+  if(!data) return;
+  G.gold = data.gold ?? G.gold;
+  G.diamond = data.diamond ?? 20;
+  G.mount = data.mount || 'walk';
+  G.ownedMounts = Array.isArray(data.ownedMounts) ? data.ownedMounts : ['walk'];
+  G.usedCodes = Array.isArray(data.usedCodes) ? data.usedCodes : [];
+  G.lastHourlyHeal = data.lastHourlyHeal || Date.now();
+  G.fishing = { ...G.fishing, ...(data.fishing || {}) };
+  G.map = data.map || 'farm';
+  G.inv = { ...G.inv, ...(data.inv || {}) };
+  if(data.pets && data.pets.length > 0){
+    G.pets = data.pets;
+    G.activeIdx = Math.min(data.activeIdx ?? 0, G.pets.length - 1);
+  }
+  if(data.plots && data.plots.length >= 25){
+    G.plots = data.plots;
+  }
+  if(data.player){
+    P.tx = data.player.tx; P.ty = data.player.ty;
+    P.px = data.player.px; P.py = data.player.py;
+  }
+  const zEl = document.getElementById('hud-zone');
+  if(zEl) zEl.textContent = MAPS[G.map].name;
+  updateHUD();
+}
+
+// Xuất mã đồng bộ Base64 để copy sang thiết bị khác
+function exportSaveCode(){
+  saveGame(true);
+  const data = getGameSaveDataObj();
+  const str = JSON.stringify(data);
+  const code = btoa(encodeURIComponent(str));
+  prompt('📋 Hãy copy toàn bộ Mã Đồng Bộ này để dán vào máy mới:', code);
+}
+
+// Nhập mã đồng bộ từ máy khác dán vào
+function importSaveCode(){
+  const code = prompt('📥 Dán Mã Đồng Bộ từ thiết bị cũ của Út vào đây:');
+  if(!code) return;
+  try {
+    const jsonStr = decodeURIComponent(atob(code.trim()));
+    const data = JSON.parse(jsonStr);
+    if(data && data.pets){
+      applyGameSaveDataObj(data);
+      saveGame(true);
+      notify('🎉 Đồng bộ dữ liệu từ thiết bị cũ thành công 100%!');
+      closeAllMenus();
+    } else {
+      notify('❌ Mã đồng bộ không hợp lệ!');
+    }
+  } catch(e){
+    notify('❌ Lỗi đọc mã đồng bộ! Vui lòng kiểm tra lại mã copy.');
+  }
+}
+
 // UI RENDERING
 function openMenu(id){
   closeAllMenus();
@@ -3444,10 +3774,11 @@ function openMenu(id){
   else if(id==='shop') renderShop();
   else if(id==='mounts') renderMounts();
   else if(id==='fishing') renderFishingModal();
+  else if(id==='account') renderAccountModal();
 }
 function closeAllMenus(){
   document.getElementById('overlay').style.display='none';
-  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu'].forEach(id=>{
+  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu','account'].forEach(id=>{
     const el=document.getElementById('modal-'+id);
     if(el) el.style.display='none';
   });
@@ -4581,6 +4912,7 @@ function render(){
 function loop(now){ update(now||0); render(); requestAnimationFrame(loop); }
 
 updateHUD();
+renderAccountModal();
 const hasSave = loadGame();
 if(hasSave){
   notify('💾 Đã tải dữ liệu game đã lưu!');
