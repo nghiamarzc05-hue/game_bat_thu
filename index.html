@@ -534,74 +534,95 @@
   </div>
 </div>
 
-<!-- MODAL TÀI KHOẢN & ĐỒNG BỘ ONLINE -->
-<div id="modal-account" class="glass modal-box" style="width:440px;max-width:94vw">
+<!-- MODAL TÀI KHOẢN & ĐỒNG BỘ FIREBASE CLOUD ONLINE -->
+<div id="modal-account" class="glass modal-box" style="width:450px;max-width:94vw">
   <div class="modal-header">
-    <h3 style="color:#38bdf8"><i class="fa-solid fa-user-shield"></i> Tài Khoản & Đồng Bộ</h3>
+    <h3 style="color:#38bdf8"><i class="fa-solid fa-cloud"></i> Tài Khoản Online (Firebase Cloud)</h3>
     <button onclick="closeAllMenus()">×</button>
   </div>
-  <div class="scrollbar modal-content" style="max-height:74vh;padding:4px 0">
+  <div class="scrollbar modal-content" style="max-height:76vh;padding:4px 0">
 
     <!-- Trạng thái hiện tại -->
     <div id="acc-profile-box" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:14px;border-radius:16px;display:flex;align-items:center;gap:12px;margin-bottom:8px">
       <div id="acc-avatar" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#0284c7,#0369a1);border:1.5px solid #38bdf8;display:flex;align-items:center;justify-content:center;font-size:24px">👤</div>
       <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:6px">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
           <b id="acc-username-disp" style="font-size:14px;color:#f8fafc">Khách Chơi (Chưa Đăng Nhập)</b>
           <span id="acc-badge" style="font-size:9.5px;padding:2px 6px;border-radius:6px;background:rgba(148,163,184,0.2);color:#94a3b8;font-weight:700">Khách</span>
         </div>
-        <div id="acc-desc-disp" style="font-size:11px;color:#94a3b8;margin-top:2px">Tiến trình đang lưu trên thiết bị này. Đăng nhập để lưu đa máy!</div>
+        <div id="acc-desc-disp" style="font-size:11px;color:#94a3b8;margin-top:2px">Đăng nhập tài khoản để tự động đồng bộ qua máy chủ Google Firebase!</div>
       </div>
     </div>
 
-    <!-- Tùy chọn 1: Đăng Ký / Đăng Nhập Tài Khoản -->
+    <!-- Tùy chọn 1: Đăng Ký / Đăng Nhập Tài Khoản Online -->
     <div id="acc-auth-form" style="display:flex;flex-direction:column;gap:10px">
       <div style="display:flex;background:rgba(0,0,0,0.3);border-radius:12px;padding:3px;border:1px solid rgba(255,255,255,0.08)">
-        <button id="tab-login" onclick="switchAuthTab('login')" class="btn" style="flex:1;padding:7px;border-radius:9px;font-size:11.5px;font-weight:800;background:#0284c7;color:#fff">Đăng Nhập</button>
+        <button id="tab-login" onclick="switchAuthTab('login')" class="btn" style="flex:1;padding:7px;border-radius:9px;font-size:11.5px;font-weight:800;background:#0284c7;color:#fff">Đăng Nhập Online</button>
         <button id="tab-reg" onclick="switchAuthTab('reg')" class="btn" style="flex:1;padding:7px;border-radius:9px;font-size:11.5px;font-weight:800;background:transparent;color:#94a3b8">Đăng Ký Mới</button>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:8px">
         <div>
-          <label style="font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:3px;display:block">Tên Tài Khoản / Tên Nhân Vật:</label>
-          <input id="acc-input-user" type="text" placeholder="Ví dụ: ut_mientay" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
+          <label style="font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:3px;display:block">Tên Tài Khoản (Viết liền không dấu):</label>
+          <input id="acc-input-user" type="text" placeholder="Ví dụ: ut_mientay hoặc nghia" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
         </div>
         <div>
           <label style="font-size:11px;font-weight:700;color:#cbd5e1;margin-bottom:3px;display:block">Mật Khẩu:</label>
-          <input id="acc-input-pass" type="password" placeholder="Nhập mật khẩu bảo vệ" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
+          <input id="acc-input-pass" type="password" placeholder="Nhập mật khẩu của bạn" style="width:100%;padding:9px 12px;border-radius:10px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:12.5px;outline:none">
         </div>
-        <div id="acc-msg" style="font-size:11px;font-weight:700;display:none;padding:6px 10px;border-radius:8px"></div>
-        <button id="btn-submit-auth" onclick="handleAuthSubmit()" class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1);border:1px solid rgba(56,189,248,0.5);color:#fff;font-weight:800;padding:9px;border-radius:10px;font-size:12.5px;margin-top:2px">
-          Đăng Nhập Tài Khoản
+        <div id="acc-msg" style="font-size:11px;font-weight:700;display:none;padding:7px 10px;border-radius:8px"></div>
+        <button id="btn-submit-auth" onclick="handleAuthSubmit()" class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1);border:1px solid rgba(56,189,248,0.5);color:#fff;font-weight:800;padding:10px;border-radius:10px;font-size:12.5px;margin-top:2px">
+          🌐 Đăng Nhập Tài Khoản
         </button>
       </div>
     </div>
 
-    <!-- Khi đã đăng nhập: hiển thị nút Đăng Xuất -->
+    <!-- Khi đã đăng nhập: hiển thị trạng thái Cloud & nút Đồng Bộ / Đăng Xuất -->
     <div id="acc-logged-box" style="display:none;flex-direction:column;gap:8px">
       <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(74,222,128,0.3);padding:10px 12px;border-radius:12px;font-size:11.5px;color:#86efac">
-        ✅ Tài khoản đã kết nối thành công! Dữ liệu của Út được tự động lưu vào tài khoản này.
+        ☁️ <b>Đã kết nối Máy Chủ Online (game-421dc)!</b><br>
+        Qua điện thoại hay máy tính khác chỉ cần gõ đúng Tài Khoản + Mật Khẩu này là tự động tải toàn bộ thú cưng & tiền vàng về máy!
       </div>
-      <button onclick="handleLogout()" class="btn" style="background:linear-gradient(135deg,#dc2626,#991b1b);border:1px solid rgba(248,113,113,0.4);color:#fff;font-weight:700;padding:8px;border-radius:10px;font-size:12px">
+      <div style="display:flex;gap:8px">
+        <button onclick="manualCloudSyncNow()" class="btn" style="flex:1;background:linear-gradient(135deg,#0284c7,#0369a1);border:1px solid rgba(56,189,248,0.5);color:#fff;font-weight:700;padding:8px;border-radius:10px;font-size:11.5px">
+          ☁️ Lưu Lên Đám Mây Ngay
+        </button>
+        <button onclick="pullFromCloudNow()" class="btn" style="flex:1;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:1px solid rgba(167,139,250,0.5);color:#fff;font-weight:700;padding:8px;border-radius:10px;font-size:11.5px">
+          🔄 Tải Từ Đám Mây Về
+        </button>
+      </div>
+      <button onclick="handleLogout()" class="btn" style="background:linear-gradient(135deg,#dc2626,#991b1b);border:1px solid rgba(248,113,113,0.4);color:#fff;font-weight:700;padding:8px;border-radius:10px;font-size:11.5px">
         <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất (Chuyển về Chơi Khách)
       </button>
     </div>
 
     <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:10px 0">
 
-    <!-- Tính năng: Chuyển dữ liệu sang máy khác qua Mã Đồng Bộ (Tiện lợi tức thì) -->
-    <div style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px">
-      <b style="font-size:12px;color:#fde047;display:flex;align-items:center;gap:6px">
-        <i class="fa-solid fa-cloud-arrow-up"></i> Chuyển Dữ Liệu Qua Máy Khác (Mã Đồng Bộ)
-      </b>
-      <div style="font-size:11px;color:#94a3b8;margin:4px 0 8px">Copy mã này dán qua điện thoại hay máy tính khác để nhận lại toàn bộ thú và tiền:</div>
-      <div style="display:flex;gap:6px">
-        <button onclick="exportSaveCode()" class="btn" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#f8fafc;font-size:11px;font-weight:700;padding:7px;border-radius:8px">
-          📋 Xuất Mã Đồng Bộ
+    <!-- BẢNG QUẢN TRỊ ADMIN (ẨN HOÀN TOÀN, CHỈ HIỆN KHI ĐĂNG NHẬP ĐÚNG TK ADMIN nyninuteo) -->
+    <div id="admin-panel-box" style="display:none;background:rgba(234,179,8,0.07);border:1px solid rgba(250,204,21,0.3);border-radius:14px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b style="font-size:12px;color:#fde047;display:flex;align-items:center;gap:6px">
+          👑 Quản Trị Admin (Xem Người Chơi Online)
+        </b>
+        <button onclick="openAdminPlayersList()" class="btn" style="background:linear-gradient(135deg,#ca8a04,#854d0e);border:1px solid rgba(250,204,21,0.5);color:#fff;font-size:10.5px;font-weight:800;padding:5px 10px;border-radius:8px">
+          👁️ Xem DS Người Chơi
         </button>
-        <button onclick="importSaveCode()" class="btn" style="flex:1;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;font-size:11px;font-weight:700;padding:7px;border-radius:8px">
-          📥 Nhập Mã Đồng Bộ
-        </button>
+      </div>
+      <div id="admin-players-container" style="display:none;margin-top:10px;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- Tính năng phụ: Chuyển dữ liệu qua Mã Đồng Bộ Offline -->
+    <div style="background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px;margin-top:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+        <span style="font-size:11px;color:#94a3b8;font-weight:700">📋 Sao lưu Mã Offline:</span>
+        <div style="display:flex;gap:6px">
+          <button onclick="exportSaveCode()" class="btn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#f8fafc;font-size:10.5px;font-weight:700;padding:5px 9px;border-radius:7px">
+            Xuất Mã
+          </button>
+          <button onclick="importSaveCode()" class="btn" style="background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;font-size:10.5px;font-weight:700;padding:5px 9px;border-radius:7px">
+            Nhập Mã
+          </button>
+        </div>
       </div>
     </div>
 
@@ -3436,83 +3457,27 @@ function redeemGiftcode(){
   }
 }
 
-// SAVE / LOAD SYSTEM (LOCALSTORAGE)
+// ============================================================================
+// HỆ THỐNG LƯU TRỮ & TÀI KHOẢN ONLINE GOOGLE FIREBASE (PROJECT: game-421dc)
+// ============================================================================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAFxXX4QZogKMQimagrsFnouJKVubahgFk",
+  authDomain: "game-421dc.firebaseapp.com",
+  projectId: "game-421dc",
+  storageBucket: "game-421dc.firebasestorage.app",
+  messagingSenderId: "695006030345",
+  appId: "1:695006030345:web:11337d9ef4195a1c6866d8",
+  measurementId: "G-S2HFM96T5Z"
+};
+
+const FIRESTORE_BASE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents`;
 const SAVE_KEY = 'MIEN_TAY_RPG_SAVE_V1';
-
-function saveGame(isAuto = false){
-  try {
-    const saveData = getGameSaveDataObj();
-    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-
-    // Nếu đang đăng nhập tài khoản thì tự động đồng bộ vào Database của tài khoản đó
-    const curUser = getCurrentUser();
-    if(curUser){
-      const db = getAllAccounts();
-      if(db[curUser]){
-        db[curUser].gameData = saveData;
-        db[curUser].lastSaved = Date.now();
-        localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
-      }
-    }
-
-    if(!isAuto) notify('💾 Đã lưu tiến trình game thành công!');
-  } catch(e) {
-    if(!isAuto) notify('❌ Lỗi lưu game!');
-  }
-}
-
-function loadGame(){
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if(!raw) return false;
-    const data = JSON.parse(raw);
-    if(data && data.pets && data.pets.length > 0){
-      G.gold = data.gold ?? G.gold;
-      G.diamond = data.diamond ?? 20;
-      G.mount = data.mount || 'walk';
-      G.ownedMounts = Array.isArray(data.ownedMounts) ? data.ownedMounts : ['walk'];
-      G.usedCodes = Array.isArray(data.usedCodes) ? data.usedCodes : [];
-      G.lastHourlyHeal = data.lastHourlyHeal || Date.now();
-      G.fishing = { ...G.fishing, ...(data.fishing || {}) };
-      G.map = data.map || 'farm';
-      G.inv = { ...G.inv, ...(data.inv || {}) };
-      G.pets = data.pets;
-      G.activeIdx = Math.min(data.activeIdx ?? 0, G.pets.length - 1);
-      if(data.plots && data.plots.length >= 25) {
-        G.plots = data.plots;
-      } else {
-        // Tự động nâng cấp lên 25 ô đất 5x5 nếu lưu cũ chỉ có 6 ô
-        G.plots = Array.from({length:25},(_,i)=>({tx:8+(i%5),ty:5+Math.floor(i/5),crop:null,timer:0,max:0}));
-        if(data.plots && Array.isArray(data.plots)){
-          data.plots.forEach((oldP, idx)=>{ if(idx < 25 && oldP.crop) { G.plots[idx].crop = oldP.crop; G.plots[idx].timer = oldP.timer; G.plots[idx].max = oldP.max; } });
-        }
-      }
-      if(data.player){
-        P.tx = data.player.tx; P.ty = data.player.ty;
-        P.px = data.player.px; P.py = data.player.py;
-      }
-      document.getElementById('hud-zone').textContent = MAPS[G.map].name;
-      updateHUD();
-      return true;
-    }
-  } catch(e) {
-    console.error('Lỗi đọc file save', e);
-  }
-  return false;
-}
-
-function resetSaveGame(){
-  if(confirm('⚠️ Bạn có chắc muốn XÓA DỮ LIỆU và chơi lại từ đầu không? Tất cả thú bảo và tiền sẽ bị mất!')){
-    localStorage.removeItem(SAVE_KEY);
-    notify('🧹 Đã xóa dữ liệu, đang khởi động lại...');
-    setTimeout(() => location.reload(), 1000);
-  }
-}
-
-// HỆ THỐNG TÀI KHOẢN & ĐỒNG BỘ ĐA MÁY
 const ACCOUNTS_DB_KEY = 'MIEN_TAY_RPG_ACCOUNTS_V1';
 const CURRENT_USER_KEY = 'MIEN_TAY_RPG_CURRENT_USER';
+const CURRENT_PASS_KEY = 'MIEN_TAY_RPG_CURRENT_PASS';
+const CURRENT_TOKEN_KEY = 'MIEN_TAY_RPG_CURRENT_TOKEN';
 let currentAuthTab = 'login';
+let isAdminUnlocked = false;
 
 function getAllAccounts(){
   try {
@@ -3523,6 +3488,332 @@ function getAllAccounts(){
 
 function getCurrentUser(){
   return localStorage.getItem(CURRENT_USER_KEY) || null;
+}
+
+function normalizeUsername(raw){
+  return (raw || '').trim().toLowerCase().replace(/\s+/g, '_');
+}
+
+function toFirebaseAuthEmail(username){
+  const u = normalizeUsername(username);
+  if(u.includes('@')) return u;
+  const safe = u.replace(/[^a-z0-9_.-]/g, '') || 'user';
+  return `${safe}@mientay.game`;
+}
+
+function toFirebaseAuthPassword(pw){
+  const s = (pw || '').trim();
+  return s.length >= 6 ? s : (s + '_mt2026');
+}
+
+// Nén gọn dữ liệu Save (~400 bytes) để đồng bộ kép qua cả Firebase Auth Profile & Cloud Firestore
+function packCompactCloudSave(saveObj){
+  const nonZeroInv = {};
+  if(saveObj.inv){
+    Object.keys(saveObj.inv).forEach(k => { if(saveObj.inv[k] > 0) nonZeroInv[k] = saveObj.inv[k]; });
+  }
+  const activePlots = [];
+  if(Array.isArray(saveObj.plots)){
+    saveObj.plots.forEach((p, idx) => {
+      if(p && p.crop) activePlots.push([idx, p.crop, Math.round(p.timer || 0), p.max || 300]);
+    });
+  }
+  const compactPets = (saveObj.pets || []).map(p => [
+    p.name, p.icon, p.el, p.pot, p.level||1, p.exp||0, p.expNext||60, p.hp||80, p.maxHp||80, p.atk||15, p.dailyFeeds||null
+  ]);
+  const mini = {
+    g: saveObj.gold ?? 500,
+    d: saveObj.diamond ?? 20,
+    m: saveObj.mount || 'walk',
+    om: saveObj.ownedMounts || ['walk'],
+    uc: saveObj.usedCodes || [],
+    lh: saveObj.lastHourlyHeal || Date.now(),
+    f: saveObj.fishing || { rod:1, line:1, hook:1, baitGrade:1, bait:5 },
+    mp: saveObj.map || 'farm',
+    iv: nonZeroInv,
+    pt: compactPets,
+    ai: saveObj.activeIdx || 0,
+    pl: activePlots,
+    p: saveObj.player || { tx:14, ty:8, px:448, py:256 }
+  };
+  return btoa(encodeURIComponent(JSON.stringify(mini)));
+}
+
+function unpackCompactCloudSave(b64){
+  try {
+    const mini = JSON.parse(decodeURIComponent(atob(b64)));
+    if(!mini || !Array.isArray(mini.pt)) return null;
+    const fullPlots = Array.from({length:25},(_,i)=>({tx:8+(i%5),ty:5+Math.floor(i/5),crop:null,timer:0,max:0}));
+    if(Array.isArray(mini.pl)){
+      mini.pl.forEach(arr => {
+        const idx = arr[0];
+        if(fullPlots[idx]){
+          fullPlots[idx].crop = arr[1];
+          fullPlots[idx].timer = arr[2];
+          fullPlots[idx].max = arr[3];
+        }
+      });
+    }
+    const fullPets = mini.pt.map((arr, i) => ({
+      uid: 'p' + i,
+      name: arr[0], icon: arr[1], el: arr[2], pot: arr[3],
+      level: arr[4], exp: arr[5], expNext: arr[6],
+      hp: arr[7], maxHp: arr[8], atk: arr[9],
+      dailyFeeds: arr[10] || undefined
+    }));
+    return {
+      gold: mini.g ?? 500,
+      diamond: mini.d ?? 20,
+      mount: mini.m || 'walk',
+      ownedMounts: mini.om || ['walk'],
+      usedCodes: mini.uc || [],
+      lastHourlyHeal: mini.lh || Date.now(),
+      fishing: mini.f || { rod:1, line:1, hook:1, baitGrade:1, bait:5 },
+      map: mini.mp || 'farm',
+      inv: mini.iv || {},
+      pets: fullPets,
+      activeIdx: mini.ai || 0,
+      plots: fullPlots,
+      player: mini.p || { tx:14, ty:8, px:448, py:256 }
+    };
+  } catch(e){
+    return null;
+  }
+}
+
+// Kênh 1: Lưu & Đọc trực tiếp trên Firebase Authentication Cloud Profile (Luôn hoạt động 100% trên mọi máy)
+async function firebaseAuthSaveProfile(idToken, username, saveObj){
+  if(!idToken) return false;
+  try {
+    const ap = (saveObj.pets && saveObj.pets[saveObj.activeIdx || 0]) || (saveObj.pets && saveObj.pets[0]) || { name:'Mèo Mướp Vườn', icon:'🐱', pot:'B', level:1 };
+    const summary = `${username} | 🪙${saveObj.gold||0} 💎${saveObj.diamond??20} | ${ap.icon}${ap.name}[${ap.pot}]Lv.${ap.level}`;
+    const b64 = packCompactCloudSave(saveObj);
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idToken,
+        displayName: summary.slice(0, 120),
+        photoUrl: `https://s.mt/?d=${b64}`,
+        returnSecureToken: true
+      })
+    });
+    return res.ok;
+  } catch(e){
+    return false;
+  }
+}
+
+async function firebaseAuthLoadProfile(idToken){
+  if(!idToken) return null;
+  try {
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken })
+    });
+    if(!res.ok) return null;
+    const data = await res.json();
+    const userObj = data && data.users && data.users[0];
+    if(userObj && userObj.photoUrl && userObj.photoUrl.includes('?d=')){
+      const b64 = userObj.photoUrl.split('?d=')[1];
+      return unpackCompactCloudSave(b64);
+    }
+  } catch(e){}
+  return null;
+}
+
+// Kênh 2: Ghi dữ liệu người chơi lên Google Cloud Firestore (collection: players)
+async function firestoreSavePlayerDoc(username, password, saveObj, idToken){
+  const cleanUser = normalizeUsername(username);
+  if(!cleanUser) return false;
+  const ap = (saveObj.pets && saveObj.pets[saveObj.activeIdx || 0]) || (saveObj.pets && saveObj.pets[0]) || { name:'Mèo Mướp Vườn', icon:'🐱', pot:'B', level:1 };
+  const activePetSummary = `${ap.icon || '🐾'} ${ap.name} [${ap.pot || 'B'}] Lv.${ap.level || 1}`;
+  const mapName = (MAPS[saveObj.map] && MAPS[saveObj.map].name) ? MAPS[saveObj.map].name : (saveObj.map || 'farm');
+  const nowStr = new Date().toLocaleString('vi-VN');
+
+  const fields = {
+    username: { stringValue: cleanUser },
+    gold: { integerValue: String(Math.floor(saveObj.gold || 0)) },
+    diamond: { integerValue: String(Math.floor(saveObj.diamond ?? 20)) },
+    map: { stringValue: mapName },
+    petCount: { integerValue: String((saveObj.pets || []).length) },
+    activePet: { stringValue: activePetSummary },
+    updatedAt: { stringValue: nowStr },
+    saveJson: { stringValue: JSON.stringify(saveObj) }
+  };
+  if(password){
+    fields.password = { stringValue: password };
+  }
+
+  let url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}`;
+  if(!password){
+    const maskParams = ['username','gold','diamond','map','petCount','activePet','updatedAt','saveJson']
+      .map(k => `updateMask.fieldPaths=${k}`).join('&');
+    url += `?${maskParams}`;
+  }
+
+  const headers = { 'Content-Type': 'application/json' };
+  const tok = idToken || localStorage.getItem(CURRENT_TOKEN_KEY);
+  if(tok) headers['Authorization'] = `Bearer ${tok}`;
+
+  try {
+    const res = await fetch(url, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ fields })
+    });
+    return res.ok;
+  } catch(e){
+    return false;
+  }
+}
+
+// Đọc dữ liệu người chơi từ Google Cloud Firestore
+async function firestoreGetPlayerDoc(username, idToken){
+  const cleanUser = normalizeUsername(username);
+  if(!cleanUser) return null;
+  const url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}`;
+  const headers = {};
+  const tok = idToken || localStorage.getItem(CURRENT_TOKEN_KEY);
+  if(tok) headers['Authorization'] = `Bearer ${tok}`;
+  try {
+    const res = await fetch(url, { headers });
+    if(!res.ok) return null;
+    const doc = await res.json();
+    if(!doc || !doc.fields) return null;
+    const f = doc.fields;
+    let parsedSave = null;
+    try {
+      if(f.saveJson && f.saveJson.stringValue){
+        parsedSave = JSON.parse(f.saveJson.stringValue);
+      }
+    } catch(e){}
+    return {
+      username: f.username?.stringValue || cleanUser,
+      password: f.password?.stringValue || '',
+      gold: Number(f.gold?.integerValue || 0),
+      diamond: Number(f.diamond?.integerValue || 0),
+      map: f.map?.stringValue || '🏡 Nông Trại',
+      petCount: Number(f.petCount?.integerValue || 1),
+      activePet: f.activePet?.stringValue || '🐱 Mèo Mướp Vườn',
+      updatedAt: f.updatedAt?.stringValue || '',
+      gameData: parsedSave
+    };
+  } catch(e){
+    return null;
+  }
+}
+
+// Đăng ký / Đăng nhập trên Firebase Authentication
+async function firebaseAuthRestCall(mode, username, password){
+  try {
+    const endpoint = mode === 'signup' ? 'accounts:signUp' : 'accounts:signInWithPassword';
+    const url = `https://identitytoolkit.googleapis.com/v1/${endpoint}?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: toFirebaseAuthEmail(username),
+        password: toFirebaseAuthPassword(password),
+        returnSecureToken: true
+      })
+    });
+    const data = await res.json();
+    if(data && data.idToken){
+      localStorage.setItem(CURRENT_TOKEN_KEY, data.idToken);
+    }
+    return data;
+  } catch(e){
+    return null;
+  }
+}
+
+// Đồng bộ kép (cả Firebase Auth Cloud & Cloud Firestore)
+async function syncPlayerToFirebaseCloud(username, password, saveObj){
+  let token = localStorage.getItem(CURRENT_TOKEN_KEY);
+  if(!token && password){
+    const authData = await firebaseAuthRestCall('signin', username, password);
+    if(authData && authData.idToken) token = authData.idToken;
+  }
+  const okAuth = await firebaseAuthSaveProfile(token, username, saveObj);
+  const okFs = await firestoreSavePlayerDoc(username, password, saveObj, token);
+  return okAuth || okFs;
+}
+
+function saveGame(isAuto = false){
+  try {
+    const saveData = getGameSaveDataObj();
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+
+    const curUser = getCurrentUser();
+    const curPass = localStorage.getItem(CURRENT_PASS_KEY) || '';
+    if(curUser){
+      // Lưu bản sao local
+      const db = getAllAccounts();
+      if(!db[curUser]) db[curUser] = { password: curPass, createdAt: Date.now() };
+      db[curUser].gameData = saveData;
+      db[curUser].lastSaved = Date.now();
+      localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
+
+      // Đồng bộ ngầm lên Google Firebase Cloud
+      syncPlayerToFirebaseCloud(curUser, curPass, saveData).catch(()=>{});
+    }
+
+    if(!isAuto) notify(curUser ? `☁️ Đã lưu game & đồng bộ lên mây [${curUser}]!` : '💾 Đã lưu tiến trình game thành công!');
+  } catch(e) {
+    if(!isAuto) notify('❌ Lỗi lưu game!');
+  }
+}
+
+function loadGame(){
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    let loadedLocal = false;
+    if(raw){
+      const data = JSON.parse(raw);
+      if(data && data.pets && data.pets.length > 0){
+        applyGameSaveDataObj(data);
+        loadedLocal = true;
+      }
+    }
+
+    // Nếu đang đăng nhập tài khoản Online, tự động tải bản mới nhất từ Firebase Cloud về
+    const curUser = getCurrentUser();
+    const curPass = localStorage.getItem(CURRENT_PASS_KEY) || '';
+    if(curUser && curPass){
+      firebaseAuthRestCall('signin', curUser, curPass).then(async authRes => {
+        const tok = authRes && authRes.idToken;
+        let cloudSave = null;
+        const fsDoc = await firestoreGetPlayerDoc(curUser, tok);
+        if(fsDoc && fsDoc.gameData) cloudSave = fsDoc.gameData;
+        if(!cloudSave && tok) cloudSave = await firebaseAuthLoadProfile(tok);
+        if(cloudSave){
+          applyGameSaveDataObj(cloudSave);
+          localStorage.setItem(SAVE_KEY, JSON.stringify(cloudSave));
+          notify(`☁️ Đã đồng bộ dữ liệu Online của [${curUser}]!`);
+        }
+      }).catch(()=>{});
+    }
+
+    return loadedLocal;
+  } catch(e) {
+    console.error('Lỗi đọc file save', e);
+  }
+  return false;
+}
+
+function resetSaveGame(){
+  if(confirm('⚠️ Bạn có chắc muốn XÓA DỮ LIỆU trên máy này và chơi lại từ đầu không?')){
+    localStorage.removeItem(SAVE_KEY);
+    localStorage.removeItem(CURRENT_USER_KEY);
+    localStorage.removeItem(CURRENT_PASS_KEY);
+    localStorage.removeItem(CURRENT_TOKEN_KEY);
+    notify('🧹 Đã xóa dữ liệu máy, đang khởi động lại...');
+    setTimeout(() => location.reload(), 1000);
+  }
 }
 
 function switchAuthTab(tab){
@@ -3536,16 +3827,42 @@ function switchAuthTab(tab){
   if(tab === 'login'){
     if(tabLogin){ tabLogin.style.background = '#0284c7'; tabLogin.style.color = '#fff'; }
     if(tabReg){ tabReg.style.background = 'transparent'; tabReg.style.color = '#94a3b8'; }
-    if(btnSubmit) btnSubmit.textContent = 'Đăng Nhập Tài Khoản';
+    if(btnSubmit) btnSubmit.textContent = '🌐 Đăng Nhập Tài Khoản';
   } else {
     if(tabReg){ tabReg.style.background = '#0284c7'; tabReg.style.color = '#fff'; }
     if(tabLogin){ tabLogin.style.background = 'transparent'; tabLogin.style.color = '#94a3b8'; }
-    if(btnSubmit) btnSubmit.textContent = 'Đăng Ký Tài Khoản Mới';
+    if(btnSubmit) btnSubmit.textContent = '✨ Đăng Ký Tài Khoản Online';
   }
+}
+
+function ensureAdminVipData(saveObj){
+  const base = saveObj || getGameSaveDataObj();
+  base.gold = Math.max(base.gold || 0, 999000);
+  base.diamond = Math.max(base.diamond || 0, 9999);
+  if(!Array.isArray(base.pets)) base.pets = [];
+  const hasDragonS10 = base.pets.some(p => p.name === 'Rồng Thần Cổ' && p.pot === 'S' && (p.level || 1) >= 10);
+  if(!hasDragonS10){
+    base.pets.unshift({
+      uid: 'p_dragon_s10',
+      name: 'Rồng Thần Cổ',
+      icon: '🐉',
+      el: 'ĐB',
+      pot: 'S',
+      level: 10,
+      exp: 0,
+      expNext: 1699,
+      hp: 1014,
+      maxHp: 1014,
+      atk: 205
+    });
+    base.activeIdx = 0;
+  }
+  return base;
 }
 
 function renderAccountModal(){
   const user = getCurrentUser();
+  const isAdmin = (user === 'nyninuteo');
   const nameDisp = document.getElementById('acc-username-disp');
   const badgeDisp = document.getElementById('acc-badge');
   const descDisp = document.getElementById('acc-desc-disp');
@@ -3553,25 +3870,34 @@ function renderAccountModal(){
   const formBox = document.getElementById('acc-auth-form');
   const loggedBox = document.getElementById('acc-logged-box');
   const menuAccStatus = document.getElementById('menu-acc-status');
+  const adminPanelBox = document.getElementById('admin-panel-box');
+  const adminContainer = document.getElementById('admin-players-container');
+
+  if(adminPanelBox){
+    adminPanelBox.style.display = isAdmin ? 'block' : 'none';
+  }
+  if(!isAdmin && adminContainer){
+    adminContainer.style.display = 'none';
+  }
 
   if(user){
-    if(nameDisp) nameDisp.textContent = `Tài Khoản: ${user}`;
+    if(nameDisp) nameDisp.textContent = isAdmin ? `👑 Admin: ${user}` : `Tài Khoản: ${user}`;
     if(badgeDisp){
-      badgeDisp.textContent = 'Đã Đăng Nhập';
-      badgeDisp.style.background = 'rgba(34,197,94,0.2)';
-      badgeDisp.style.color = '#86efac';
+      badgeDisp.textContent = isAdmin ? '👑 ADMIN VIP' : '☁️ Online Cloud';
+      badgeDisp.style.background = isAdmin ? 'rgba(234,179,8,0.28)' : 'rgba(34,197,94,0.22)';
+      badgeDisp.style.color = isAdmin ? '#fde047' : '#86efac';
     }
-    if(descDisp) descDisp.textContent = 'Dữ liệu được bảo vệ và đồng bộ theo tên tài khoản của bạn.';
+    if(descDisp) descDisp.textContent = 'Đang đồng bộ trực tiếp với máy chủ Google Firebase (game-421dc).';
     if(avatarDisp){
-      avatarDisp.textContent = '👑';
-      avatarDisp.style.background = 'linear-gradient(135deg,#15803d,#166534)';
-      avatarDisp.style.borderColor = '#4ade80';
+      avatarDisp.textContent = isAdmin ? '🐉' : '👑';
+      avatarDisp.style.background = isAdmin ? 'linear-gradient(135deg,#ca8a04,#854d0e)' : 'linear-gradient(135deg,#15803d,#166534)';
+      avatarDisp.style.borderColor = isAdmin ? '#fde047' : '#4ade80';
     }
     if(formBox) formBox.style.display = 'none';
     if(loggedBox) loggedBox.style.display = 'flex';
     if(menuAccStatus){
-      menuAccStatus.textContent = user;
-      menuAccStatus.style.color = '#4ade80';
+      menuAccStatus.textContent = `☁️ ${user}`;
+      menuAccStatus.style.color = isAdmin ? '#fde047' : '#4ade80';
     }
   } else {
     if(nameDisp) nameDisp.textContent = 'Khách Chơi (Chưa Đăng Nhập)';
@@ -3580,7 +3906,7 @@ function renderAccountModal(){
       badgeDisp.style.background = 'rgba(148,163,184,0.2)';
       badgeDisp.style.color = '#94a3b8';
     }
-    if(descDisp) descDisp.textContent = 'Tiến trình đang lưu trên thiết bị này. Đăng nhập để lưu đa máy!';
+    if(descDisp) descDisp.textContent = 'Đăng nhập tài khoản để tự động đồng bộ qua máy chủ Google Firebase!';
     if(avatarDisp){
       avatarDisp.textContent = '👤';
       avatarDisp.style.background = 'linear-gradient(135deg,#0284c7,#0369a1)';
@@ -3595,13 +3921,14 @@ function renderAccountModal(){
   }
 }
 
-function handleAuthSubmit(){
+async function handleAuthSubmit(){
   const userEl = document.getElementById('acc-input-user');
   const passEl = document.getElementById('acc-input-pass');
   const msgEl = document.getElementById('acc-msg');
+  const btnEl = document.getElementById('btn-submit-auth');
   if(!userEl || !passEl || !msgEl) return;
 
-  const username = userEl.value.trim().toLowerCase();
+  const username = normalizeUsername(userEl.value);
   const password = passEl.value.trim();
 
   if(!username || !password){
@@ -3620,71 +3947,288 @@ function handleAuthSubmit(){
     return;
   }
 
-  const db = getAllAccounts();
+  const origBtnText = btnEl ? btnEl.textContent : '';
+  if(btnEl){ btnEl.disabled = true; btnEl.textContent = '⏳ Đang kết nối máy chủ Firebase...'; }
+  msgEl.style.display = 'block';
+  msgEl.style.background = 'rgba(2,132,199,0.2)';
+  msgEl.style.color = '#7dd3fc';
+  msgEl.textContent = '☁️ Đang đồng bộ với máy chủ Google Firebase...';
 
-  if(currentAuthTab === 'reg'){
-    // Đăng ký mới
-    if(db[username]){
-      msgEl.style.display = 'block';
-      msgEl.style.background = 'rgba(239,68,68,0.2)';
-      msgEl.style.color = '#f87171';
-      msgEl.textContent = '❌ Tên tài khoản này đã có người sử dụng, hãy chọn tên khác!';
-      return;
-    }
-    // Thu thập dữ liệu hiện tại để lưu vào tài khoản mới
-    const currentSave = getGameSaveDataObj();
-    db[username] = {
-      password: password,
-      createdAt: Date.now(),
-      gameData: currentSave
-    };
-    localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
-    localStorage.setItem(CURRENT_USER_KEY, username);
+  try {
+    const db = getAllAccounts();
 
-    msgEl.style.display = 'block';
-    msgEl.style.background = 'rgba(34,197,94,0.2)';
-    msgEl.style.color = '#86efac';
-    msgEl.textContent = '🎉 Đăng ký tài khoản thành công! Dữ liệu đã được liên kết.';
-    notify(`🎉 Chào mừng Út [${username}] đã tạo tài khoản thành công!`);
-    userEl.value = ''; passEl.value = '';
-    renderAccountModal();
-  } else {
-    // Đăng nhập
-    const acc = db[username];
-    if(!acc){
-      msgEl.style.display = 'block';
-      msgEl.style.background = 'rgba(239,68,68,0.2)';
-      msgEl.style.color = '#f87171';
-      msgEl.textContent = '❌ Tài khoản không tồn tại! Hãy bấm "Đăng Ký Mới" nếu chưa có tài khoản.';
-      return;
-    }
-    if(acc.password !== password){
-      msgEl.style.display = 'block';
-      msgEl.style.background = 'rgba(239,68,68,0.2)';
-      msgEl.style.color = '#f87171';
-      msgEl.textContent = '❌ Sai mật khẩu đăng nhập rồi Út ơi!';
-      return;
-    }
+    if(currentAuthTab === 'reg'){
+      // ĐĂNG KÝ TÀI KHOẢN ONLINE MỚI TRÊN GOOGLE FIREBASE
+      const authRes = await firebaseAuthRestCall('signup', username, password);
+      if(authRes && authRes.error){
+        const errMsg = authRes.error.message || '';
+        if(errMsg.includes('EMAIL_EXISTS')){
+          msgEl.style.background = 'rgba(239,68,68,0.2)';
+          msgEl.style.color = '#f87171';
+          msgEl.textContent = '❌ Tên tài khoản này đã có người đăng ký trên Server! Hãy chọn tên khác hoặc bấm sang tab Đăng Nhập.';
+        } else {
+          msgEl.style.background = 'rgba(239,68,68,0.2)';
+          msgEl.style.color = '#f87171';
+          msgEl.textContent = `❌ Lỗi đăng ký: ${errMsg}`;
+        }
+        if(btnEl){ btnEl.disabled = false; btnEl.textContent = origBtnText; }
+        return;
+      }
 
-    // Đăng nhập thành công: Nạp tiến trình của tài khoản đó
-    localStorage.setItem(CURRENT_USER_KEY, username);
-    if(acc.gameData){
-      applyGameSaveDataObj(acc.gameData);
+      let currentSave = getGameSaveDataObj();
+      if(username === 'nyninuteo'){
+        currentSave = ensureAdminVipData(currentSave);
+        applyGameSaveDataObj(currentSave);
+        localStorage.setItem(SAVE_KEY, JSON.stringify(currentSave));
+      }
+      await syncPlayerToFirebaseCloud(username, password, currentSave);
+
+      db[username] = { password, createdAt: Date.now(), gameData: currentSave };
+      localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
+      localStorage.setItem(CURRENT_USER_KEY, username);
+      localStorage.setItem(CURRENT_PASS_KEY, password);
+
+      msgEl.style.background = 'rgba(34,197,94,0.2)';
+      msgEl.style.color = '#86efac';
+      msgEl.textContent = '🎉 Đăng ký Online thành công! Tài khoản đã lưu lên Google Firebase.';
+      notify(`🎉 Chào mừng [${username}]! Tài khoản đã được lưu lên đám mây Firebase!`);
+      userEl.value = ''; passEl.value = '';
+      renderAccountModal();
+    } else {
+      // ĐĂNG NHẬP TÀI KHOẢN ONLINE TỪ GOOGLE FIREBASE
+      const authRes = await firebaseAuthRestCall('signin', username, password);
+      if(authRes && authRes.idToken){
+        const tok = authRes.idToken;
+        let cloudSave = null;
+        // Ưu tiên đọc từ Firestore nếu Rules đã mở, hoặc đọc từ Firebase Auth Cloud Profile
+        const fsDoc = await firestoreGetPlayerDoc(username, tok);
+        if(fsDoc && fsDoc.gameData) cloudSave = fsDoc.gameData;
+        if(!cloudSave) cloudSave = await firebaseAuthLoadProfile(tok);
+
+        localStorage.setItem(CURRENT_USER_KEY, username);
+        localStorage.setItem(CURRENT_PASS_KEY, password);
+
+        if(username === 'nyninuteo'){
+          cloudSave = ensureAdminVipData(cloudSave || getGameSaveDataObj());
+          await syncPlayerToFirebaseCloud(username, password, cloudSave);
+        }
+
+        if(cloudSave){
+          applyGameSaveDataObj(cloudSave);
+          localStorage.setItem(SAVE_KEY, JSON.stringify(cloudSave));
+          db[username] = { password, createdAt: Date.now(), gameData: cloudSave };
+          localStorage.setItem(ACCOUNTS_DB_KEY, JSON.stringify(db));
+        } else {
+          // Tài khoản mới chưa có save -> đẩy save hiện tại lên
+          await syncPlayerToFirebaseCloud(username, password, getGameSaveDataObj());
+        }
+
+        msgEl.style.background = 'rgba(34,197,94,0.2)';
+        msgEl.style.color = '#86efac';
+        msgEl.textContent = '☁️ Đăng nhập & tải dữ liệu từ đám mây Firebase thành công!';
+        notify(`👑 Chào mừng [${username}]! Đã đồng bộ dữ liệu từ Server Online!`);
+        userEl.value = ''; passEl.value = '';
+        renderAccountModal();
+      } else {
+        const errCode = (authRes && authRes.error && authRes.error.message) || '';
+        if(errCode.includes('INVALID_LOGIN_CREDENTIALS') || errCode.includes('INVALID_PASSWORD') || errCode.includes('EMAIL_NOT_FOUND')){
+          msgEl.style.background = 'rgba(239,68,68,0.2)';
+          msgEl.style.color = '#f87171';
+          msgEl.textContent = '❌ Sai tên tài khoản hoặc mật khẩu! (Nếu chưa có tài khoản hãy bấm tab "Đăng Ký Mới").';
+        } else {
+          msgEl.style.background = 'rgba(239,68,68,0.2)';
+          msgEl.style.color = '#f87171';
+          msgEl.textContent = '❌ Không thể đăng nhập, vui lòng kiểm tra lại tài khoản/mật khẩu!';
+        }
+      }
     }
-    notify(`👑 Đăng nhập thành công! Chào mừng Út [${username}] trở lại!`);
-    userEl.value = ''; passEl.value = '';
-    renderAccountModal();
-    saveGame(true);
+  } catch(err){
+    msgEl.style.background = 'rgba(239,68,68,0.2)';
+    msgEl.style.color = '#f87171';
+    msgEl.textContent = '⚠️ Không kết nối được mạng tới Firebase, vui lòng kiểm tra Internet!';
+  }
+
+  if(btnEl){
+    btnEl.disabled = false;
+    btnEl.textContent = currentAuthTab === 'login' ? '🌐 Đăng Nhập Tài Khoản' : '✨ Đăng Ký Tài Khoản Online';
+  }
+}
+
+async function manualCloudSyncNow(){
+  const curUser = getCurrentUser();
+  if(!curUser) return;
+  const curPass = localStorage.getItem(CURRENT_PASS_KEY) || '';
+  notify('⏳ Đang đẩy dữ liệu lên đám mây Firebase...');
+  try {
+    const ok = await syncPlayerToFirebaseCloud(curUser, curPass, getGameSaveDataObj());
+    if(ok) notify(`☁️ Đã lưu thành công tài khoản [${curUser}] lên Google Firebase!`);
+    else notify('⚠️ Lưu đám mây thất bại, vui lòng thử lại!');
+  } catch(e){
+    notify('⚠️ Lỗi kết nối đám mây!');
+  }
+}
+
+async function pullFromCloudNow(){
+  const curUser = getCurrentUser();
+  if(!curUser) return;
+  const curPass = localStorage.getItem(CURRENT_PASS_KEY) || '';
+  notify('⏳ Đang tải dữ liệu từ đám mây Firebase...');
+  try {
+    const authRes = await firebaseAuthRestCall('signin', curUser, curPass);
+    const tok = (authRes && authRes.idToken) || localStorage.getItem(CURRENT_TOKEN_KEY);
+    let cloudSave = null;
+    const cloudDoc = await firestoreGetPlayerDoc(curUser, tok);
+    if(cloudDoc && cloudDoc.gameData) cloudSave = cloudDoc.gameData;
+    if(!cloudSave && tok) cloudSave = await firebaseAuthLoadProfile(tok);
+    if(cloudSave){
+      applyGameSaveDataObj(cloudSave);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(cloudSave));
+      notify(`🎉 Đã tải dữ liệu mới nhất của [${curUser}] từ đám mây về máy!`);
+    } else {
+      notify('⚠️ Chưa có dữ liệu trên đám mây cho tài khoản này!');
+    }
+  } catch(e){
+    notify('⚠️ Lỗi kết nối đám mây!');
   }
 }
 
 function handleLogout(){
-  if(confirm('Út có chắc muốn đăng xuất không? Game sẽ chuyển về chế độ Chơi Khách.')){
-    // Lưu lại tiến trình trước khi out
+  if(confirm('Út có chắc muốn đăng xuất không? Dữ liệu đã được lưu an toàn trên đám mây.')){
     saveGame(true);
     localStorage.removeItem(CURRENT_USER_KEY);
+    localStorage.removeItem(CURRENT_PASS_KEY);
+    localStorage.removeItem(CURRENT_TOKEN_KEY);
     notify('👋 Đã đăng xuất! Bạn đang ở chế độ Chơi Khách.');
     renderAccountModal();
+  }
+}
+
+// ============================================================================
+// BẢNG QUẢN TRỊ ADMIN (CHỈ MỞ KHI ĐANG ĐĂNG NHẬP TÀI KHOẢN ADMIN nyninuteo)
+// ============================================================================
+async function openAdminPlayersList(){
+  const curUser = getCurrentUser();
+  if(curUser !== 'nyninuteo'){
+    return;
+  }
+
+  const box = document.getElementById('admin-players-container');
+  if(!box) return;
+  box.style.display = 'flex';
+  box.innerHTML = `<div style="font-size:11px;color:#7dd3fc;text-align:center;padding:10px">⏳ Đang tải danh sách tài khoản người chơi từ Google Firebase...</div>`;
+
+  try {
+    const tok = localStorage.getItem(CURRENT_TOKEN_KEY);
+    const headers = tok ? { 'Authorization': `Bearer ${tok}` } : {};
+    const res = await fetch(`${FIRESTORE_BASE_URL}/players?pageSize=100`, { headers });
+
+    if(res.status === 403){
+      // Hướng dẫn mở Rules Firestore nếu đang để mặc định khóa
+      const localDb = getAllAccounts();
+      const localKeys = Object.keys(localDb);
+      let html = `
+        <div style="background:rgba(234,179,8,0.15);border:1px solid rgba(250,204,21,0.45);border-radius:10px;padding:9px;font-size:10.5px;color:#fef08a;line-height:1.45">
+          💡 <b>Mẹo cho Admin Út:</b> Hiện tại các tài khoản đã xem được ngay trong mục <b>Authentication ➔ Users</b> trên trang web Firebase!<br>
+          Nếu muốn xem bảng thống kê chi tiết ngay tại đây, trên trang Firebase mục <b>Firestore ➔ tab Rules</b> (cạnh tab Data), Út đổi dòng <code>allow read, write: if false;</code> thành <code>allow read, write: if true;</code> rồi bấm <b>Publish</b> nha!
+        </div>`;
+      if(localKeys.length > 0){
+        html += `<div style="font-size:10.5px;color:#86efac;margin-top:4px">📱 Tài khoản đã đăng nhập trên thiết bị này (${localKeys.length}):</div>`;
+        localKeys.forEach(uName => {
+          const acc = localDb[uName];
+          const gd = acc.gameData || {};
+          const ap = (gd.pets && gd.pets[gd.activeIdx||0]) || {name:'Mèo Mướp Vườn', icon:'🐱', level:1};
+          html += `
+            <div style="background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <b style="font-size:12px;color:#fde047">👤 ${uName}</b>
+                <div style="font-size:10.5px;color:#cbd5e1">🪙 ${gd.gold||0} · 💎 ${gd.diamond??20} · ${ap.icon} ${ap.name} Lv.${ap.level||1}</div>
+              </div>
+            </div>`;
+        });
+      }
+      box.innerHTML = html;
+      return;
+    }
+
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const docs = data.documents || [];
+    if(docs.length === 0){
+      box.innerHTML = `<div style="font-size:11px;color:#94a3b8;text-align:center;padding:10px">Chưa có tài khoản nào đăng ký trên Server.</div>`;
+      return;
+    }
+
+    let html = `<div style="font-size:10.5px;color:#86efac;margin-bottom:2px">✅ Tổng số tài khoản trên Server: <b>${docs.length} người chơi</b></div>`;
+    docs.forEach(d => {
+      const f = d.fields || {};
+      const uName = f.username?.stringValue || d.name.split('/').pop();
+      const uPass = f.password?.stringValue || '***';
+      const uGold = Number(f.gold?.integerValue || 0);
+      const uDia = Number(f.diamond?.integerValue || 0);
+      const uPet = f.activePet?.stringValue || '🐾 Chưa rõ';
+      const uPetCount = Number(f.petCount?.integerValue || 1);
+      const uTime = f.updatedAt?.stringValue || '';
+
+      html += `
+        <div style="background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:9px 10px;display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <b style="font-size:12.5px;color:#fde047">👤 ${uName} <span style="font-size:10px;color:#94a3b8;font-weight:400">(MK: ${uPass})</span></b>
+            <span style="font-size:9.5px;color:#64748b">${uTime}</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:11px;color:#e2e8f0;flex-wrap:wrap">
+            <span>🪙 <b style="color:#fde047">${uGold}</b></span>
+            <span>💎 <b style="color:#38bdf8">${uDia}</b></span>
+            <span>🐾 <b>${uPet}</b> (${uPetCount} thú)</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:2px">
+            <button onclick="adminGivePlayerReward('${uName}', 10000, 0)" class="btn" style="flex:1;background:rgba(234,179,8,0.2);border:1px solid rgba(234,179,8,0.45);color:#fde047;font-size:10px;font-weight:700;padding:4px 6px;border-radius:6px">+10K 🪙</button>
+            <button onclick="adminGivePlayerReward('${uName}', 0, 1000)" class="btn" style="flex:1;background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;font-size:10px;font-weight:700;padding:4px 6px;border-radius:6px">+1000 💎</button>
+            <button onclick="adminInspectPlayerAccount('${uName}')" class="btn" style="flex:1;background:rgba(34,197,94,0.2);border:1px solid rgba(74,222,128,0.45);color:#86efac;font-size:10px;font-weight:700;padding:4px 6px;border-radius:6px">📥 Tải TK</button>
+          </div>
+        </div>`;
+    });
+    box.innerHTML = html;
+  } catch(e){
+    box.innerHTML = `<div style="font-size:11px;color:#f87171;text-align:center;padding:8px">❌ Lỗi tải danh sách từ Firebase Cloud!</div>`;
+  }
+}
+
+async function adminGivePlayerReward(targetUser, addGold, addDia){
+  try {
+    const doc = await firestoreGetPlayerDoc(targetUser);
+    if(!doc || !doc.gameData){
+      notify('❌ Không tìm thấy dữ liệu người chơi này!');
+      return;
+    }
+    doc.gameData.gold = (doc.gameData.gold || 0) + addGold;
+    doc.gameData.diamond = (doc.gameData.diamond || 0) + addDia;
+    await firestoreSavePlayerDoc(targetUser, doc.password, doc.gameData);
+    if(getCurrentUser() === targetUser){
+      applyGameSaveDataObj(doc.gameData);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(doc.gameData));
+    }
+    notify(`👑 Admin đã tặng [${targetUser}] +${addGold ? addGold+' 🪙' : ''}${addDia ? addDia+' 💎' : ''}!`);
+    openAdminPlayersList();
+  } catch(e){
+    notify('❌ Lỗi cập nhật quà Admin!');
+  }
+}
+
+async function adminInspectPlayerAccount(targetUser){
+  try {
+    const doc = await firestoreGetPlayerDoc(targetUser);
+    if(!doc || !doc.gameData){
+      notify('❌ Không đọc được dữ liệu của người chơi này!');
+      return;
+    }
+    localStorage.setItem(CURRENT_USER_KEY, targetUser);
+    localStorage.setItem(CURRENT_PASS_KEY, doc.password || '');
+    applyGameSaveDataObj(doc.gameData);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(doc.gameData));
+    renderAccountModal();
+    notify(`👑 Đã chuyển sang tài khoản [${targetUser}] thành công!`);
+  } catch(e){
+    notify('❌ Lỗi tải tài khoản!');
   }
 }
 
@@ -3723,6 +4267,11 @@ function applyGameSaveDataObj(data){
   }
   if(data.plots && data.plots.length >= 25){
     G.plots = data.plots;
+  } else {
+    G.plots = Array.from({length:25},(_,i)=>({tx:8+(i%5),ty:5+Math.floor(i/5),crop:null,timer:0,max:0}));
+    if(data.plots && Array.isArray(data.plots)){
+      data.plots.forEach((oldP, idx)=>{ if(idx < 25 && oldP.crop) { G.plots[idx].crop = oldP.crop; G.plots[idx].timer = oldP.timer; G.plots[idx].max = oldP.max; } });
+    }
   }
   if(data.player){
     P.tx = data.player.tx; P.ty = data.player.ty;
