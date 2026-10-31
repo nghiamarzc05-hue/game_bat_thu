@@ -50,6 +50,26 @@
   .item-card { transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); }
   .item-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.2) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
 
+  /* Quick Chat Pill Styles */
+  .quick-chat-pill {
+    background: rgba(15,23,42,0.85);
+    border: 1px solid rgba(56,189,248,0.35);
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .quick-chat-pill:active {
+    transform: scale(0.94);
+    background: #0284c7;
+    color: #fff;
+  }
+
   /* ============================================================================
      GIAO DIỆN CHUẨN GAME APP MOBILE (FULLSCREEN EDGE-TO-EDGE + APP ICON HUD)
      ============================================================================ */
@@ -380,6 +400,10 @@
     <button onclick="openMenu('leaderboard')" class="app-icon-btn" title="Bảng Xếp Hạng & Danh Hiệu Tuần">
       <div class="app-icon-box" style="background:linear-gradient(135deg,#eab308,#ca8a04);border-color:#fef08a">🏆</div>
       <span class="app-icon-label" style="color:#fde047">BXH</span>
+    </button>
+    <button onclick="toggleChatDrawer()" class="app-icon-btn" title="Trò Chuyện & Giao Lưu">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);border-color:#7dd3fc">💬</div>
+      <span class="app-icon-label" style="color:#7dd3fc">Chat</span>
     </button>
     <button id="btn-orient" onclick="toggleMobileOrientation()" class="app-icon-btn" title="Xoay Ngang / Dọc Màn Hình">
       <div class="app-icon-box" style="background:linear-gradient(135deg,#0284c7,#1e3a8a)">🔄</div>
@@ -901,6 +925,74 @@
   </div>
 </div>
 
+<!-- MODAL CHUẨN BỊ XUẤT TRẬN PK (5S ĐẾM NGƯỢC CHỌN PET) -->
+<div id="modal-pk-prep" class="glass modal-box" style="width:420px;max-width:94vw;text-align:center;padding:18px 14px;z-index:99998;display:none">
+  <div class="modal-header" style="justify-content:center;position:relative">
+    <h3 style="color:#ef4444"><i class="fa-solid fa-swords"></i> Chuẩn Bị Xuất Trận PK</h3>
+  </div>
+  
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0">
+    <div style="font-size:12px;color:#94a3b8">Đối thủ: <b id="pk-prep-opp-name" style="color:#f87171">ghe_mientay</b></div>
+    <div id="pk-prep-timer" style="background:#dc2626;color:#fff;font-size:14px;font-weight:900;padding:4px 14px;border-radius:20px;border:1.5px solid #fca5a5;box-shadow:0 0 12px rgba(220,38,38,0.6)">⏳ 5s</div>
+  </div>
+
+  <div style="font-size:11.5px;color:#fde047;font-weight:800;margin-bottom:6px">🎯 Chạm để chọn Linh Thú ra sân:</div>
+  <div id="pk-prep-pet-list" class="scrollbar" style="display:flex;flex-direction:column;gap:7px;max-height:36vh;overflow-y:auto;padding:2px">
+    <!-- Rendered dynamically -->
+  </div>
+
+  <div style="margin-top:12px">
+    <button id="btn-pk-prep-go" onclick="confirmPKPrepAndStart()" class="btn" style="width:100%;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-weight:900;font-size:13px;padding:11px;border-radius:10px;border:1px solid #fca5a5">
+      🔥 XUẤT TRẬN NGAY!
+    </button>
+  </div>
+</div>
+
+<!-- KHUNG CHAT GIAO LƯU TRÊN ĐẦU & CÂU THOẠI NHANH MOBILE -->
+<div id="chat-drawer" class="glass" style="position:fixed;bottom:12px;left:50%;transform:translateX(-50%);width:460px;max-width:96vw;z-index:9000;display:none;flex-direction:column;gap:8px;padding:12px;border-radius:18px;box-shadow:0 12px 36px rgba(0,0,0,0.7);border:1px solid rgba(56,189,248,0.3)">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:6px">
+    <div style="font-size:12px;font-weight:800;color:#38bdf8"><i class="fa-solid fa-comments"></i> Trò Chuyện & Thả Thính Miền Tây</div>
+    <button onclick="toggleChatDrawer()" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer">×</button>
+  </div>
+  
+  <!-- Cụm câu thoại nhanh tối ưu 1-chạm cho điện thoại -->
+  <div class="scrollbar" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;white-space:nowrap">
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('👋 Chào bà con Miền Tây!')">👋 Chào bà con!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('⚔️ Có ai dám PK Pet với tui không?')">⚔️ Ai PK không?</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('🤝 Ai muốn giao dịch đồ với tui không?')">🤝 Giao dịch đê!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('🎣 Chỗ này cá cắn câu dữ quá!')">🎣 Cá cắn dữ ghê!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('😂 Hụt cá rồi trời ơi tiếc quá!')">😂 Hụt cá rồi!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('✨ Xem chiến lợi phẩm tui nè!')">✨ Khoe cá nè!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('🔥 Pet của tui là vô địch!')">🔥 Pet vô địch!</button>
+    <button class="btn quick-chat-pill" onclick="sendChatMessage('👍 Đỉnh quá bạn ơi!')">👍 Quá đỉnh!</button>
+  </div>
+
+  <!-- Hàng nhập tin nhắn tự do -->
+  <div style="display:flex;gap:6px">
+    <input id="chat-input" type="text" maxlength="50" placeholder="Nhập lời muốn nói trên đầu..." class="input" style="flex:1;font-size:12px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,0.8);border:1px solid rgba(255,255,255,0.15);color:#fff" onkeydown="if(event.key==='Enter') sendCustomChatMessage()">
+    <button onclick="sendCustomChatMessage()" class="btn" style="background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-weight:800;font-size:12px;padding:8px 14px;border-radius:10px;border:1px solid #38bdf8">Gửi 🚀</button>
+  </div>
+</div>
+
+<!-- THANH KHOE CHIẾN LỢI PHẨM CÂU CÁ TRÊN TAY -->
+<div id="trophy-hold-bar" class="glass" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);width:460px;max-width:94vw;z-index:9000;display:none;flex-direction:column;align-items:center;gap:10px;padding:12px 16px;border-radius:20px;border:1.5px solid #facc15;box-shadow:0 12px 40px rgba(0,0,0,0.8);animation:popIn .25s ease-out">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="trophy-hold-icon" style="font-size:36px;animation:breathe 2s infinite">🐟</span>
+    <div>
+      <div id="trophy-hold-title" style="font-size:14px;font-weight:900;color:#fde047">Cá Tra Khủng (12.5 kg)</div>
+      <div id="trophy-hold-status" style="font-size:10.5px;color:#86efac;font-weight:700">✨ Bạn đang giơ cao trên tay khoe với mọi người!</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;width:100%">
+    <button id="btn-trophy-bag" onclick="putAwayTrophyFish('bag')" class="btn" style="flex:1;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-weight:800;font-size:12.5px;padding:9px;border-radius:10px;border:1px solid #38bdf8">
+      🎒 CẤT VÀO TÚI
+    </button>
+    <button id="btn-trophy-sell" onclick="putAwayTrophyFish('sell')" class="btn" style="flex:1;background:linear-gradient(135deg,#eab308,#ca8a04);color:#fff;font-weight:800;font-size:12.5px;padding:9px;border-radius:10px;border:1px solid #fde047">
+      💰 BÁN LUÔN (<span id="trophy-sell-price">0</span>đ)
+    </button>
+  </div>
+</div>
+
 </div><!-- /wrap -->
 
 <script>
@@ -1088,7 +1180,8 @@ const WILD_TEMPLATES={
 
 // Đầy đủ 8 Map
 const MAPS={
-  farm:       {name:'🏡 Nông Trại',    bg:[[42,98,50],[36,88,44],[30,78,38]],  portals:[{tx:14,ty:1,to:'fields',label:'🌾 Đồng Ruộng'},{tx:28,ty:8,to:'mist_forest',label:'🌫️ Rừng Mù'},{tx:14,ty:15,to:'lake',label:'🪷 Hồ Sen'},{tx:1,ty:8,to:'mines',label:'⛏️ Hầm Mỏ'}]},
+  farm:       {name:'🏡 Nông Trại Chung', bg:[[42,98,50],[36,88,44],[30,78,38]], portals:[{tx:14,ty:1,to:'fields',label:'🌾 Đồng Ruộng'},{tx:28,ty:8,to:'mist_forest',label:'🌫️ Rừng Mù'},{tx:14,ty:15,to:'lake',label:'🪷 Hồ Sen'},{tx:1,ty:8,to:'mines',label:'⛏️ Hầm Mỏ'},{tx:3,ty:4,to:'home',label:'🏡 Vào Nhà Riêng'}]},
+  home:       {name:'🏡 Nhà & Vườn Riêng', bg:[[50,88,44],[44,78,38],[38,68,32]], portals:[{tx:14,ty:15,to:'farm',label:'🚪 Ra Sân Chung'}]},
   fields:     {name:'🌾 Đồng Ruộng',  bg:[[72,118,28],[66,110,22],[78,126,34]],portals:[{tx:14,ty:15,to:'farm',label:'🏡 Về Nhà'},{tx:28,ty:8,to:'meadow',label:'🌿 Đồng Cỏ'}]},
   mist_forest:{name:'🌫️ Rừng Sương Mù',bg:[[44,54,72],[38,48,66],[50,60,80]],portals:[{tx:1,ty:8,to:'farm',label:'🏡 Về Nhà'}]},
   lake:       {name:'🪷 Hồ Sen',      bg:[[18,98,115],[14,92,108],[22,104,122]],portals:[{tx:14,ty:1,to:'farm',label:'🏡 Về Nhà'},{tx:28,ty:8,to:'sea',label:'🌊 Biển'}]},
@@ -1247,7 +1340,7 @@ function _isBlockedPx(px,py,isPlayer=false){
   if(tx<1||tx>=COLS-1||ty<1||ty>=ROWS-1) return true;
   if(!isPlayer){
     if(MAPS[G.map].portals.some(p=>p.tx===tx&&p.ty===ty)) return true;
-    if(G.map==='farm'&&G.plots.some(p=>p.tx===tx&&p.ty===ty)) return true;
+    if(G.map==='home'&&G.plots.some(p=>p.tx===tx&&p.ty===ty)) return true;
   }
   return false;
 }
@@ -1736,23 +1829,52 @@ function handleCanvasPointerDown(clientX, clientY){
 
   const ttx=Math.floor(mx/TS), tty=Math.floor(my/TS);
   if(ttx>0&&ttx<COLS-1&&tty>0&&tty<ROWS-1){
-    // Nếu đang ở Nông Trại
+    // Nếu đang ở Nông Trại Chung
     if(G.map === 'farm'){
-      // 1. Click vào Nhà Tranh hoặc NPC Bà Tư (tx: 2..5, ty: 2..5) -> Mở Bếp Bà Tư
-      if(ttx >= 2 && ttx <= 5 && tty >= 2 && tty <= 5){
+      // Click vào Cửa Nhà Tranh -> Vào Nhà & Vườn Riêng của cá nhân
+      if(ttx >= 2 && ttx <= 4 && tty >= 2 && tty <= 4){
+        G.map = 'home';
+        P.tx = 14; P.ty = 13; P.px = 14*TS; P.py = 13*TS;
+        P.fpx = P.px - 24; P.fpy = P.py + 4;
+        zoneBanner = { title: MAPS['home'].name, t: 0, dur: 1.8 };
+        const hudZ = document.getElementById('hud-zone'); if(hudZ) hudZ.textContent = MAPS['home'].name;
+        notify('🏡 Bước vào Nhà & Vườn Riêng của bạn!');
+        lastHeartbeatTime = 0; syncOnlineHeartbeat();
+        return;
+      }
+      // Click vào NPC Bà Tư -> Mở Bếp Nấu Ăn
+      if((ttx === 4 || ttx === 5) && (tty === 4 || tty === 5)){
         openMenu('cook');
         return;
       }
+    }
 
-      // 2. Click trúng ô đất trồng trọt
+    // Nếu đang ở trong Nhà & Vườn Riêng
+    if(G.map === 'home'){
+      // 1. Click vào Bếp Lò trong nhà
+      if(ttx >= 2 && ttx <= 5 && tty >= 2 && tty <= 4){
+        openMenu('cook');
+        return;
+      }
+      // 2. Click vào Cửa ra sân
+      if(ttx >= 13 && ttx <= 15 && tty >= 14){
+        G.map = 'farm';
+        P.tx = 3; P.ty = 5; P.px = 3*TS; P.py = 5*TS;
+        P.fpx = P.px - 24; P.fpy = P.py + 4;
+        zoneBanner = { title: MAPS['farm'].name, t: 0, dur: 1.8 };
+        const hudZ = document.getElementById('hud-zone'); if(hudZ) hudZ.textContent = MAPS['farm'].name;
+        notify('🚪 Bước ra Nông Trại Chung!');
+        lastHeartbeatTime = 0; syncOnlineHeartbeat();
+        return;
+      }
+
+      // 3. Click trúng ô đất trồng trọt trong vườn nhà
       const clickedPlot = G.plots.find(p => p.tx === ttx && p.ty === tty);
       if(clickedPlot){
         if(!clickedPlot.crop){
-          // Ô đất trống: Mở bảng chọn hạt giống gieo trồng ngay lập tức!
           openSeedSelectModal(clickedPlot);
           return;
         } else if(clickedPlot.timer <= 0){
-          // Cây đã chín: Bấm vào thu hoạch ngay
           const yi=CROPS[clickedPlot.crop].yield, amt=CROPS[clickedPlot.crop].amt;
           G.inv[yi]=(G.inv[yi]||0)+amt;
           spawnWorldVFX(clickedPlot.tx*TS+16, clickedPlot.ty*TS+16, `+${amt} ${CROPS[yi].icon} ${CROPS[yi].name}`, '#fde047');
@@ -1762,7 +1884,6 @@ function handleCanvasPointerDown(clientX, clientY){
           saveGame(true);
           return;
         } else {
-          // Cây đang lớn: Báo thời gian còn lại
           notify(`⏳ ${CROPS[clickedPlot.crop].name} đang lớn, chín sau ${formatCropTime(clickedPlot.timer)} nữa!`);
           return;
         }
@@ -2034,15 +2155,98 @@ function drawBiomeProps(t){
     ctx.strokeStyle='#ca8a04'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.moveTo(px+12, py+30); ctx.quadraticCurveTo(px+64, py+26, px+116, py+30); ctx.stroke();
 
-    // 3. Hàng rào tre bao quanh 25 ô đất trồng 5x5 (tx=8..12, ty=5..9)
-    ctx.strokeStyle='#ca8a04'; ctx.lineWidth=2;
-    ctx.strokeRect(7.6*TS, 4.6*TS, 5.8*TS, 5.8*TS);
+    // 3. Quảng Trường Trung Tâm Nông Trại Chung (Không gian giao lưu, gặp gỡ)
+    const qx = 7.8*TS, qy = 4.8*TS, qw = 5.4*TS, qh = 5.4*TS;
+    ctx.fillStyle='rgba(0,0,0,0.22)'; rr(ctx, qx+4, qy+6, qw, qh, 14); ctx.fill();
+    ctx.fillStyle='#334155'; rr(ctx, qx, qy, qw, qh, 14); ctx.fill();
+    ctx.strokeStyle='#475569'; ctx.lineWidth=2; rr(ctx, qx, qy, qw, qh, 14); ctx.stroke();
+    // Hoa văn gạch lát sân đình
+    ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
+    for(let i=1; i<5; i++){
+      ctx.beginPath(); ctx.moveTo(qx+i*TS, qy+4); ctx.lineTo(qx+i*TS, qy+qh-4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(qx+4, qy+i*TS); ctx.lineTo(qx+qw-4, qy+i*TS); ctx.stroke();
+    }
 
-    // 4. Rặng Dừa Bến Tre quanh nông trại
+    // Giếng Nước Cổ Đầu Làng (Tâm: tx=10.5, ty=7.5)
+    const wx = 10.5*TS, wy = 7.5*TS;
+    ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.beginPath(); ctx.ellipse(wx, wy+14, 22, 10, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#64748b'; ctx.beginPath(); ctx.ellipse(wx, wy, 20, 12, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0f172a'; ctx.beginPath(); ctx.ellipse(wx, wy, 15, 8, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#0284c7'; ctx.beginPath(); ctx.ellipse(wx, wy+2, 12, 6, 0, 0, Math.PI*2); ctx.fill();
+    // Khung gỗ & mái che giếng nước
+    ctx.fillStyle='#78350f'; ctx.fillRect(wx-16, wy-22, 4, 24); ctx.fillRect(wx+12, wy-22, 4, 24);
+    ctx.fillStyle='#ca8a04';
+    ctx.beginPath(); ctx.moveTo(wx-20, wy-20); ctx.lineTo(wx, wy-32); ctx.lineTo(wx+20, wy-20); ctx.closePath(); ctx.fill();
+
+    // Bàn ghế đá Miền Tây đàm đạo
+    ctx.fillStyle='#94a3b8'; ctx.beginPath(); ctx.ellipse(8.8*TS, 8.2*TS, 10, 6, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#64748b'; ctx.beginPath(); ctx.arc(8.8*TS-12, 8.2*TS, 4, 0, Math.PI*2); ctx.arc(8.8*TS+12, 8.2*TS, 4, 0, Math.PI*2); ctx.fill();
+
+    // 4. Bảng chỉ dẫn trước Cửa Nhà Tranh
+    ctx.fillStyle='rgba(15,23,42,0.85)'; rr(ctx, 2.5*TS, 4.4*TS, 74, 16, 5); ctx.fill();
+    ctx.strokeStyle='#fde047'; ctx.lineWidth=1; rr(ctx, 2.5*TS, 4.4*TS, 74, 16, 5); ctx.stroke();
+    ctx.fillStyle='#fde047'; ctx.font='bold 8.5px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('🏡 Vào Nhà Riêng', 2.5*TS + 37, 4.4*TS + 11);
+
+    // 5. Rặng Dừa Bến Tre quanh nông trại
     drawCoconutTree(6.3*TS, 4.2*TS, t, 0.95);
     drawCoconutTree(6.2*TS, 13.8*TS, t, 1.0);
     drawCoconutTree(22.5*TS, 4.5*TS, t, 1.05);
     drawCoconutTree(24.5*TS, 13.5*TS, t, 0.95);
+  } else if(m==='home'){
+    // ═══════════════════════════════════════════════════════════
+    // KHÔNG GIAN BÊN TRONG CĂN NHÀ & VƯỜN RIÊNG CÁ NHÂN CỦA ÚT
+    // ═══════════════════════════════════════════════════════════
+    // Sàn gỗ phòng khách ấm cúng (tx=2..7, ty=2..13)
+    const fx = 2*TS, fy = 2*TS, fw = 5.6*TS, fh = 11*TS;
+    ctx.fillStyle='rgba(0,0,0,0.35)'; rr(ctx, fx+4, fy+6, fw, fh, 12); ctx.fill();
+    ctx.fillStyle='#78350f'; rr(ctx, fx, fy, fw, fh, 12); ctx.fill();
+    ctx.strokeStyle='#451a03'; ctx.lineWidth=2; rr(ctx, fx, fy, fw, fh, 12); ctx.stroke();
+    // Ván gỗ lát sàn
+    for(let y=fy+12; y<fy+fh-6; y+=16){
+      ctx.strokeStyle='#92400e'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(fx+6, y); ctx.lineTo(fx+fw-6, y); ctx.stroke();
+    }
+    // Thảm dệt đỏ hoa văn ấm áp
+    ctx.fillStyle='#991b1b'; rr(ctx, fx+14, fy+110, fw-28, 70, 6); ctx.fill();
+    ctx.strokeStyle='#facc15'; ctx.lineWidth=1; rr(ctx, fx+14, fy+110, fw-28, 70, 6); ctx.stroke();
+
+    // Bếp Lò Nấu Ăn (tx=3, ty=3)
+    const kx = 3.2*TS, ky = 2.8*TS;
+    ctx.fillStyle='#1c1917'; rr(ctx, kx, ky, 42, 34, 6); ctx.fill();
+    ctx.fillStyle='#ea580c'; ctx.beginPath(); ctx.arc(kx+21, ky+18, 9, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fef08a'; ctx.beginPath(); ctx.arc(kx+21, ky+18, 5, 0, Math.PI*2); ctx.fill();
+    // Nồi đất nung đang sôi
+    ctx.fillStyle='#7c2d12'; ctx.beginPath(); ctx.ellipse(kx+21, ky+8, 12, 6, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fde047'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('🍲 Bếp Nấu Ăn', kx+21, ky-4);
+
+    // Giường ngủ tre mộc mạc
+    const bx = 2.6*TS, by = 9.8*TS;
+    ctx.fillStyle='#a16207'; rr(ctx, bx, by, 48, 64, 5); ctx.fill();
+    ctx.fillStyle='#e2e8f0'; rr(ctx, bx+4, by+4, 40, 20, 4); ctx.fill();
+    ctx.fillStyle='#38bdf8'; rr(ctx, bx+4, by+24, 40, 36, 4); ctx.fill();
+
+    // Bức vách ngăn giữa phòng khách và vườn cây (có vòm cửa đi qua)
+    ctx.fillStyle='#451a03';
+    ctx.fillRect(7.6*TS, 2*TS, 6, 4*TS);
+    ctx.fillRect(7.6*TS, 8.2*TS, 6, 5*TS);
+    // Vòm cửa mở sang vườn
+    ctx.fillStyle='rgba(250,204,21,0.15)'; rr(ctx, 7.4*TS, 6*TS, 10, 2.2*TS, 4); ctx.fill();
+
+    // Hàng rào tre bảo vệ 25 ô đất trồng trong vườn nhà (tx=8..12, ty=5..9)
+    ctx.strokeStyle='#ca8a04'; ctx.lineWidth=2;
+    ctx.strokeRect(7.6*TS, 4.6*TS, 5.8*TS, 5.8*TS);
+    // Bảng tên vườn riêng
+    ctx.fillStyle='rgba(15,23,42,0.85)'; rr(ctx, 9*TS, 3.8*TS, 96, 17, 5); ctx.fill();
+    ctx.strokeStyle='#4ade80'; ctx.lineWidth=1; rr(ctx, 9*TS, 3.8*TS, 96, 17, 5); ctx.stroke();
+    ctx.fillStyle='#86efac'; ctx.font='bold 9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('🌾 Vườn Ruộng Của Út', 9*TS + 48, 3.8*TS + 12);
+
+    // Đèn lồng treo góc vườn
+    ctx.fillStyle='#eab308';
+    ctx.beginPath(); ctx.arc(7.8*TS, 4.4*TS, 5, 0, Math.PI*2); ctx.arc(13.4*TS, 4.4*TS, 5, 0, Math.PI*2); ctx.fill();
+    ctx.arc(7.8*TS, 10.6*TS, 5, 0, Math.PI*2); ctx.arc(13.4*TS, 10.6*TS, 5, 0, Math.PI*2); ctx.fill();
   } else if(m==='fields'){
     // Bù Nhìn Rơm đội Nón Lá giữa đồng lúa (tx=15, ty=7)
     const sx=15*TS+16, sy=7*TS+16, sw=Math.sin(t*3)*2;
@@ -2528,9 +2732,9 @@ function drawSkyAndLighting(){
   }
 }
 
-// Vẽ Ruộng Trồng 4 Giai Đoạn Sinh Trưởng Vector HD + Bướm Vàng Bay Lượn
+// Vẽ Ruộng Trồng 4 Giai Đoạn Sinh Trưởng Vector HD + Bướm Vàng Bay Lượn (Chỉ hiển thị trong Nhà & Vườn Riêng)
 function drawPlots(){
-  if(G.map!=='farm') return;
+  if(G.map!=='home') return;
   const t=Date.now()/1000;
   G.plots.forEach(p=>{
     const px=p.tx*TS,py=p.ty*TS;
@@ -2879,6 +3083,17 @@ function drawPlayer(px,py){
   ctx.beginPath(); ctx.moveTo(cx+side*1.5,cy-10); ctx.lineTo(cx-15,cy+2); ctx.lineTo(cx+15,cy+2); ctx.closePath(); ctx.fill();
   ctx.strokeStyle='#ca8a04'; ctx.lineWidth=1.2; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx-9,cy-2); ctx.quadraticCurveTo(cx,cy,cx+9,cy-2); ctx.stroke();
+
+  // Khoe Chiến Lợi Phẩm Câu Cá Trên Tay (Giơ 2 tay lên cao)
+  if(P.holdingFish && typeof drawTrophyFishPose === 'function'){
+    drawTrophyFishPose(ctx, cx, cy, P.holdingFish);
+  }
+
+  // Khung Chat Giao Lưu Trên Đầu
+  if(P.speechBubble && P.speechBubble.expire > Date.now() && typeof drawSpeechBubble === 'function'){
+    const headY = P.holdingFish ? (cy - 52) : (cy - 12);
+    drawSpeechBubble(ctx, cx, headY, P.speechBubble.text, '#38bdf8');
+  }
 }
 
 function drawFollowerPet(px,py){
@@ -3196,6 +3411,10 @@ function drawMinimap(){
   if(G.map==='farm'){
     mmCtx.fillStyle='#ca8a04'; mmCtx.fillRect(2*tW,2*tH,4*tW,2.5*tH);
     mmCtx.fillStyle='#0284c7'; mmCtx.beginPath(); mmCtx.ellipse(4*tW,12.5*tH,2*tW,1.3*tH,0,0,Math.PI*2); mmCtx.fill();
+    mmCtx.fillStyle='#64748b'; mmCtx.fillRect(8*tW,5*tH,5*tW,5*tH);
+  }
+  if(G.map==='home'){
+    mmCtx.fillStyle='#78350f'; mmCtx.fillRect(2*tW,2*tH,5*tW,11*tH);
     G.plots.forEach(p=>{ mmCtx.fillStyle=p.crop?(p.timer<=0?'#facc15':'#4ade80'):'#78350f'; mmCtx.fillRect(p.tx*tW,p.ty*tH,tW-0.5,tH-0.5); });
   }
   MAPS[G.map].portals.forEach(pt=>{
@@ -3230,13 +3449,13 @@ function getNearbyContext(){
     return { type:'portal', target:bestPt, icon:'🚪', label:'QUA CỔNG', badge:bestPt.label, bg:'linear-gradient(135deg,#7c3aed,#4c1d95)', border:'#c4b5fd', pulse:true };
   }
 
-  // 2. Trong Nông Trại: Bếp Bà Tư & Ô đất trồng trọt
-  if(G.map === 'farm'){
-    if(P.tx >= 1 && P.tx <= 6 && P.ty >= 2 && P.ty <= 5){
-      return { type:'cook', icon:'🍳', label:'BẾP BÀ TƯ', badge:'🏡 Bếp Nấu Bà Tư', bg:'linear-gradient(135deg,#ea580c,#9a3412)', border:'#fdba74', pulse:true };
+  // 2. Trong Nhà & Vườn Riêng: Bếp Lò & Ô đất trồng trọt
+  if(G.map === 'home'){
+    if(P.tx >= 2 && P.tx <= 5 && P.ty >= 2 && P.ty <= 4){
+      return { type:'cook', icon:'🍳', label:'BẾP LÒ', badge:'🍲 Bếp Lò Nấu Ăn', bg:'linear-gradient(135deg,#ea580c,#9a3412)', border:'#fdba74', pulse:true };
     }
 
-    // Tìm ô đất dưới chân hoặc sát cạnh gần nhất
+    // Tìm ô đất dưới chân hoặc sát cạnh gần nhất trong vườn nhà
     let bestPlot = G.plots.find(p => p.tx === P.tx && p.ty === P.ty);
     if(!bestPlot){
       let minPlotDist = Infinity;
@@ -3255,6 +3474,13 @@ function getNearbyContext(){
         const cName = CROPS[bestPlot.crop].name;
         return { type:'plot_growing', target:bestPlot, icon:'⏳', label:formatCropTime(bestPlot.timer), badge:`🌱 ${cName}: ${formatCropTime(bestPlot.timer)}`, bg:'linear-gradient(135deg,#475569,#1e293b)', border:'#94a3b8', pulse:false };
       }
+    }
+  }
+
+  // 3. Trong Nông Trại Chung: Bà Tư & Cửa vào nhà riêng
+  if(G.map === 'farm'){
+    if(P.tx >= 3 && P.tx <= 6 && P.ty >= 4 && P.ty <= 6){
+      return { type:'cook', icon:'👵', label:'BÀ TƯ', badge:'👵 Bếp Nấu Bà Tư', bg:'linear-gradient(135deg,#ea580c,#9a3412)', border:'#fdba74', pulse:true };
     }
   }
 
@@ -3446,11 +3672,21 @@ function interact(){
   }
   if(ctxInfo.type === 'portal'){
     const pt = ctxInfo.target;
-    G.map=pt.to; P.tx=14; P.ty=8; P.px=14*TS; P.py=8*TS; P.fpx=P.px-24; P.fpy=P.py+4;
-    zoneBanner={title:MAPS[G.map].name, t:0, dur:1.8};
-    document.getElementById('hud-zone').textContent=MAPS[G.map].name;
+    const prevMap = G.map;
+    G.map = pt.to;
+    if(pt.to === 'home'){
+      P.tx = 14; P.ty = 13; P.px = 14*TS; P.py = 13*TS;
+    } else if(prevMap === 'home' && pt.to === 'farm'){
+      P.tx = 3; P.ty = 5; P.px = 3*TS; P.py = 5*TS;
+    } else {
+      P.tx = 14; P.ty = 8; P.px = 14*TS; P.py = 8*TS;
+    }
+    P.fpx = P.px - 24; P.fpy = P.py + 4;
+    zoneBanner = { title: MAPS[G.map].name, t: 0, dur: 1.8 };
+    const hudZ = document.getElementById('hud-zone'); if(hudZ) hudZ.textContent = MAPS[G.map].name;
     spawnWildPetsForMap(G.map);
     notify(`🚪 Bước vào ${MAPS[G.map].name}`);
+    lastHeartbeatTime = 0; syncOnlineHeartbeat();
     return;
   }
   if(ctxInfo.type === 'cook'){
@@ -3805,8 +4041,8 @@ const FIREBASE_CONFIG = {
   projectId: "game-421dc",
   storageBucket: "game-421dc.firebasestorage.app",
   messagingSenderId: "695006030345",
-  appId: "1:695006030345:web:11337d9ef4195a1c6866d8",
-  measurementId: "G-S2HFM96T5Z"
+  appId: "1:695006030345:web:44ac350cf56494e06866d8",
+  measurementId: "G-H5851BFJFB"
 };
 
 const FIRESTORE_BASE_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents`;
@@ -3987,11 +4223,11 @@ async function firestoreSavePlayerDoc(username, password, saveObj, idToken){
     fields.password = { stringValue: password };
   }
 
-  let url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}`;
+  let url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}?key=${FIREBASE_CONFIG.apiKey}`;
   if(!password){
     const maskParams = ['username','gold','diamond','map','petCount','activePet','updatedAt','saveJson']
       .map(k => `updateMask.fieldPaths=${k}`).join('&');
-    url += `?${maskParams}`;
+    url += `&${maskParams}`;
   }
 
   const headers = { 'Content-Type': 'application/json' };
@@ -4014,7 +4250,7 @@ async function firestoreSavePlayerDoc(username, password, saveObj, idToken){
 async function firestoreGetPlayerDoc(username, idToken){
   const cleanUser = normalizeUsername(username);
   if(!cleanUser) return null;
-  const url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}`;
+  const url = `${FIRESTORE_BASE_URL}/players/${encodeURIComponent(cleanUser)}?key=${FIREBASE_CONFIG.apiKey}`;
   const headers = {};
   const tok = idToken || localStorage.getItem(CURRENT_TOKEN_KEY);
   if(tok) headers['Authorization'] = `Bearer ${tok}`;
@@ -4544,7 +4780,7 @@ async function openAdminPlayersList(){
   try {
     const tok = localStorage.getItem(CURRENT_TOKEN_KEY);
     const headers = tok ? { 'Authorization': `Bearer ${tok}` } : {};
-    const res = await fetch(`${FIRESTORE_BASE_URL}/players?pageSize=100`, { headers });
+    const res = await fetch(`${FIRESTORE_BASE_URL}/players?pageSize=100&key=${FIREBASE_CONFIG.apiKey}`, { headers });
 
     if(res.status === 403){
       // Hướng dẫn mở Rules Firestore nếu đang để mặc định khóa
@@ -4813,11 +5049,37 @@ function getPlayerWeeklyTitle(username){
   return '';
 }
 
-// Gửi tọa độ & Trạng thái lên Firebase Online Players
+// Gửi tọa độ & Trạng thái lên Firebase Online Players (Mượt mà, thích ứng nhịp di chuyển)
 let lastHeartbeatTime = 0;
+let lastHeartbeatPos = { x: 0, y: 0, map: '' };
+let activeTradeSessionId = null;
+let tradeSyncTimer = null;
+let currentIncomingInvite = null;
+let nearbyPlayerHUDElement = null;
+
+function updateNearbyPlayerHUD(op){
+  if(!nearbyPlayerHUDElement){
+    nearbyPlayerHUDElement = document.createElement('div');
+    nearbyPlayerHUDElement.id = 'btn-nearby-pill';
+    nearbyPlayerHUDElement.style.cssText = 'position:fixed;bottom:78px;left:50%;transform:translateX(-50%);z-index:9000;display:none;background:linear-gradient(135deg,#0ea5e9,#0284c7);border:1.5px solid #7dd3fc;box-shadow:0 8px 24px rgba(0,0,0,0.5);border-radius:24px;padding:8px 18px;font-size:12px;font-weight:900;color:#fff;cursor:pointer;align-items:center;gap:8px';
+    document.body.appendChild(nearbyPlayerHUDElement);
+  }
+  if(op && !battle.active && G.map !== 'home'){
+    nearbyPlayerHUDElement.style.display = 'flex';
+    nearbyPlayerHUDElement.innerHTML = `<span>🤝 Gặp [${op.username}]</span> <span style="background:#fde047;color:#0f172a;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:800">PK & Trade</span>`;
+    nearbyPlayerHUDElement.onclick = () => openPlayerInteractModal(op);
+  } else {
+    nearbyPlayerHUDElement.style.display = 'none';
+  }
+}
+
 async function syncOnlineHeartbeat(){
-  if(Date.now() - lastHeartbeatTime < 2500) return;
+  const isMoving = P.moving || Math.hypot(P.px - lastHeartbeatPos.x, P.py - lastHeartbeatPos.y) > 8;
+  const heartbeatThreshold = isMoving ? 550 : 1600;
+  if(Date.now() - lastHeartbeatTime < heartbeatThreshold) return;
   lastHeartbeatTime = Date.now();
+  lastHeartbeatPos = { x: P.px, y: P.py, map: G.map };
+
   const cleanUser = normalizeUsername(getCurrentUser()) || ('NongDan_' + (P.charSeed || 100));
   const activePetObj = (G.pets && G.pets[G.activeIdx]) ? {
     name: G.pets[G.activeIdx].name,
@@ -4831,8 +5093,12 @@ async function syncOnlineHeartbeat(){
 
   const myTitle = getPlayerWeeklyTitle(cleanUser);
 
+  const tok = localStorage.getItem(CURRENT_TOKEN_KEY);
+  const authHeaders = { 'Content-Type': 'application/json' };
+  if(tok) authHeaders['Authorization'] = `Bearer ${tok}`;
+
   try {
-    const url = `${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanUser)}`;
+    const url = `${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanUser)}?key=${FIREBASE_CONFIG.apiKey}`;
     const body = {
       fields: {
         username: { stringValue: cleanUser },
@@ -4844,18 +5110,20 @@ async function syncOnlineHeartbeat(){
         petLv: { integerValue: activePetObj ? activePetObj.lv : 1 },
         petPot: { stringValue: activePetObj ? activePetObj.pot : 'B' },
         petEl: { stringValue: activePetObj ? activePetObj.el : 'Thường' },
+        holdingFish: { stringValue: P.holdingFish ? JSON.stringify(P.holdingFish) : '' },
+        speechBubble: { stringValue: (P.speechBubble && P.speechBubble.expire > Date.now()) ? JSON.stringify(P.speechBubble) : '' },
         updatedAt: { integerValue: Date.now() }
       }
     };
     fetch(url, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders,
       body: JSON.stringify(body)
     }).catch(()=>{});
   } catch(e){}
 
   try {
-    const listRes = await fetch(`${FIRESTORE_BASE_URL}/online_players?pageSize=30`);
+    const listRes = await fetch(`${FIRESTORE_BASE_URL}/online_players?pageSize=50&key=${FIREBASE_CONFIG.apiKey}`, { headers: authHeaders });
     if(listRes.ok){
       const data = await listRes.json();
       if(data.documents && Array.isArray(data.documents)){
@@ -4864,7 +5132,26 @@ async function syncOnlineHeartbeat(){
           const f = doc.fields || {};
           const u = f.username ? f.username.stringValue : '';
           const uTime = f.updatedAt ? Number(f.updatedAt.integerValue || f.updatedAt.stringValue || 0) : 0;
-          if(u && u !== cleanUser && (now - uTime < 45000)){
+
+          // Kiểm tra xem chính mình có nhận được lời mời PK / Giao dịch từ người khác không
+          if(u === cleanUser){
+            if(f.incomingAction && f.incomingAction.stringValue){
+              try {
+                const act = JSON.parse(f.incomingAction.stringValue);
+                if(act && act.time && (now - act.time < 30000)){
+                  handleIncomingOnlineAction(act);
+                }
+              } catch(e){}
+            }
+            if(f.incomingResponse && f.incomingResponse.stringValue){
+              try {
+                const resp = JSON.parse(f.incomingResponse.stringValue);
+                if(resp && resp.time && (now - resp.time < 30000)){
+                  handleIncomingOnlineResponse(resp);
+                }
+              } catch(e){}
+            }
+          } else if(u && (now - uTime < 45000)){
             const oMap = f.map ? f.map.stringValue : 'farm';
             const ox = f.x ? Number(f.x.integerValue || f.x.stringValue || 0) : 0;
             const oy = f.y ? Number(f.y.integerValue || f.y.stringValue || 0) : 0;
@@ -4874,12 +5161,24 @@ async function syncOnlineHeartbeat(){
             const pPot = f.petPot ? f.petPot.stringValue : 'B';
             const pEl = f.petEl ? f.petEl.stringValue : 'Thường';
 
+            let oHoldingFish = null;
+            if(f.holdingFish && f.holdingFish.stringValue){
+              try { oHoldingFish = JSON.parse(f.holdingFish.stringValue); } catch(e){}
+            }
+            let oSpeechBubble = null;
+            if(f.speechBubble && f.speechBubble.stringValue){
+              try { oSpeechBubble = JSON.parse(f.speechBubble.stringValue); } catch(e){}
+            }
+
             if(!onlinePlayers[u]){
               onlinePlayers[u] = {
                 username: u, map: oMap, x: ox, y: oy, targetX: ox, targetY: oy,
                 title: oTitle,
                 activePet: pName ? { name: pName, lv: pLv, pot: pPot, el: pEl } : null,
-                updatedAt: uTime
+                holdingFish: oHoldingFish,
+                speechBubble: oSpeechBubble,
+                updatedAt: uTime,
+                moving: false
               };
             } else {
               onlinePlayers[u].map = oMap;
@@ -4887,6 +5186,8 @@ async function syncOnlineHeartbeat(){
               onlinePlayers[u].targetY = oy;
               onlinePlayers[u].title = oTitle;
               onlinePlayers[u].activePet = pName ? { name: pName, lv: pLv, pot: pPot, el: pEl } : null;
+              onlinePlayers[u].holdingFish = oHoldingFish;
+              onlinePlayers[u].speechBubble = oSpeechBubble;
               onlinePlayers[u].updatedAt = uTime;
             }
           }
@@ -4915,39 +5216,87 @@ function ensureSimulatedNeighbors(){
   }
 }
 
-// Vẽ người chơi trực tuyến khác trong World Space
+// Vẽ người chơi trực tuyến khác trong World Space (Chuyển động mượt mà, chân bước, nón lá, áo bà ba)
 function drawOnlinePlayers(){
+  if(G.map === 'home') {
+    updateNearbyPlayerHUD(null);
+    return;
+  }
   const now = Date.now();
+  let nearestOp = null;
+  let nearestDist = Infinity;
+
   Object.keys(onlinePlayers).forEach(u => {
     const op = onlinePlayers[u];
     if(op.map !== G.map) return;
     if(now - op.updatedAt > 60000) return;
 
-    op.x += (op.targetX - op.x) * 0.15;
-    op.y += (op.targetY - op.y) * 0.15;
+    // Khoảng cách tới mục tiêu cập nhật từ mạng
+    const dx = op.targetX - op.x;
+    const dy = op.targetY - op.y;
+    const dist = Math.hypot(dx, dy);
+
+    if(dist > 180){
+      op.x = op.targetX;
+      op.y = op.targetY;
+      op.moving = false;
+    } else if(dist > 1.2){
+      op.moving = true;
+      const step = Math.min(dist, Math.max(2.8, dist * 0.32));
+      op.x += (dx / dist) * step;
+      op.y += (dy / dist) * step;
+      op.dir = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+    } else {
+      op.x = op.targetX;
+      op.y = op.targetY;
+      op.moving = false;
+    }
 
     ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    // Bóng đổ mượt mà dưới chân
+    ctx.fillStyle = 'rgba(0,0,0,0.32)';
     ctx.beginPath();
-    ctx.ellipse(op.x + 16, op.y + 28, 12, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(op.x + 16, op.y + 28, 13, 5.5, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#0284c7';
-    ctx.fillRect(op.x + 8, op.y + 12, 16, 16);
+    // Hoạt họa chân bước khi di chuyển
+    const walkCycle = op.moving ? Math.sin(Date.now() / 110) * 4.5 : 0;
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(op.x + 10, op.y + 22 + walkCycle, 4.5, 6);
+    ctx.fillRect(op.x + 17.5, op.y + 22 - walkCycle, 4.5, 6);
+
+    // Áo Bà Ba Miền Tây
+    const shirtCol = (u.charCodeAt(0) % 2 === 0) ? '#0284c7' : '#92400e';
+    ctx.fillStyle = shirtCol;
+    rr(ctx, op.x + 7, op.y + 11, 18, 14, 4); ctx.fill();
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(op.x + 15.5, op.y + 13, 1.5, 2);
+    ctx.fillRect(op.x + 15.5, op.y + 17, 1.5, 2);
+    ctx.fillRect(op.x + 15.5, op.y + 21, 1.5, 2);
+
+    // Khuôn mặt
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath(); ctx.arc(op.x + 16, op.y + 8, 6.5, 0, Math.PI * 2); ctx.fill();
+
+    // Nón Lá Miền Tây nghiêng vành nón
     ctx.fillStyle = '#fde047';
     ctx.beginPath();
-    ctx.moveTo(op.x + 16, op.y - 2);
-    ctx.lineTo(op.x + 1, op.y + 10);
-    ctx.lineTo(op.x + 31, op.y + 10);
+    ctx.moveTo(op.x + 16, op.y - 4);
+    ctx.lineTo(op.x + 1, op.y + 8);
+    ctx.lineTo(op.x + 31, op.y + 8);
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1; ctx.stroke();
+    // Chóp nón lá
+    ctx.fillStyle = '#eab308';
+    ctx.beginPath(); ctx.arc(op.x + 16, op.y - 3, 2, 0, Math.PI * 2); ctx.fill();
 
+    // Vẽ Linh Thú đi theo mượt mà
     if(op.activePet && op.activePet.name){
       const pName = op.activePet.name;
-      const petX = op.x - 16, petY = op.y + 4;
+      const petX = op.x - 18, petY = op.y + 4;
       const t = Date.now()/1000;
-      const bob = Math.sin(t * 3.5) * 1.5;
+      const bob = Math.sin(t * 4) * 2;
       const col = elCol(op.activePet.el || 'Lôi');
       ctx.fillStyle = col + '33';
       ctx.beginPath(); ctx.ellipse(petX + 12, petY + 22, 12, 4.5, 0, 0, Math.PI * 2); ctx.fill();
@@ -4963,7 +5312,8 @@ function drawOnlinePlayers(){
       ctx.restore();
     }
 
-    const nameY = op.y - 8;
+    // Tên người chơi
+    const nameY = op.y - 10;
     ctx.font = 'bold 9.5px sans-serif';
     const nw = ctx.measureText(op.username).width;
     ctx.fillStyle = 'rgba(15,23,42,0.85)';
@@ -4973,6 +5323,7 @@ function drawOnlinePlayers(){
     ctx.fillStyle = '#38bdf8'; ctx.textAlign = 'center';
     ctx.fillText(op.username, op.x + 16, nameY);
 
+    // Danh hiệu tuần
     if(op.title){
       const titleY = nameY - 15;
       ctx.font = 'bold 8.5px sans-serif';
@@ -4984,13 +5335,334 @@ function drawOnlinePlayers(){
       ctx.fillStyle = '#fde047'; ctx.textAlign = 'center';
       ctx.fillText(op.title, op.x + 16, titleY);
     }
+
+    // Kiểm tra khoảng cách để hiện nút Tương Tác nổi trên đầu
+    const pDist = Math.hypot(P.px - op.x, P.py - op.y);
+    if(pDist < 80){
+      if(pDist < nearestDist){ nearestDist = pDist; nearestOp = op; }
+      const bubbleY = op.title ? (nameY - 32) : (nameY - 26);
+      const pulseA = 0.85 + Math.sin(Date.now() / 150) * 0.15;
+      ctx.fillStyle = `rgba(16,185,129,${pulseA})`;
+      rr(ctx, op.x + 16 - 44, bubbleY, 88, 15, 6); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
+      rr(ctx, op.x + 16 - 44, bubbleY, 88, 15, 6); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 8.5px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('⚡ BẤM ĐỂ PK / TRADE', op.x + 16, bubbleY + 10.5);
+    }
+
+    // Khoe Chiến Lợi Phẩm Câu Cá Trên Tay của bạn bè online
+    if(op.holdingFish && typeof drawTrophyFishPose === 'function'){
+      drawTrophyFishPose(ctx, op.x + 16, op.y + 8, op.holdingFish);
+    }
+
+    // Khung Chat Giao Lưu Trên Đầu của bạn bè online
+    if(op.speechBubble && op.speechBubble.expire > Date.now() && typeof drawSpeechBubble === 'function'){
+      const headY = op.holdingFish ? (op.y - 48) : (op.title ? (nameY - 26) : (nameY - 14));
+      drawSpeechBubble(ctx, op.x + 16, headY, op.speechBubble.text, '#38bdf8');
+    }
+
     ctx.restore();
 
+    // Vùng chạm nút lớn (80x80px) để tương tác tức thì
     canvas._worldBtns.push({
-      x: op.x - 2, y: op.y - 14, w: 36, h: 46,
+      x: op.x - 24, y: op.y - 36, w: 80, h: 80,
       fn: () => openPlayerInteractModal(op)
     });
   });
+
+  // Nút nhanh trên màn hình HUD
+  updateNearbyPlayerHUD(nearestOp);
+}
+
+// ═══════════════════════════════════════════════════
+// HỆ THỐNG KHUNG CHAT TRÊN ĐẦU & CÂU THOẠI NHANH MOBILE
+// ═══════════════════════════════════════════════════
+function drawSpeechBubble(ctx, cx, bottomY, text, col){
+  if(!text) return;
+  ctx.save();
+  ctx.font = 'bold 11px sans-serif';
+  const textW = ctx.measureText(text).width;
+  const padX = 10, padY = 5;
+  const bubbleW = Math.min(220, Math.max(48, textW + padX * 2));
+  const bubbleH = 24;
+  const bx = cx - bubbleW / 2;
+  const by = bottomY - bubbleH - 7;
+
+  // Đổ bóng bong bóng chat
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 8;
+  ctx.shadowOffsetY = 3;
+
+  // Nền bong bóng
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+  rr(ctx, bx, by, bubbleW, bubbleH, 10);
+  ctx.fill();
+
+  // Viền bong bóng
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = col || '#38bdf8';
+  ctx.lineWidth = 1.6;
+  rr(ctx, bx, by, bubbleW, bubbleH, 10);
+  ctx.stroke();
+
+  // Mũi nhọn chỉ xuống đỉnh đầu
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, by + bubbleH);
+  ctx.lineTo(cx, by + bubbleH + 6);
+  ctx.lineTo(cx + 5, by + bubbleH);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = col || '#38bdf8';
+  ctx.beginPath();
+  ctx.moveTo(cx - 5, by + bubbleH);
+  ctx.lineTo(cx, by + bubbleH + 6);
+  ctx.lineTo(cx + 5, by + bubbleH);
+  ctx.stroke();
+
+  // Chữ bên trong bong bóng
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 10px sans-serif';
+
+  let displayText = text;
+  if(textW > bubbleW - padX * 2){
+    while(ctx.measureText(displayText + '...').width > bubbleW - padX * 2 && displayText.length > 3){
+      displayText = displayText.slice(0, -1);
+    }
+    displayText += '...';
+  }
+  ctx.fillText(displayText, cx, by + bubbleH / 2 + 1);
+  ctx.restore();
+}
+
+function sendChatMessage(text){
+  if(!text || !text.trim()) return;
+  const clean = text.trim().slice(0, 50);
+  P.speechBubble = {
+    text: clean,
+    expire: Date.now() + 6000
+  };
+  const input = document.getElementById('chat-input');
+  if(input) input.value = '';
+  toggleChatDrawer(false);
+  notify(`💬 Bạn: "${clean}"`);
+  syncOnlineHeartbeat();
+}
+
+function sendCustomChatMessage(){
+  const input = document.getElementById('chat-input');
+  if(input && input.value){
+    sendChatMessage(input.value);
+  }
+}
+
+function toggleChatDrawer(forceState){
+  const drawer = document.getElementById('chat-drawer');
+  if(!drawer) return;
+  const isOpen = (drawer.style.display === 'flex');
+  const shouldOpen = (forceState !== undefined) ? forceState : !isOpen;
+  drawer.style.display = shouldOpen ? 'flex' : 'none';
+  if(shouldOpen){
+    const inp = document.getElementById('chat-input');
+    if(inp) setTimeout(() => inp.focus(), 150);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// HỆ THỐNG GIƠ CAO KHOE CHIẾN LỢI PHẨM CÂU CÁ TRÊN TAY
+// ═══════════════════════════════════════════════════
+function drawTrophyFishPose(ctx, cx, headY, holdingFish){
+  if(!holdingFish) return;
+  const t = Date.now() / 1000;
+  const bob = Math.sin(t * 5) * 2;
+  const fishY = headY - 26 + bob;
+
+  ctx.save();
+
+  // 1. Hai cánh tay giơ cao qua đầu
+  ctx.strokeStyle = '#fed7aa';
+  ctx.lineWidth = 3.5;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx - 7, headY + 12);
+  ctx.lineTo(cx - 14, headY - 4);
+  ctx.lineTo(cx - 6, fishY + 6);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 7, headY + 12);
+  ctx.lineTo(cx + 14, headY - 4);
+  ctx.lineTo(cx + 6, fishY + 6);
+  ctx.stroke();
+
+  // Ống tay áo bà ba
+  ctx.fillStyle = '#0284c7';
+  rr(ctx, cx - 16, headY + 2, 5, 8, 2); ctx.fill();
+  rr(ctx, cx + 11, headY + 2, 5, 8, 2); ctx.fill();
+
+  // 2. Hào quang lấp lánh quanh chiến lợi phẩm
+  const haloRad = 20 + Math.sin(t * 6) * 3;
+  const haloG = ctx.createRadialGradient(cx, fishY, 4, cx, fishY, haloRad);
+  haloG.addColorStop(0, 'rgba(254, 240, 138, 0.7)');
+  haloG.addColorStop(0.6, 'rgba(234, 179, 8, 0.3)');
+  haloG.addColorStop(1, 'rgba(234, 179, 8, 0)');
+  ctx.fillStyle = haloG;
+  ctx.beginPath();
+  ctx.arc(cx, fishY, haloRad, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Các tia sao lấp lánh xoay tròn
+  for(let i = 0; i < 4; i++){
+    const ang = t * 2.5 + (i * Math.PI / 2);
+    const starDist = 16 + Math.sin(t * 8 + i) * 3;
+    const sx = cx + Math.cos(ang) * starDist;
+    const sy = fishY + Math.sin(ang) * starDist;
+    ctx.fillStyle = '#fde047';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✨', sx, sy);
+  }
+
+  // 3. Icon chiến lợi phẩm to rõ
+  ctx.font = '28px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = '#facc15';
+  ctx.shadowBlur = 10;
+  ctx.fillText(holdingFish.icon || '🐟', cx, fishY);
+  ctx.shadowBlur = 0;
+
+  // 4. Bảng tên chiến lợi phẩm
+  const fishName = holdingFish.isSpecial ? (holdingFish.name || 'Bảo Vật') : `${holdingFish.name || 'Chiến Lợi Phẩm'} (${holdingFish.kg || 1}kg)`;
+  ctx.font = 'bold 8.5px sans-serif';
+  const nw = ctx.measureText(fishName).width;
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+  rr(ctx, cx - nw/2 - 5, fishY - 22, nw + 10, 13, 5); ctx.fill();
+  ctx.strokeStyle = '#facc15'; ctx.lineWidth = 1.2;
+  rr(ctx, cx - nw/2 - 5, fishY - 22, nw + 10, 13, 5); ctx.stroke();
+  ctx.fillStyle = '#fef08a';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(fishName, cx, fishY - 15.5);
+
+  ctx.restore();
+}
+
+function putAwayTrophyFish(action){
+  const hf = P.holdingFish;
+  if(!hf) return;
+  const holdBar = document.getElementById('trophy-hold-bar');
+  if(holdBar) holdBar.style.display = 'none';
+
+  if(action === 'sell' && !hf.isSpecial){
+    const gold = hf.sellGold || 100;
+    G.gold += gold;
+    notify(`💰 Đã bán ${hf.name} (${hf.kg}kg) thu về +${gold} Vàng!`);
+  } else {
+    if(!hf.isSpecial){
+      G.inv[hf.id] = (G.inv[hf.id] || 0) + 1;
+    }
+    notify(`🎒 Đã cất ${hf.name} vào Túi Đồ!`);
+  }
+
+  G.pendingFish = null;
+  P.holdingFish = null;
+  G.savedAt = Date.now();
+  saveGame(true);
+  updateHUD();
+  syncOnlineHeartbeat();
+}
+
+// ═══════════════════════════════════════════════════
+// HỆ THỐNG 5S ĐẾM NGƯỢC CHUẨN BỊ PK & CHỌN PET
+// ═══════════════════════════════════════════════════
+let pkPrepTimer = null;
+let pkPrepTimeLeft = 5;
+let pkPrepOpponent = null;
+let pkPrepCustomCallback = null;
+
+function openPKPreparationModal(oppInfo, onConfirmStart){
+  pkPrepOpponent = oppInfo;
+  pkPrepCustomCallback = onConfirmStart;
+  const modal = document.getElementById('modal-pk-prep');
+  const oppNameEl = document.getElementById('pk-prep-opp-name');
+  const timerEl = document.getElementById('pk-prep-timer');
+
+  if(oppNameEl) oppNameEl.textContent = (oppInfo && oppInfo.username) || 'Đối thủ';
+  pkPrepTimeLeft = 5;
+  if(timerEl) timerEl.textContent = `⏳ ${pkPrepTimeLeft}s`;
+
+  renderPKPrepPetList();
+
+  if(modal) modal.style.display = 'block';
+
+  if(pkPrepTimer) clearInterval(pkPrepTimer);
+  pkPrepTimer = setInterval(() => {
+    pkPrepTimeLeft--;
+    if(timerEl) timerEl.textContent = `⏳ ${pkPrepTimeLeft}s`;
+    if(pkPrepTimeLeft <= 0){
+      confirmPKPrepAndStart();
+    }
+  }, 1000);
+}
+
+function renderPKPrepPetList(){
+  const listEl = document.getElementById('pk-prep-pet-list');
+  if(!listEl) return;
+  const pets = Array.isArray(G.pets) ? G.pets : [];
+  if(pets.length === 0){
+    listEl.innerHTML = '<div style="color:#94a3b8;font-size:12px;padding:12px">Không có Linh Thú nào trong chuồng!</div>';
+    return;
+  }
+  listEl.innerHTML = pets.map((p, idx) => {
+    const isCur = (idx === G.activeIdx);
+    const col = elCol(p.el || 'Thường');
+    return `
+    <div onclick="selectPKPrepPet(${idx})" class="btn" style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:${isCur ? 'rgba(239,68,68,0.25)' : 'rgba(255,255,255,0.06)'};border:${isCur ? '2px solid #ef4444' : '1px solid rgba(255,255,255,0.1)'};cursor:pointer;text-align:left;transition:all .15s">
+      <div style="font-size:24px;filter:drop-shadow(0 2px 4px ${col}88)">${p.icon || '🐾'}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
+          <b style="color:#fff;font-size:12.5px">${p.name}</b>
+          <span style="font-size:9.5px;background:${col}33;color:${col};padding:1px 6px;border-radius:6px;font-weight:800">${p.el || 'Thường'}</span>
+          <span style="font-size:9.5px;color:#fde047;font-weight:800">[${p.pot || 'B'}]</span>
+        </div>
+        <div style="font-size:11px;color:#94a3b8;margin-top:2px">
+          Lv.<b style="color:#fde047">${p.level || p.lv || 1}</b> | ATK: <b style="color:#fca5a5">${p.atk || 20}</b> | HP: <b style="color:#86efac">${p.hp ?? 100}/${p.maxHp ?? 100}</b>
+        </div>
+      </div>
+      <div>
+        ${isCur ? '<span style="font-size:10px;font-weight:900;color:#ef4444;background:#fff;padding:2px 7px;border-radius:10px">ĐANG CHỌN</span>' : '<span style="font-size:11px;color:#64748b">Chạm chọn</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectPKPrepPet(idx){
+  if(G.pets && G.pets[idx]){
+    G.activeIdx = idx;
+    renderPKPrepPetList();
+    updateHUD();
+    notify(`🔥 Đã đổi sang [${G.pets[idx].name}] để xuất chiến!`);
+  }
+}
+
+function confirmPKPrepAndStart(){
+  if(pkPrepTimer){
+    clearInterval(pkPrepTimer);
+    pkPrepTimer = null;
+  }
+  const modal = document.getElementById('modal-pk-prep');
+  if(modal) modal.style.display = 'none';
+
+  if(typeof pkPrepCustomCallback === 'function'){
+    const cb = pkPrepCustomCallback;
+    pkPrepCustomCallback = null;
+    cb();
+  } else if(pkPrepOpponent){
+    startPvPBattle(pkPrepOpponent);
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -5134,8 +5806,8 @@ function openPlayerInteractModal(op){
   openMenu('player-interact');
 }
 
-// 1. Thách Đấu PK Pet
-function triggerPvPWithSelected(){
+// 1. Thách Đấu PK Pet (Hỗ trợ cả Bot & Người chơi thật Online)
+async function triggerPvPWithSelected(){
   if(!selectedOnlinePlayer){ closeAllMenus(); return; }
   const op = selectedOnlinePlayer;
   closeAllMenus();
@@ -5146,20 +5818,183 @@ function triggerPvPWithSelected(){
   }
   const myPet = G.pets[G.activeIdx];
   if(myPet.hp <= 0){
-    notify('❌ Linh Thú của bạn đã kiệt sức! Hãy cho ăn tại Bếp Bà Tư trước khi PK.');
+    notify('❌ Linh Thú của bạn đã kiệt sức! Hãy cho ăn tại Bếp trước khi PK.');
     return;
   }
 
-  notify(`⚔️ Đã gửi lời thách đấu PK tới [${op.username}]! Đang chờ đối phương tiếp chiêu...`);
+  // Nếu là Bot mô phỏng
+  if(op.isBot){
+    notify(`⚔️ Đã gửi lời thách đấu PK tới [${op.username}]! Đang chờ đối phương tiếp chiêu...`);
+    setTimeout(() => {
+      notify(`🔥 [${op.username}] đã chấp nhận lời khiêu chiến! 5s chuẩn bị chọn linh thú...`);
+      openPKPreparationModal(op, () => {
+        startPvPBattle(op);
+      });
+    }, 800);
+    return;
+  }
 
-  setTimeout(() => {
-    notify(`🔥 [${op.username}] đã chấp nhận lời khiêu chiến! TRẬN ĐẤU BẮT ĐẦU!`);
-    startPvPBattle(op);
-  }, 1200);
+  // Nếu là người chơi Online thật (Gửi dữ liệu qua Firestore)
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  notify(`⚔️ Đang gửi lời khiêu chiến PK tới [${op.username}]...`);
+  try {
+    const actionPayload = {
+      type: 'pvp_invite',
+      from: cleanMe,
+      time: Date.now(),
+      pet: {
+        name: myPet.name,
+        lv: myPet.lv || 1,
+        pot: myPet.pot || 'B',
+        el: myPet.el || 'Lôi',
+        hp: myPet.hp || 100,
+        maxHp: myPet.maxHp || 100,
+        atk: myPet.atk || 25
+      }
+    };
+    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(op.username)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: {
+          incomingAction: { stringValue: JSON.stringify(actionPayload) }
+        }
+      })
+    });
+    notify(`⏳ Đã gửi lời khiêu chiến tới [${op.username}]! Đang chờ đối phương tiếp chiêu...`);
+  } catch(e){
+    notify(`⚠️ Không thể kết nối tới [${op.username}], vui lòng thử lại!`);
+  }
+}
+
+// Xử lý khi có người gửi lời mời tới máy mình
+function handleIncomingOnlineAction(act){
+  if(currentIncomingInvite && currentIncomingInvite.time === act.time) return;
+  currentIncomingInvite = act;
+
+  const m = document.getElementById('modal-pvp-invite');
+  const icon = document.getElementById('pvp-invite-icon');
+  const title = document.getElementById('pvp-invite-title');
+  const desc = document.getElementById('pvp-invite-desc');
+  const btnAcc = document.getElementById('btn-pvp-accept');
+  const btnDec = document.getElementById('btn-pvp-decline');
+
+  if(act.type === 'pvp_invite'){
+    if(icon) icon.textContent = '⚔️';
+    if(title) title.textContent = `Thách Đấu PK Từ [${act.from}]!`;
+    const pInfo = act.pet || { name: 'Linh Thú', lv: 1, el: 'Lôi' };
+    if(desc) desc.innerHTML = `Người chơi <b>[${act.from}]</b> muốn khiêu chiến linh thú với bạn!<br><span style="color:#fde047">🐾 ${pInfo.name}</span> (Cấp ${pInfo.lv} - Hệ ${pInfo.el})`;
+    if(m) m.style.display = 'flex';
+    if(btnAcc) btnAcc.onclick = () => acceptPvPInvite(act);
+    if(btnDec) btnDec.onclick = () => declinePvPInvite(act);
+  } else if(act.type === 'trade_invite'){
+    if(icon) icon.textContent = '🤝';
+    if(title) title.textContent = `Lời Mời Giao Dịch Từ [${act.from}]!`;
+    if(desc) desc.innerHTML = `Người chơi <b>[${act.from}]</b> muốn mở sàn trao đổi Tiền Vàng & Vật Phẩm với bạn!`;
+    if(m) m.style.display = 'flex';
+    if(btnAcc) btnAcc.onclick = () => acceptTradeInvite(act);
+    if(btnDec) btnDec.onclick = () => declineTradeInvite(act);
+  }
+}
+
+// Xử lý phản hồi từ người kia gửi về máy mình
+function handleIncomingOnlineResponse(resp){
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { incomingResponse: { stringValue: '' } } })
+  }).catch(()=>{});
+
+  if(resp.type === 'pvp_accept'){
+    notify(`🔥 [${resp.from}] ĐÃ CHẤP NHẬN TIẾP CHIÊU! 5s chuẩn bị chọn linh thú...`);
+    openPKPreparationModal({ username: resp.from, activePet: resp.pet }, () => {
+      startPvPBattle({ username: resp.from, activePet: resp.pet });
+    });
+  } else if(resp.type === 'pvp_decline'){
+    notify(`❌ [${resp.from}] đã từ chối lời khiêu chiến PK.`);
+  } else if(resp.type === 'trade_accept'){
+    notify(`🤝 [${resp.from}] đã đồng ý mở sàn giao dịch!`);
+    openRealtimeTradeModal(resp.from, resp.sessionId, 'A');
+  } else if(resp.type === 'trade_decline'){
+    notify(`❌ [${resp.from}] đã từ chối lời mời giao dịch.`);
+  }
+}
+
+async function acceptPvPInvite(act){
+  const m = document.getElementById('modal-pvp-invite');
+  if(m) m.style.display = 'none';
+
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const myPet = (G.pets && G.pets[G.activeIdx]) ? G.pets[G.activeIdx] : { name: 'Gà Đá Chọi', lv: 1, pot: 'B', el: 'Lôi' };
+
+  try {
+    // Xóa lời mời trên máy mình
+    fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
+    }).catch(()=>{});
+
+    // Báo cho đối thủ biết đã chấp nhận
+    fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: {
+          incomingResponse: {
+            stringValue: JSON.stringify({
+              type: 'pvp_accept',
+              from: cleanMe,
+              time: Date.now(),
+              pet: {
+                name: myPet.name,
+                lv: myPet.lv || 1,
+                pot: myPet.pot || 'B',
+                el: myPet.el || 'Lôi',
+                hp: myPet.hp || 100,
+                maxHp: myPet.maxHp || 100,
+                atk: myPet.atk || 25
+              }
+            })
+          }
+        }
+      })
+    }).catch(()=>{});
+  } catch(e){}
+
+  notify(`🔥 BẠN ĐÃ TIẾP CHIÊU CỦA [${act.from}]! 5s chuẩn bị chọn linh thú...`);
+  openPKPreparationModal({ username: act.from, activePet: act.pet }, () => {
+    startPvPBattle({ username: act.from, activePet: act.pet });
+  });
+}
+
+function declinePvPInvite(act){
+  const m = document.getElementById('modal-pvp-invite');
+  if(m) m.style.display = 'none';
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
+  }).catch(()=>{});
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fields: {
+        incomingResponse: { stringValue: JSON.stringify({ type: 'pvp_decline', from: cleanMe, time: Date.now() }) }
+      }
+    })
+  }).catch(()=>{});
+
+  notify(`❌ Đã từ chối lời khiêu chiến của [${act.from}].`);
 }
 
 function startPvPBattle(op){
-  const ap = G.pets[G.activeIdx];
+  const ap = G.pets[G.activeIdx] || { name: 'Gà Đá Chọi', lv: 1, pot: 'B', el: 'Lôi', hp: 100, maxHp: 100, atk: 25, def: 10, spd: 12 };
   const petObj = op.activePet || { name: 'Gà Đá Chọi', lv: 6, pot: 'A', el: 'Lôi' };
   const rawName = petObj.name || 'Gà Đá Chọi';
   const oppPetTmpl = {
@@ -5197,21 +6032,155 @@ function startPvPBattle(op){
   joyState.active = false; joyState.vx = 0; joyState.vy = 0;
 }
 
-// 2. Giao Dịch Tài Nguyên (Tuyệt đối trừ Kim Cương)
-function triggerTradeWithSelected(){
+// 2. Giao Dịch Tài Nguyên (Trừ Kim Cương, Realtime 2 Người chơi)
+let tradeRole = 'A'; // 'A' hoặc 'B'
+async function triggerTradeWithSelected(){
   if(!selectedOnlinePlayer){ closeAllMenus(); return; }
   const op = selectedOnlinePlayer;
   closeAllMenus();
   currentTradePartner = op;
 
-  notify(`🤝 Đang kết nối phiên giao dịch tài nguyên với [${op.username}]...`);
-  setTimeout(() => {
-    openTradeModal();
-  }, 800);
+  if(op.isBot){
+    notify(`🤝 Đang kết nối phiên giao dịch tài nguyên với [${op.username}]...`);
+    setTimeout(() => { openTradeModal(); }, 600);
+    return;
+  }
+
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const sId = [cleanMe, op.username].sort().join('__');
+  notify(`🤝 Đang gửi lời mời giao dịch tới [${op.username}]...`);
+
+  try {
+    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(op.username)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fields: {
+          incomingAction: {
+            stringValue: JSON.stringify({
+              type: 'trade_invite',
+              from: cleanMe,
+              sessionId: sId,
+              time: Date.now()
+            })
+          }
+        }
+      })
+    });
+    notify(`⏳ Đã gửi lời mời giao dịch tới [${op.username}]! Đang chờ bạn ấy đồng ý...`);
+  } catch(e){
+    notify(`⚠️ Gặp lỗi khi gửi lời mời giao dịch tới [${op.username}]!`);
+  }
+}
+
+async function acceptTradeInvite(act){
+  const m = document.getElementById('modal-pvp-invite');
+  if(m) m.style.display = 'none';
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
+  }).catch(()=>{});
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fields: {
+        incomingResponse: {
+          stringValue: JSON.stringify({
+            type: 'trade_accept',
+            from: cleanMe,
+            sessionId: act.sessionId,
+            time: Date.now()
+          })
+        }
+      }
+    })
+  }).catch(()=>{});
+
+  notify(`🤝 ĐÃ MỞ SÀN GIAO DỊCH VỚI [${act.from}]!`);
+  openRealtimeTradeModal(act.from, act.sessionId, 'B');
+}
+
+function declineTradeInvite(act){
+  const m = document.getElementById('modal-pvp-invite');
+  if(m) m.style.display = 'none';
+  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
+  }).catch(()=>{});
+
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fields: {
+        incomingResponse: { stringValue: JSON.stringify({ type: 'trade_decline', from: cleanMe, time: Date.now() }) }
+      }
+    })
+  }).catch(()=>{});
+
+  notify(`❌ Đã từ chối giao dịch với [${act.from}].`);
+}
+
+function openRealtimeTradeModal(partnerName, sessionId, role){
+  activeTradeSessionId = sessionId;
+  tradeRole = role;
+  currentTradePartner = { username: partnerName };
+  tradeMyGold = 0;
+  tradeMyItemId = '';
+  tradeMyItemQty = 1;
+  tradeMyLocked = false;
+  tradeOppLocked = false;
+  tradeOppGold = 0;
+  tradeOppItemId = '';
+  tradeOppItemQty = 0;
+
+  openMenu('trade');
+  renderTradeUI();
+
+  if(tradeSyncTimer) clearInterval(tradeSyncTimer);
+  tradeSyncTimer = setInterval(syncLiveTradeSession, 650);
+}
+
+async function syncLiveTradeSession(){
+  if(!activeTradeSessionId) return;
+  try {
+    const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url);
+    if(res.ok){
+      const data = await res.json();
+      const f = data.fields || {};
+      const oppRole = (tradeRole === 'A') ? 'B' : 'A';
+
+      tradeOppGold = f[`gold_${oppRole}`] ? Number(f[`gold_${oppRole}`].integerValue || 0) : 0;
+      tradeOppItemId = f[`item_${oppRole}`] ? f[`item_${oppRole}`].stringValue : '';
+      tradeOppItemQty = f[`qty_${oppRole}`] ? Number(f[`qty_${oppRole}`].integerValue || 0) : 0;
+      tradeOppLocked = f[`locked_${oppRole}`] ? !!f[`locked_${oppRole}`].booleanValue : false;
+
+      // Kiểm tra nếu cả hai bên đã bấm xác nhận hoàn tất
+      const myConfirmed = f[`confirmed_${tradeRole}`] ? !!f[`confirmed_${tradeRole}`].booleanValue : false;
+      const oppConfirmed = f[`confirmed_${oppRole}`] ? !!f[`confirmed_${oppRole}`].booleanValue : false;
+
+      if(myConfirmed && oppConfirmed){
+        executeFinalTradeSwap();
+        return;
+      }
+
+      renderTradeUI();
+    }
+  } catch(e){}
 }
 
 function openTradeModal(){
   if(!currentTradePartner) return;
+  activeTradeSessionId = null;
   tradeMyGold = 0;
   tradeMyItemId = '';
   tradeMyItemQty = 1;
@@ -5295,18 +6264,40 @@ function onTradeOfferChange(){
   if(valQty > maxHave) valQty = Math.max(1, maxHave);
   myQtyInput.value = valQty;
   tradeMyItemQty = valQty;
+
+  // Đẩy đề xuất của mình lên Firestore session nếu đang Online
+  pushMyTradeOfferToFirestore();
+}
+
+function pushMyTradeOfferToFirestore(){
+  if(!activeTradeSessionId) return;
+  const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
+  const fields = {};
+  fields[`gold_${tradeRole}`] = { integerValue: tradeMyGold };
+  fields[`item_${tradeRole}`] = { stringValue: tradeMyItemId || '' };
+  fields[`qty_${tradeRole}`] = { integerValue: tradeMyItemQty };
+  fields[`locked_${tradeRole}`] = { booleanValue: tradeMyLocked };
+
+  fetch(url, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields })
+  }).catch(()=>{});
 }
 
 function toggleTradeLock(){
   tradeMyLocked = !tradeMyLocked;
-  if(tradeMyLocked){
-    setTimeout(() => {
-      tradeOppLocked = true;
-      renderTradeUI();
-      notify('🤝 Đối phương đã đồng ý khóa giao dịch! Bạn có thể bấm [Xác Nhận Đổi].');
-    }, 800);
-  } else {
-    tradeOppLocked = false;
+  pushMyTradeOfferToFirestore();
+  if(!activeTradeSessionId){
+    if(tradeMyLocked){
+      setTimeout(() => {
+        tradeOppLocked = true;
+        renderTradeUI();
+        notify('🤝 Đối phương đã đồng ý khóa giao dịch! Bạn có thể bấm [Xác Nhận Đổi].');
+      }, 700);
+    } else {
+      tradeOppLocked = false;
+    }
   }
   renderTradeUI();
 }
@@ -5323,6 +6314,27 @@ function confirmTradeAction(){
     tradeMyLocked = false; tradeOppLocked = false; renderTradeUI();
     return;
   }
+
+  // Nếu là session Online thật
+  if(activeTradeSessionId){
+    notify('⏳ Đã bấm xác nhận! Đang đợi đối phương xác nhận...');
+    const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
+    const fields = {};
+    fields[`confirmed_${tradeRole}`] = { booleanValue: true };
+    fetch(url, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields })
+    }).catch(()=>{});
+    return;
+  }
+
+  executeFinalTradeSwap();
+}
+
+function executeFinalTradeSwap(){
+  if(tradeSyncTimer){ clearInterval(tradeSyncTimer); tradeSyncTimer = null; }
+  activeTradeSessionId = null;
 
   G.gold -= tradeMyGold;
   if(tradeMyItemId){
@@ -5361,6 +6373,8 @@ function openMenu(id){
   else if(id==='trade') renderTradeUI();
 }
 function closeAllMenus(){
+  if(tradeSyncTimer){ clearInterval(tradeSyncTimer); tradeSyncTimer = null; }
+  activeTradeSessionId = null;
   document.getElementById('overlay').style.display='none';
   ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu','account','leaderboard','player-interact','trade','pvp-invite'].forEach(id=>{
     const el=document.getElementById('modal-'+id);
@@ -6193,54 +7207,45 @@ function startFishingAction(spotX, spotY){
 function openFishResultModal(fishId, kg, isNewRecord){
   const fish = FISH_DATA[fishId] || { name: fishId, icon: '🐟', pricePerKg: 100 };
   const modal = document.getElementById('modal-fish-result');
-  const iconEl = document.getElementById('fish-res-icon');
-  const titleEl = document.getElementById('fish-res-title');
-  const weightEl = document.getElementById('fish-res-weight');
-  const recordEl = document.getElementById('fish-res-record');
-  const btnSell = document.getElementById('btn-fish-sell');
-  const btnBag = document.getElementById('btn-fish-bag');
+  if(modal) modal.style.display = 'none';
 
-  if(iconEl) iconEl.textContent = fish.icon;
-  if(titleEl) titleEl.textContent = fish.name;
-  if(weightEl) weightEl.textContent = `Trọng lượng: ${kg} kg`;
-  if(recordEl) recordEl.style.display = isNewRecord ? 'block' : 'none';
+  const sellGold = Math.round((fish.pricePerKg || 100) * kg);
 
-  const sellGold = Math.round(fish.pricePerKg * kg);
-  if(btnSell){
-    btnSell.textContent = `BÁN NGAY (+${sellGold} 🪙)`;
-    btnSell.disabled = false;
-    btnSell.onclick = () => {
-      btnSell.disabled = true;
-      if(btnBag) btnBag.disabled = true;
-      G.gold += sellGold;
-      G.pendingFish = null;
-      G.savedAt = Date.now();
-      saveGame(true);
-      if(modal) modal.style.display = 'none';
-      isFishing = false;
-      updateHUD();
-      notify(`💰 Đã bán ${fish.name} (${kg}kg) thu về +${sellGold} Vàng!`);
-    };
-  }
+  // Vào thế CẦM TRÊN TAY ĐỂ KHOE với bạn bè online
+  P.holdingFish = {
+    id: fishId,
+    name: fish.name,
+    icon: fish.icon,
+    kg: kg,
+    sellGold: sellGold,
+    isNewRecord: isNewRecord
+  };
 
-  if(btnBag){
-    btnBag.disabled = false;
-    btnBag.onclick = () => {
-      btnBag.disabled = true;
-      if(btnSell) btnSell.disabled = true;
-      G.inv[fishId] = (G.inv[fishId] || 0) + 1;
-      G.pendingFish = null;
-      G.savedAt = Date.now();
-      saveGame(true);
-      if(modal) modal.style.display = 'none';
-      isFishing = false;
-      updateHUD();
-      notify(`🎒 Đã bỏ 1x ${fish.name} vào Túi Đồ!`);
-    };
-  }
+  // Cập nhật thanh khoe chiến lợi phẩm nổi dưới đáy
+  const holdBar = document.getElementById('trophy-hold-bar');
+  const holdIcon = document.getElementById('trophy-hold-icon');
+  const holdTitle = document.getElementById('trophy-hold-title');
+  const holdStatus = document.getElementById('trophy-hold-status');
+  const sellPriceEl = document.getElementById('trophy-sell-price');
+  const btnSell = document.getElementById('btn-trophy-sell');
 
-  isFishing = true;
-  if(modal) modal.style.display = 'flex';
+  if(holdIcon) holdIcon.textContent = fish.icon;
+  if(holdTitle) holdTitle.textContent = `${fish.name} (${kg} kg) ${isNewRecord ? '🌟 KỶ LỤC MỚI!' : ''}`;
+  if(holdStatus) holdStatus.innerHTML = isNewRecord ? '🔥 <b style="color:#fde047">KỶ LỤC MỚI CỦA BẠN!</b> Đang giơ cao khoe mọi người!' : '✨ Bạn đang giơ cao trên tay khoe với mọi người!';
+  if(sellPriceEl) sellPriceEl.textContent = sellGold;
+  if(btnSell) btnSell.style.display = 'flex';
+
+  if(holdBar) holdBar.style.display = 'flex';
+
+  // Thả bong bóng chat khoe cá trên đầu 7 giây
+  P.speechBubble = {
+    text: `✨ Xem tui câu dính ${fish.name} (${kg}kg) nè!`,
+    expire: Date.now() + 7000
+  };
+
+  isFishing = false;
+  notify(`✨ Bạn đang cầm ${fish.icon} ${fish.name} (${kg}kg) giơ cao trên tay khoe với mọi người!`);
+  syncOnlineHeartbeat();
 }
 
 function handleFishingInteraction(){
@@ -6295,6 +7300,21 @@ function handleFishingInteraction(){
       fishingState.resultCol = '#f87171';
       spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, '💨 Hụt câu rồi Út ơi!', '#f87171');
       notify(`💨 Hụt rồi Út ơi! Cá rỉa hết mồi câu (Tỉ lệ hụt ${missRate}%).`);
+
+      // TỤT CHAT HỤT CHO BẠN BÈ XEM (Bong bóng chat trên đầu & đồng bộ online)
+      const missPhrases = [
+        '😂 Hụt cá rồi trời ơi tiếc quá!',
+        'Hụt rồi tức ghê á trời! 😭',
+        'Sẩy con cá bự chảng rồi! 🎣',
+        'Trời ơi cá rỉa sạch mồi câu luôn! 😱'
+      ];
+      const randomMiss = missPhrases[Math.floor(Math.random() * missPhrases.length)];
+      P.speechBubble = {
+        text: randomMiss,
+        expire: Date.now() + 6000
+      };
+      syncOnlineHeartbeat();
+
       isFishing = false;
       G.savedAt = Date.now();
       saveGame(true);
@@ -6337,6 +7357,29 @@ function handleFishingInteraction(){
         fishingState.resultCol = '#38bdf8';
         spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+${diaAmt} 💎 Kim Cương`, '#38bdf8');
         notify(`🎉 VẬN MAY ĐẾN! Câu được ${diaAmt} viên Kim Cương 💎 lấp lánh!`);
+
+        // Khoe Kim Cương trên tay
+        P.holdingFish = {
+          id: 'diamond',
+          name: `${diaAmt}x Kim Cương 💎`,
+          icon: '💎',
+          kg: diaAmt,
+          sellGold: 0,
+          isSpecial: true
+        };
+        const holdBar = document.getElementById('trophy-hold-bar');
+        const holdIcon = document.getElementById('trophy-hold-icon');
+        const holdTitle = document.getElementById('trophy-hold-title');
+        const holdStatus = document.getElementById('trophy-hold-status');
+        const btnSell = document.getElementById('btn-trophy-sell');
+        if(holdIcon) holdIcon.textContent = '💎';
+        if(holdTitle) holdTitle.textContent = `BẢO VẬT: ${diaAmt}x Kim Cương 💎`;
+        if(holdStatus) holdStatus.textContent = '✨ Đang giơ cao khoe bảo vật quý hiếm với mọi người!';
+        if(btnSell) btnSell.style.display = 'none';
+        if(holdBar) holdBar.style.display = 'flex';
+        P.speechBubble = { text: `💎 Trời ơi tui vừa câu trúng ${diaAmt} viên Kim Cương nè!`, expire: Date.now() + 7000 };
+        syncOnlineHeartbeat();
+
         isFishing = false;
         G.savedAt = Date.now();
         updateHUD();
@@ -6368,6 +7411,29 @@ function handleFishingInteraction(){
         fishingState.resultCol = '#a855f7';
         spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+1 ${itInfo.icon} ${itInfo.name}`, '#a855f7');
         notify(`🎉 Giật được vật phẩm: ${itInfo.icon} ${itInfo.name}!`);
+
+        // Khoe vật phẩm đặc biệt trên tay
+        P.holdingFish = {
+          id: itemId,
+          name: itInfo.name,
+          icon: itInfo.icon,
+          kg: 1,
+          sellGold: 150,
+          isSpecial: true
+        };
+        const holdBar = document.getElementById('trophy-hold-bar');
+        const holdIcon = document.getElementById('trophy-hold-icon');
+        const holdTitle = document.getElementById('trophy-hold-title');
+        const holdStatus = document.getElementById('trophy-hold-status');
+        const btnSell = document.getElementById('btn-trophy-sell');
+        if(holdIcon) holdIcon.textContent = itInfo.icon;
+        if(holdTitle) holdTitle.textContent = `${itInfo.name}`;
+        if(holdStatus) holdStatus.textContent = '✨ Đang giơ cao khoe chiến lợi phẩm với mọi người!';
+        if(btnSell) btnSell.style.display = 'none';
+        if(holdBar) holdBar.style.display = 'flex';
+        P.speechBubble = { text: `✨ Nhìn xem tui vừa câu được ${itInfo.icon} ${itInfo.name} nè!`, expire: Date.now() + 7000 };
+        syncOnlineHeartbeat();
+
         isFishing = false;
         G.savedAt = Date.now();
         updateHUD();
@@ -6810,7 +7876,7 @@ function render(){
   drawPlots();
 
   // Vẽ viền sáng mục tiêu quanh ô đất đang đứng gần (giúp Mobile dùng Joystick biết rõ đang chọn ô nào)
-  if(G.map === 'farm' && !battle.active){
+  if(G.map === 'home' && !battle.active){
     const nearCtx = getNearbyContext();
     if(nearCtx.targetPlot){
       const tp = nearCtx.targetPlot;
