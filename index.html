@@ -5093,12 +5093,12 @@ async function syncOnlineHeartbeat(){
 
   const myTitle = getPlayerWeeklyTitle(cleanUser);
 
-  const tok = localStorage.getItem(CURRENT_TOKEN_KEY);
   const authHeaders = { 'Content-Type': 'application/json' };
-  if(tok) authHeaders['Authorization'] = `Bearer ${tok}`;
 
   try {
-    const url = `${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanUser)}?key=${FIREBASE_CONFIG.apiKey}`;
+    const hbFields = ['username', 'map', 'x', 'y', 'title', 'petName', 'petLv', 'petPot', 'petEl', 'holdingFish', 'speechBubble', 'updatedAt'];
+    const maskParams = hbFields.map(k => `updateMask.fieldPaths=${k}`).join('&');
+    const url = `${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanUser)}?key=${FIREBASE_CONFIG.apiKey}&${maskParams}`;
     const body = {
       fields: {
         username: { stringValue: cleanUser },
@@ -5131,14 +5131,16 @@ async function syncOnlineHeartbeat(){
         data.documents.forEach(doc => {
           const f = doc.fields || {};
           const u = f.username ? f.username.stringValue : '';
+          const docId = doc.name ? doc.name.split('/').pop() : '';
           const uTime = f.updatedAt ? Number(f.updatedAt.integerValue || f.updatedAt.stringValue || 0) : 0;
 
           // Kiểm tra xem chính mình có nhận được lời mời PK / Giao dịch từ người khác không
-          if(u === cleanUser){
+          const isMe = (u === cleanUser) || (normalizeUsername(u) === cleanUser) || (docId === cleanUser);
+          if(isMe){
             if(f.incomingAction && f.incomingAction.stringValue){
               try {
                 const act = JSON.parse(f.incomingAction.stringValue);
-                if(act && act.time && (now - act.time < 30000)){
+                if(act && act.time && (now - act.time < 90000)){
                   handleIncomingOnlineAction(act);
                 }
               } catch(e){}
@@ -5146,7 +5148,7 @@ async function syncOnlineHeartbeat(){
             if(f.incomingResponse && f.incomingResponse.stringValue){
               try {
                 const resp = JSON.parse(f.incomingResponse.stringValue);
-                if(resp && resp.time && (now - resp.time < 30000)){
+                if(resp && resp.time && (now - resp.time < 90000)){
                   handleIncomingOnlineResponse(resp);
                 }
               } catch(e){}
@@ -5836,6 +5838,7 @@ async function triggerPvPWithSelected(){
 
   // Nếu là người chơi Online thật (Gửi dữ liệu qua Firestore)
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const targetUser = normalizeUsername(op.username);
   notify(`⚔️ Đang gửi lời khiêu chiến PK tới [${op.username}]...`);
   try {
     const actionPayload = {
@@ -5852,7 +5855,7 @@ async function triggerPvPWithSelected(){
         atk: myPet.atk || 25
       }
     };
-    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(op.username)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5926,6 +5929,7 @@ async function acceptPvPInvite(act){
   if(m) m.style.display = 'none';
 
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const targetUser = normalizeUsername(act.from);
   const myPet = (G.pets && G.pets[G.activeIdx]) ? G.pets[G.activeIdx] : { name: 'Gà Đá Chọi', lv: 1, pot: 'B', el: 'Lôi' };
 
   try {
@@ -5937,7 +5941,7 @@ async function acceptPvPInvite(act){
     }).catch(()=>{});
 
     // Báo cho đối thủ biết đã chấp nhận
-    fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+    fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5973,6 +5977,7 @@ function declinePvPInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
     method: 'PATCH',
@@ -5980,7 +5985,7 @@ function declinePvPInvite(act){
     body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
   }).catch(()=>{});
 
-  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -6047,11 +6052,12 @@ async function triggerTradeWithSelected(){
   }
 
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
-  const sId = [cleanMe, op.username].sort().join('__');
+  const targetUser = normalizeUsername(op.username);
+  const sId = [cleanMe, targetUser].sort().join('__');
   notify(`🤝 Đang gửi lời mời giao dịch tới [${op.username}]...`);
 
   try {
-    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(op.username)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
+    await fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -6077,6 +6083,7 @@ async function acceptTradeInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
     method: 'PATCH',
@@ -6084,7 +6091,7 @@ async function acceptTradeInvite(act){
     body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
   }).catch(()=>{});
 
-  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -6109,6 +6116,7 @@ function declineTradeInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
   const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
     method: 'PATCH',
@@ -6116,7 +6124,7 @@ function declineTradeInvite(act){
     body: JSON.stringify({ fields: { incomingAction: { stringValue: '' } } })
   }).catch(()=>{});
 
-  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(act.from)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
+  fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(targetUser)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -6141,6 +6149,20 @@ function openRealtimeTradeModal(partnerName, sessionId, role){
   tradeOppGold = 0;
   tradeOppItemId = '';
   tradeOppItemQty = 0;
+
+  // Khởi tạo phiên giao dịch trên Firestore nếu chưa có
+  const initMask = `updateMask.fieldPaths=gold_${role}&updateMask.fieldPaths=item_${role}&updateMask.fieldPaths=qty_${role}&updateMask.fieldPaths=locked_${role}&updateMask.fieldPaths=confirmed_${role}&updateMask.fieldPaths=updatedAt`;
+  const initFields = { updatedAt: { integerValue: Date.now() } };
+  initFields[`gold_${role}`] = { integerValue: 0 };
+  initFields[`item_${role}`] = { stringValue: '' };
+  initFields[`qty_${role}`] = { integerValue: 0 };
+  initFields[`locked_${role}`] = { booleanValue: false };
+  initFields[`confirmed_${role}`] = { booleanValue: false };
+  fetch(`${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(sessionId)}?key=${FIREBASE_CONFIG.apiKey}&${initMask}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: initFields })
+  }).catch(()=>{});
 
   openMenu('trade');
   renderTradeUI();
@@ -6271,7 +6293,8 @@ function onTradeOfferChange(){
 
 function pushMyTradeOfferToFirestore(){
   if(!activeTradeSessionId) return;
-  const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
+  const maskPaths = [`gold_${tradeRole}`, `item_${tradeRole}`, `qty_${tradeRole}`, `locked_${tradeRole}`].map(k => `updateMask.fieldPaths=${k}`).join('&');
+  const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}&${maskPaths}`;
   const fields = {};
   fields[`gold_${tradeRole}`] = { integerValue: tradeMyGold };
   fields[`item_${tradeRole}`] = { stringValue: tradeMyItemId || '' };
@@ -6318,7 +6341,7 @@ function confirmTradeAction(){
   // Nếu là session Online thật
   if(activeTradeSessionId){
     notify('⏳ Đã bấm xác nhận! Đang đợi đối phương xác nhận...');
-    const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
+    const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=confirmed_${tradeRole}`;
     const fields = {};
     fields[`confirmed_${tradeRole}`] = { booleanValue: true };
     fetch(url, {
