@@ -548,8 +548,20 @@ const canvas=document.getElementById('gc'), ctx=canvas.getContext('2d');
 const DPR = Math.max(2, window.devicePixelRatio || 2);
 canvas.width = CW * DPR;
 canvas.height = CH * DPR;
-canvas.style.width = CW + 'px';
-canvas.style.height = CH + 'px';
+
+// Tự động căn chỉnh kích thước Canvas chuẩn theo màn hình Mobile / Desktop
+function resizeGameView(){
+  const w = window.innerWidth, h = window.innerHeight;
+  const scale = Math.min(w / CW, h / CH);
+  const targetW = Math.round(CW * scale);
+  const targetH = Math.round(CH * scale);
+  canvas.style.width = targetW + 'px';
+  canvas.style.height = targetH + 'px';
+}
+window.addEventListener('resize', resizeGameView);
+window.addEventListener('orientationchange', () => setTimeout(resizeGameView, 200));
+resizeGameView();
+
 ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 ctx.imageSmoothingEnabled = true;
 ctx.imageSmoothingQuality = 'high';
@@ -667,6 +679,38 @@ window.addEventListener('keydown',e=>{
   }
 });
 window.addEventListener('keyup',e=>keys[e.code]=false);
+
+// Xử lý các phím ảo D-Pad & Nút Tương Tác trên màn hình cảm ứng Mobile
+function bindMobileTouchBtn(btnId, keyCode){
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  const press = (e) => { e.preventDefault(); e.stopPropagation(); keys[keyCode] = true; };
+  const release = (e) => { e.preventDefault(); e.stopPropagation(); keys[keyCode] = false; };
+  btn.addEventListener('touchstart', press, { passive: false });
+  btn.addEventListener('touchend', release, { passive: false });
+  btn.addEventListener('touchcancel', release, { passive: false });
+  btn.addEventListener('mousedown', press);
+  btn.addEventListener('mouseup', release);
+  btn.addEventListener('mouseleave', release);
+}
+bindMobileTouchBtn('btn-up', 'KeyW');
+bindMobileTouchBtn('btn-down', 'KeyS');
+bindMobileTouchBtn('btn-left', 'KeyA');
+bindMobileTouchBtn('btn-right', 'KeyD');
+
+const actBtn = document.getElementById('btn-act');
+if(actBtn){
+  const doAction = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if(fishingState.active){
+      handleFishingInteraction();
+    } else {
+      interact();
+    }
+  };
+  actBtn.addEventListener('touchstart', doAction, { passive: false });
+  actBtn.addEventListener('click', doAction);
+}
 canvas.style.cursor='crosshair';
 canvas.addEventListener('click',e=>{
   const r=canvas.getBoundingClientRect(), mx=(e.clientX-r.left)*(CW/r.width), my=(e.clientY-r.top)*(CH/r.height);
