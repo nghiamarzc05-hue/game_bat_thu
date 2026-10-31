@@ -999,8 +999,31 @@ const fishingState = {
   bobberY: 0,
   biteTimer: 0,
   resultText: '',
-  resultCol: '#fff'
+  resultCol: '#fff',
+  barPos: 0,        // Vị trí con trỏ (0.0 đến 1.0)
+  barDir: 1,        // Hướng chạy: 1 (phải) hoặc -1 (trái)
+  barSpeed: 0.65,   // Tốc độ di chuyển vừa phải (~1.5s / 1 chiều)
+  greenSlot: 0,     // Ô Xanh (tăng 10-20% tỉ lệ câu được)
+  redSlot: 1,       // Ô Đỏ (giảm 5-10% tỉ lệ câu được)
+  goldSlot: 2,      // Ô Vàng kim (vận may hiếm 50%)
+  barBonusText: '', // Thông báo kết quả ô dừng
+  barBonusCol: '#fff'
 };
+
+function randomizeFishingBarSlots(){
+  const slots = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for(let i = slots.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = slots[i]; slots[i] = slots[j]; slots[j] = tmp;
+  }
+  fishingState.greenSlot = slots[0];
+  fishingState.redSlot = slots[1];
+  fishingState.goldSlot = slots[2];
+  fishingState.barPos = 0;
+  fishingState.barDir = 1;
+  fishingState.barBonusText = '';
+  fishingState.barBonusCol = '#fff';
+}
 
 function getFishingMissRate(){
   const f = G.fishing || {rod:1, line:1, hook:1};
@@ -3161,9 +3184,18 @@ function update(now){
     if(fishingState.state === 'waiting' && fishingState.timer >= fishingState.biteTimer){
       fishingState.state = 'bite';
       fishingState.timer = 0;
-      notify('❗ CẮN CÂU RỒI ÚT ƠI! Bấm [⚡ GIẬT CÂU] ngay!');
+      randomizeFishingBarSlots();
+      notify('❗ CẮN CÂU RỒI ÚT ƠI! Canh kim bấm [⚡ GIẬT CÂU] ngay!');
     } else if(fishingState.state === 'bite'){
-      if(fishingState.timer >= 3.0){
+      fishingState.barPos += fishingState.barDir * fishingState.barSpeed * dt;
+      if(fishingState.barPos >= 1){
+        fishingState.barPos = 1;
+        fishingState.barDir = -1;
+      } else if(fishingState.barPos <= 0){
+        fishingState.barPos = 0;
+        fishingState.barDir = 1;
+      }
+      if(fishingState.timer >= 7.0){
         fishingState.active = false;
         fishingState.state = 'idle';
         spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, '💨 Cá đớp mồi chạy mất tiêu!', '#f87171');
@@ -5457,7 +5489,43 @@ function handleFishingInteraction(){
   }
   if(fishingState.state === 'bite'){
     fishingState.state = 'reeling';
-    const missRate = getFishingMissRate();
+    
+    // Đọc vị trí con trỏ trên thanh 10 ô (0 đến 9, tương ứng ô 1 đến 10)
+    const curPos = Math.max(0, Math.min(0.999, fishingState.barPos));
+    const hitSlot = Math.floor(curPos * 10);
+    const slotNum = hitSlot + 1;
+    
+    let missRate = getFishingMissRate();
+    let isRareBonus50 = false;
+    
+    if(hitSlot === fishingState.greenSlot){
+      // Ô Xanh: Tăng 10-20% tỉ lệ câu được
+      const bonusHit = 10 + Math.floor(Math.random() * 11);
+      missRate = Math.max(10, missRate - bonusHit);
+      fishingState.barBonusText = `🎯 TRÚNG Ô XANH #${slotNum}: +${bonusHit}% DÍNH CÁ!`;
+      fishingState.barBonusCol = '#22c55e';
+      spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `🎯 +${bonusHit}% Dính Cá!`, '#22c55e');
+      notify(`🎯 XUẤT SẮC! Căn trúng Ô Xanh #${slotNum} (+${bonusHit}% tỉ lệ dính cá)!`);
+    } else if(hitSlot === fishingState.redSlot){
+      // Ô Đỏ: Giảm 5-10% tỉ lệ câu được
+      const penaltyMiss = 5 + Math.floor(Math.random() * 6);
+      missRate = Math.min(95, missRate + penaltyMiss);
+      fishingState.barBonusText = `⚠️ TRÚNG Ô ĐỎ #${slotNum}: -${penaltyMiss}% DÍNH CÁ!`;
+      fishingState.barBonusCol = '#ef4444';
+      spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `⚠️ -${penaltyMiss}% Dính Cá!`, '#ef4444');
+      notify(`⚠️ LỠ NHỊP! Dính phải Ô Đỏ #${slotNum} (-${penaltyMiss}% tỉ lệ câu được, dễ hụt câu)!`);
+    } else if(hitSlot === fishingState.goldSlot){
+      // Ô Vàng kim: Tăng vận may câu được vật phẩm hiếm lên thành 50%
+      isRareBonus50 = true;
+      fishingState.barBonusText = `🌟 TRÚNG Ô VÀNG #${slotNum}: 50% BẢO VẬT HIẾM!`;
+      fishingState.barBonusCol = '#facc15';
+      spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `🌟 VẬN MAY 50% BẢO VẬT!`, '#facc15');
+      notify(`🌟 SIÊU CẤP! Căn trúng Ô Vàng Kim #${slotNum} (Vận may vật phẩm hiếm lên hẳn 50%)!`);
+    } else {
+      fishingState.barBonusText = `🎯 GIẬT CẦN Ô #${slotNum}`;
+      fishingState.barBonusCol = '#94a3b8';
+    }
+
     const roll = Math.random() * 100;
     if(roll < missRate){
       // Giật hụt!
@@ -5476,55 +5544,77 @@ function handleFishingInteraction(){
       return;
     }
 
-    // Câu trúng: 5% Kim cương, 15% Vật phẩm đặc biệt (Nhánh B), 80% Thủy sản (Nhánh A)
-    const prizeRoll = Math.random() * 100;
-    if(prizeRoll < 5){
-      // Kim Cương: 1-5 viên ngẫu nhiên
-      const diaAmt = 1 + Math.floor(Math.random() * 5);
-      G.diamond = (G.diamond || 0) + diaAmt;
-      fishingState.resultText = `💎 DÍNH: ${diaAmt} Kim Cương!`;
-      fishingState.resultCol = '#38bdf8';
-      spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+${diaAmt} 💎 Kim Cương`, '#38bdf8');
-      notify(`🎉 VẬN MAY ĐẾN! Câu được ${diaAmt} viên Kim Cương 💎 lấp lánh!`);
-      isFishing = false;
-      G.savedAt = Date.now();
-      updateHUD();
-      saveGame(true);
-      setTimeout(()=>{
-        fishingState.active = false;
-        fishingState.state = 'idle';
-      }, 1200);
-    } else if(prizeRoll < 20){
-      // 15% Nhánh B: Vật phẩm đặc biệt
-      // bun_phu_sa 40%, dep_to_ong 30%, binh_co 5%, seed_ancient_lotus 15% (chỉ lake, khác lake -> bun_phu_sa), vo_oc 10% (chỉ sea, khác sea -> dep_to_ong)
-      const itemRoll = Math.random() * 100;
-      let itemId = 'bun_phu_sa';
-      if(itemRoll < 40){
-        itemId = 'bun_phu_sa';
-      } else if(itemRoll < 70){
-        itemId = 'dep_to_ong';
-      } else if(itemRoll < 75){
-        itemId = 'binh_co';
-      } else if(itemRoll < 90){
-        itemId = (G.map === 'lake') ? 'seed_ancient_lotus' : 'bun_phu_sa';
-      } else {
-        itemId = (G.map === 'sea') ? 'vo_oc' : 'dep_to_ong';
+    // Câu trúng:
+    let isRareBranch = false;
+    let isDiamond = false;
+    if(isRareBonus50){
+      const prizeRoll = Math.random() * 100;
+      if(prizeRoll < 50){
+        isRareBranch = true;
+        if(prizeRoll < 15){
+          isDiamond = true;
+        }
       }
+    } else {
+      const prizeRoll = Math.random() * 100;
+      if(prizeRoll < 5){
+        isRareBranch = true;
+        isDiamond = true;
+      } else if(prizeRoll < 20){
+        isRareBranch = true;
+        isDiamond = false;
+      }
+    }
 
-      G.inv[itemId] = (G.inv[itemId] || 0) + 1;
-      const itInfo = FISHING_SPECIAL_ITEMS[itemId] || { name: itemId, icon: '📦' };
-      fishingState.resultText = `🎉 DÍNH: ${itInfo.name}!`;
-      fishingState.resultCol = '#a855f7';
-      spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+1 ${itInfo.icon} ${itInfo.name}`, '#a855f7');
-      notify(`🎉 Giật được vật phẩm: ${itInfo.icon} ${itInfo.name}!`);
-      isFishing = false;
-      G.savedAt = Date.now();
-      updateHUD();
-      saveGame(true);
-      setTimeout(()=>{
-        fishingState.active = false;
-        fishingState.state = 'idle';
-      }, 1200);
+    if(isRareBranch){
+      if(isDiamond){
+        // Kim Cương: 1-5 viên ngẫu nhiên
+        const diaAmt = 1 + Math.floor(Math.random() * 5);
+        G.diamond = (G.diamond || 0) + diaAmt;
+        fishingState.resultText = `💎 DÍNH: ${diaAmt} Kim Cương!`;
+        fishingState.resultCol = '#38bdf8';
+        spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+${diaAmt} 💎 Kim Cương`, '#38bdf8');
+        notify(`🎉 VẬN MAY ĐẾN! Câu được ${diaAmt} viên Kim Cương 💎 lấp lánh!`);
+        isFishing = false;
+        G.savedAt = Date.now();
+        updateHUD();
+        saveGame(true);
+        setTimeout(()=>{
+          fishingState.active = false;
+          fishingState.state = 'idle';
+        }, 1200);
+      } else {
+        // Nhánh B: Vật phẩm đặc biệt
+        // bun_phu_sa 40%, dep_to_ong 30%, binh_co 5%, seed_ancient_lotus 15% (chỉ lake, khác lake -> bun_phu_sa), vo_oc 10% (chỉ sea, khác sea -> dep_to_ong)
+        const itemRoll = Math.random() * 100;
+        let itemId = 'bun_phu_sa';
+        if(itemRoll < 40){
+          itemId = 'bun_phu_sa';
+        } else if(itemRoll < 70){
+          itemId = 'dep_to_ong';
+        } else if(itemRoll < 75){
+          itemId = 'binh_co';
+        } else if(itemRoll < 90){
+          itemId = (G.map === 'lake') ? 'seed_ancient_lotus' : 'bun_phu_sa';
+        } else {
+          itemId = (G.map === 'sea') ? 'vo_oc' : 'dep_to_ong';
+        }
+
+        G.inv[itemId] = (G.inv[itemId] || 0) + 1;
+        const itInfo = FISHING_SPECIAL_ITEMS[itemId] || { name: itemId, icon: '📦' };
+        fishingState.resultText = `🎉 DÍNH: ${itInfo.name}!`;
+        fishingState.resultCol = '#a855f7';
+        spawnWorldVFX(fishingState.bobberX, fishingState.bobberY, `+1 ${itInfo.icon} ${itInfo.name}`, '#a855f7');
+        notify(`🎉 Giật được vật phẩm: ${itInfo.icon} ${itInfo.name}!`);
+        isFishing = false;
+        G.savedAt = Date.now();
+        updateHUD();
+        saveGame(true);
+        setTimeout(()=>{
+          fishingState.active = false;
+          fishingState.state = 'idle';
+        }, 1200);
+      }
     } else {
       // 80% Nhánh A: Thủy sản
       const pool = FISHING_POOLS[G.map] || FISHING_POOLS.farm;
@@ -5654,20 +5744,99 @@ function drawFishingWorldPrompt(){
   }
 }
 
-// Vẽ cụm nút [❌ Dừng Câu] & [⚡ GIẬT CÂU NGAY!] ở góc dưới giữa Viewport (Screen Space)
+// Vẽ cụm nút [❌ Dừng Câu] & [⚡ GIẬT CÂU NGAY!] cùng Thanh Căn Lực Minigame ở góc dưới Viewport
 function drawFishingScreenPrompt(){
   if(battle.active || !fishingState.active) return;
   const isPortrait = VIEW_H > VIEW_W;
   const isBiting = (fishingState.state === 'bite');
 
-  const stopW = 110, stopH = 44;
-  const actW = 165, actH = 44;
+  const stopW = 100, stopH = 42;
+  const actW = 175, actH = 42;
   const gap = 10;
   const totalW = stopW + gap + actW;
   const startX = VIEW_W / 2 - totalW / 2;
-  const btnY = isPortrait ? (VIEW_H - 185) : (VIEW_H - 64);
+  const btnY = isPortrait ? (VIEW_H - 180) : (VIEW_H - 60);
 
-  // 1. Nút [❌ Dừng Câu] - bấm vào lập tức thu cần & hoàn tiền mồi nếu chưa cắn
+  // 1. THANH CĂN LỰC / NHỊP CÂU CÁ (Hiện khi cá cắn câu)
+  if(isBiting){
+    const barW = Math.min(320, VIEW_W - 32);
+    const barH = 26;
+    const barX = VIEW_W / 2 - barW / 2;
+    const barY = btnY - 56;
+    const slotW = barW / 10;
+
+    ctx.save();
+    // Khung nền
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+    rr(ctx, barX - 6, barY - 18, barW + 12, barH + 34, 10); ctx.fill();
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.5;
+    rr(ctx, barX - 6, barY - 18, barW + 12, barH + 34, 10); ctx.stroke();
+
+    // Tiêu đề
+    ctx.fillStyle = '#fde047'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('🎯 CANH KIM BẤM GIẬT CÂU (10 Ô NGẪU NHIÊN)', VIEW_W / 2, barY - 6);
+
+    // 10 Ô nấc
+    for(let i = 0; i < 10; i++){
+      const sx = barX + i * slotW;
+      const slotNum = i + 1;
+      if(i === fishingState.greenSlot){
+        // Ô Xanh: Tăng 10-20%
+        ctx.fillStyle = '#16a34a';
+        ctx.fillRect(sx + 1, barY, slotW - 2, barH);
+        ctx.strokeStyle = '#86efac'; ctx.lineWidth = 1.2;
+        ctx.strokeRect(sx + 1, barY, slotW - 2, barH);
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('+20%', sx + slotW / 2, barY + 16);
+      } else if(i === fishingState.redSlot){
+        // Ô Đỏ: Giảm 5-10%
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(sx + 1, barY, slotW - 2, barH);
+        ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 1.2;
+        ctx.strokeRect(sx + 1, barY, slotW - 2, barH);
+        ctx.fillStyle = '#ffffff'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('-10%', sx + slotW / 2, barY + 16);
+      } else if(i === fishingState.goldSlot){
+        // Ô Vàng kim: 50% Đồ hiếm
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(sx + 1, barY, slotW - 2, barH);
+        ctx.strokeStyle = '#fef08a'; ctx.lineWidth = 1.5;
+        ctx.strokeRect(sx + 1, barY, slotW - 2, barH);
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 9px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('⭐50%', sx + slotW / 2, barY + 16);
+      } else {
+        // Ô Thường
+        ctx.fillStyle = 'rgba(30, 41, 59, 0.75)';
+        ctx.fillRect(sx + 1, barY, slotW - 2, barH);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)'; ctx.lineWidth = 1;
+        ctx.strokeRect(sx + 1, barY, slotW - 2, barH);
+        ctx.fillStyle = 'rgba(203, 213, 225, 0.6)'; ctx.font = '8.5px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(slotNum, sx + slotW / 2, barY + 16);
+      }
+    }
+
+    // Mũi tên / Con trỏ chạy qua lại
+    const pointerX = barX + fishingState.barPos * barW;
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath();
+    ctx.moveTo(pointerX - 6, barY - 5);
+    ctx.lineTo(pointerX + 6, barY - 5);
+    ctx.lineTo(pointerX, barY + 1);
+    ctx.fill();
+
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pointerX, barY); ctx.lineTo(pointerX, barY + barH); ctx.stroke();
+
+    // Chú thích bên dưới thanh
+    ctx.fillStyle = '#cbd5e1'; ctx.font = '8.5px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('🟢 +15% Dính  |  🔴 -8% Dễ Hụt  |  ⭐ 50% Bảo Vật', VIEW_W / 2, barY + barH + 11);
+    ctx.restore();
+
+    // Bấm thẳng vào thanh để giật câu
+    canvas._screenBtns.push({ x: barX - 6, y: barY - 18, w: barW + 12, h: barH + 34, fn: handleFishingInteraction });
+  }
+
+  // 2. Nút [❌ Dừng Câu] - bấm vào lập tức thu cần & hoàn tiền mồi nếu chưa cắn
   ctx.save();
   const stopG = ctx.createLinearGradient(startX, btnY, startX, btnY + stopH);
   stopG.addColorStop(0, '#dc2626'); stopG.addColorStop(1, '#991b1b');
@@ -5676,14 +5845,14 @@ function drawFishingScreenPrompt(){
   ctx.strokeStyle = '#fca5a5'; ctx.lineWidth = 1.5;
   rr(ctx, startX, btnY, stopW, stopH, 14); ctx.stroke();
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 12.5px sans-serif';
+  ctx.font = 'bold 12px sans-serif';
   ctx.textAlign = 'center';
   ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
-  ctx.fillText('❌ Dừng Câu', startX + stopW / 2, btnY + 27);
+  ctx.fillText('❌ Dừng Câu', startX + stopW / 2, btnY + 26);
   ctx.restore();
   canvas._screenBtns.push({ x: startX, y: btnY, w: stopW, h: stopH, fn: stopFishingAction });
 
-  // 2. Nút [⚡ GIẬT CÂU NGAY!] hoặc [⏳ Đang Chờ Cá...]
+  // 3. Nút [⚡ GIẬT CÂU NGAY!] hoặc [⏳ Đang Chờ Cá...]
   const actX = startX + stopW + gap;
   ctx.save();
   const actG = ctx.createLinearGradient(actX, btnY, actX, btnY + actH);
@@ -5699,10 +5868,10 @@ function drawFishingScreenPrompt(){
   rr(ctx, actX, btnY, actW, actH, 14); ctx.stroke();
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 13px sans-serif';
+  ctx.font = 'bold 12.5px sans-serif';
   ctx.textAlign = 'center';
   ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
-  ctx.fillText(isBiting ? '⚡ GIẬT CÂU NGAY!' : '⏳ Đang Chờ Cá...', actX + actW / 2, btnY + 27);
+  ctx.fillText(isBiting ? '⚡ GIẬT / DỪNG KIM' : '⏳ Đang Chờ Cá...', actX + actW / 2, btnY + 26);
   ctx.restore();
 
   if(isBiting){
