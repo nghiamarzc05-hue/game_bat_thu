@@ -50,7 +50,9 @@
   .item-card { transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); }
   .item-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.2) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important; }
 
-  /* Mobile Touch Controls & Responsive Handheld RPG Layout */
+  /* ============================================================================
+     GIAO DIỆN CHUẨN GAME APP MOBILE (FULLSCREEN EDGE-TO-EDGE + APP ICON HUD)
+     ============================================================================ */
   #mobile-controls {
     display: none;
     position: absolute;
@@ -58,13 +60,132 @@
     pointer-events: none;
     z-index: 35;
   }
-  #mobile-center-dock {
-    display: none;
+
+  /* Nút App Game Có Nhãn Chữ Rõ Ràng Bên Dưới (Chuẩn Play Together / Genshin / Hay Day) */
+  .app-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    pointer-events: auto;
+    user-select: none;
+    transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .app-icon-btn:hover {
+    transform: translateY(-2px) scale(1.06);
+  }
+  .app-icon-btn:active {
+    transform: scale(0.9);
+  }
+  .app-icon-box {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    position: relative;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55), inset 0 1.5px 1px rgba(255, 255, 255, 0.35);
+    border: 1.5px solid rgba(255, 255, 255, 0.28);
+  }
+  .app-icon-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    padding: 1px 6px;
+    border-radius: 8px;
+    text-shadow: 0 1px 2px #000;
+    white-space: nowrap;
+    line-height: 1.25;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Nút Kỹ Năng Vệ Tinh Góc Dưới Phải (Có Nhãn Chữ Rõ Ràng) */
+  .skill-sat-btn {
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.96));
+    border: 2px solid rgba(255, 255, 255, 0.32);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    padding: 0;
+    transition: transform 0.1s ease;
+  }
+  .skill-sat-btn:active {
+    transform: scale(0.88);
+  }
+  .skill-sat-icon {
+    font-size: 20px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+  .skill-sat-label {
+    position: absolute;
+    bottom: -7px;
+    font-size: 9px;
+    font-weight: 800;
+    color: #fef08a;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(250, 204, 21, 0.4);
+    padding: 0.5px 5px;
+    border-radius: 6px;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px #000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+
+  /* Lưới Menu Chức Năng Dạng App Game (3x3 Launchpad Grid) */
+  .app-grid-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 8px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    cursor: pointer;
+    transition: all 0.16s ease;
+    text-align: center;
+  }
+  .app-grid-card:hover, .app-grid-card:active {
+    transform: translateY(-2px) scale(0.97);
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(56, 189, 248, 0.45);
+  }
+  .app-grid-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 1.5px 1px rgba(255, 255, 255, 0.35);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
   }
 
   @keyframes pulseAction {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(250, 204, 21, 0.55); }
-    50% { transform: scale(1.08); box-shadow: 0 0 28px rgba(250, 204, 21, 0.95); }
+    0%, 100% { transform: scale(1); box-shadow: 0 0 18px rgba(250, 204, 21, 0.55), inset 0 0 12px rgba(255,255,255,0.3); }
+    50% { transform: scale(1.07); box-shadow: 0 0 30px rgba(250, 204, 21, 0.95), inset 0 0 16px rgba(255,255,255,0.5); }
   }
   .pulse-btn {
     animation: pulseAction 0.9s ease-in-out infinite;
@@ -84,112 +205,75 @@
 
   @media (pointer: coarse), (max-width: 1024px) {
     #mobile-controls { display: block; }
-    .modal-box { width: 92vw !important; max-width: 440px !important; padding: 14px !important; }
-    .hud-btn { width: 34px !important; height: 34px !important; font-size: 13px !important; flex-shrink: 0; }
-    .hud-pill { padding: 4px 8px !important; font-size: 10.5px !important; flex-shrink: 0; }
+    .modal-box { width: 92vw !important; max-width: 430px !important; padding: 15px !important; }
     #desktop-hint { display: none !important; }
     #minimap-container { display: none !important; }
+    .desktop-only-app { display: none !important; }
   }
 
-  /* Giao diện Chuẩn Game Mobile DỌC (Portrait Handheld Console Mode) */
-  #wrap.portrait-mode {
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 6px 6px 10px 6px !important;
+  /* Giao diện Fullscreen 100% trên Mobile (Cả Dọc & Ngang - Không Viền Đen, Không Khung Hộp) */
+  #wrap.portrait-mode, #wrap.landscape-mobile {
+    padding: 0 !important;
+    width: 100vw !important;
     height: 100vh !important;
     height: 100dvh !important;
   }
-  #wrap.portrait-mode #hud-top-bar {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    width: 100% !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 5px !important;
-    flex-shrink: 0;
+  #wrap.force-landscape-rot.landscape-mobile {
+    width: 100vh !important;
+    height: 100vw !important;
   }
-  #wrap.portrait-mode #hud-top-left {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    justify-content: space-between !important;
-    padding-bottom: 2px !important;
-  }
-  #wrap.portrait-mode #hud-top-right {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important;
-    justify-content: space-between !important;
-    padding: 2px 2px !important;
-  }
-  #wrap.portrait-mode #gc {
-    border-radius: 16px !important;
-    box-shadow: 0 10px 32px rgba(0,0,0,0.85), 0 0 0 1.5px rgba(148,163,184,0.22) !important;
-    margin: auto 0 !important;
-  }
-  #wrap.portrait-mode #mobile-controls {
-    position: relative !important;
-    inset: auto !important;
-    width: 100% !important;
-    height: 154px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    padding: 6px 12px !important;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.82) 0%, rgba(9, 13, 22, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 22px;
-    box-shadow: 0 -6px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-    pointer-events: auto !important;
-    flex-shrink: 0;
-  }
-  #wrap.portrait-mode #mobile-dpad {
-    position: relative !important;
-    bottom: auto !important;
-    left: auto !important;
-    width: 128px !important;
-    height: 128px !important;
-    flex-shrink: 0;
-  }
-  #wrap.portrait-mode #mobile-center-dock {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex: 1;
-    padding: 0 6px;
-    pointer-events: auto;
-  }
-  #wrap.portrait-mode #mobile-act-container {
-    position: relative !important;
-    bottom: auto !important;
-    right: auto !important;
-    width: 136px !important;
-    height: 132px !important;
-    flex-shrink: 0;
+  #wrap.portrait-mode #gc, #wrap.landscape-mobile #gc {
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
-  /* Giao diện Chuẩn Game Mobile NGANG (Landscape Fullscreen Mode) */
+  /* Tinh chỉnh vị trí HUD khi cầm DỌC (Portrait) */
+  #wrap.portrait-mode #hud-top-bar {
+    top: 8px !important;
+    left: 8px !important;
+    right: 8px !important;
+    align-items: flex-start !important;
+  }
+  #wrap.portrait-mode .app-icon-box {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 18px !important;
+    border-radius: 12px !important;
+  }
+  #wrap.portrait-mode .app-icon-label {
+    font-size: 9px !important;
+    padding: 1px 4.5px !important;
+  }
+  #wrap.portrait-mode #mobile-dpad {
+    bottom: 24px !important;
+    left: 18px !important;
+    width: 130px !important;
+    height: 130px !important;
+  }
+  #wrap.portrait-mode #mobile-act-container {
+    bottom: 20px !important;
+    right: 16px !important;
+    width: 156px !important;
+    height: 150px !important;
+  }
+
+  /* Tinh chỉnh vị trí HUD khi cầm NGANG (Landscape) */
   #wrap.landscape-mobile #hud-top-bar {
-    top: 6px !important;
-    left: 10px !important;
-    right: 10px !important;
-    gap: 6px !important;
+    top: 8px !important;
+    left: 12px !important;
+    right: 12px !important;
+    align-items: flex-start !important;
   }
-  #wrap.landscape-mobile #hud-top-left {
-    max-width: 54% !important;
-    overflow-x: auto !important;
+  #wrap.landscape-mobile .app-icon-box {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 18px !important;
+    border-radius: 12px !important;
   }
-  #wrap.landscape-mobile #hud-top-right {
-    max-width: 46% !important;
-    overflow-x: auto !important;
+  #wrap.landscape-mobile .app-icon-label {
+    font-size: 9px !important;
+    padding: 1px 5px !important;
   }
-  #wrap.landscape-mobile .hud-btn { width: 32px !important; height: 32px !important; font-size: 12px !important; }
-  #wrap.landscape-mobile .hud-pill { padding: 3px 7px !important; font-size: 10px !important; }
   #wrap.landscape-mobile .modal-box {
     max-height: 88% !important;
     width: 440px !important;
@@ -200,30 +284,28 @@
     max-height: 60vh !important;
   }
   #wrap.landscape-mobile #mobile-dpad {
-    bottom: 16px !important;
-    left: 18px !important;
-    width: 124px !important;
-    height: 124px !important;
+    bottom: 18px !important;
+    left: 22px !important;
+    width: 126px !important;
+    height: 126px !important;
   }
   #wrap.landscape-mobile #mobile-act-container {
     bottom: 16px !important;
-    right: 18px !important;
-    width: 136px !important;
-    height: 132px !important;
+    right: 20px !important;
+    width: 156px !important;
+    height: 150px !important;
   }
-
-  #hud-top-left::-webkit-scrollbar, #hud-top-right::-webkit-scrollbar { display: none; }
 
   .touch-btn {
     pointer-events: auto;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    background: rgba(15, 23, 42, 0.82);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255, 255, 255, 0.24);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -232,49 +314,77 @@
     transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
   }
   .touch-btn:active {
-    transform: scale(0.88);
-    background: rgba(56, 189, 248, 0.45) !important;
-    border-color: rgba(56, 189, 248, 0.8) !important;
+    transform: scale(0.9);
   }
 </style>
 </head>
 <body>
 <div id="wrap">
 
-<!-- TOP HUD -->
-<div id="hud-top-bar" style="position:absolute;top:10px;left:10px;right:10px;z-index:30;display:flex;justify-content:space-between;align-items:center;pointer-events:none;gap:8px">
-  <div id="hud-top-left" style="display:flex;gap:5px;pointer-events:auto;align-items:center">
-    <div class="glass hud-pill" style="padding:5px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(234,179,8,.4)">
-      <i class="fa-solid fa-coins" style="color:#eab308;font-size:11.5px"></i>
-      <span id="hud-gold" style="color:#fde047;font-weight:800;font-size:12.5px">500</span>
+<!-- TOP HUD CHUẨN GAME APP MOBILE -->
+<div id="hud-top-bar" style="position:absolute;top:10px;left:12px;right:12px;z-index:30;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;gap:8px">
+
+  <!-- GÓC TRÁI TRÊN: KHUNG AVATAR NHÂN VẬT / THÚ BẢO + TIỀN TỆ -->
+  <div id="hud-top-left" style="display:flex;flex-direction:column;gap:6px;pointer-events:auto;align-items:flex-start">
+    <!-- Thẻ Trạng Thái Thú Bảo & Bản Đồ (Gộp gọn chuẩn RPG App) -->
+    <div style="display:flex;align-items:center;gap:8px;background:linear-gradient(135deg, rgba(15,23,42,0.92), rgba(9,13,22,0.96));backdrop-filter:blur(12px);padding:5px 11px 5px 6px;border-radius:18px;border:1.5px solid rgba(56,189,248,0.38);box-shadow:0 6px 20px rgba(0,0,0,0.55)">
+      <div id="hud-active-pet" onclick="inspectPetData(G.pets[G.activeIdx], false, `<button class='btn' style='background:linear-gradient(135deg, #7c3aed, #4c1d95);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700' onclick='openMenu(\&quot;pets\&quot;)'>🐾 Đổi Thú</button>`)" class="btn" style="display:flex;align-items:center;gap:7px" title="Bấm xem chi tiết Linh Thú"></div>
     </div>
-    <div class="glass hud-pill" style="padding:5px 10px;border-radius:30px;display:flex;align-items:center;gap:5px;border-color:rgba(56,189,248,.45);background:rgba(8,47,73,.35)">
-      <i class="fa-solid fa-gem" style="color:#38bdf8;font-size:11.5px"></i>
-      <span id="hud-diamond" style="color:#7dd3fc;font-weight:800;font-size:12.5px">20</span>
-    </div>
-    <div id="hud-active-pet" onclick="inspectPetData(G.pets[G.activeIdx], false, `<button class='btn' style='background:linear-gradient(135deg, #7c3aed, #4c1d95);color:#fff;padding:7px 14px;border-radius:10px;font-size:11.5px;font-weight:700' onclick='openMenu(\&quot;pets\&quot;)'>🐾 Vào Chuồng Thú</button>`)" class="glass hud-pill btn" style="padding:3px 9px;border-radius:30px;display:flex;align-items:center;gap:6px;border-color:rgba(56,189,248,.4)" title="Bấm xem thú"></div>
-    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(168,85,247,.4)">
-      <span id="hud-zone" style="color:#d8b4fe;font-weight:700;font-size:10.5px">🏡 Nông Trại</span>
-    </div>
-    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(74,222,128,.4)">
-      <span id="hud-petcount" style="color:#86efac;font-weight:700;font-size:10.5px">🐾 Thú: 1</span>
-    </div>
-    <div class="glass hud-pill" style="padding:5px 9px;border-radius:30px;display:flex;align-items:center;gap:4px;border-color:rgba(250,204,21,.35)">
-      <span id="hud-weather" style="color:#fef08a;font-weight:700;font-size:10.5px">☀️ Ban Ngày</span>
+
+    <!-- Thanh Tiền Vàng + Kim Cương + Tên Map Hiện Tại -->
+    <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+      <div onclick="openMenu('shop')" class="btn" style="background:rgba(15,23,42,0.9);border:1.5px solid rgba(234,179,8,0.45);padding:3px 9px;border-radius:20px;display:flex;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(0,0,0,0.45)">
+        <span style="font-size:12px">🪙</span>
+        <span id="hud-gold" style="color:#fde047;font-weight:800;font-size:12px">500</span>
+      </div>
+      <div onclick="openMenu('giftcode')" class="btn" style="background:rgba(8,47,73,0.88);border:1.5px solid rgba(56,189,248,0.5);padding:3px 9px;border-radius:20px;display:flex;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(0,0,0,0.45)">
+        <span style="font-size:11.5px">💎</span>
+        <span id="hud-diamond" style="color:#7dd3fc;font-weight:800;font-size:12px">20</span>
+        <span style="background:#0284c7;color:#fff;font-size:9px;font-weight:900;width:14px;height:14px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center">+</span>
+      </div>
+      <div style="background:rgba(15,23,42,0.85);border:1px solid rgba(168,85,247,0.4);padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
+        <span id="hud-zone" style="color:#e9d5ff;font-weight:800;font-size:10.5px">🏡 Nông Trại</span>
+        <span style="color:#64748b;font-size:10px">·</span>
+        <span id="hud-weather" style="color:#fef08a;font-weight:700;font-size:10px">☀️ Ban Ngày</span>
+      </div>
+      <span id="hud-petcount" style="display:none">🐾 1</span>
     </div>
   </div>
-  <div id="hud-top-right" style="display:flex;gap:5px;pointer-events:auto;align-items:center">
-    <button id="btn-orient" onclick="toggleMobileOrientation()" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.5);background:rgba(2,132,199,.25)" title="Xoay Ngang / Dọc Màn Hình"><i class="fa-solid fa-rotate"></i></button>
-    <button onclick="cycleCameraZoom()" class="glass hud-btn" style="color:#fde047;border-color:rgba(250,204,21,.4)" title="Đổi Góc Nhìn Camera (Gần / Vừa / Toàn Cảnh)"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-    <button onclick="openMenu('giftcode')" class="glass hud-btn" style="color:#f472b6;border-color:rgba(244,114,182,.4)" title="Nhập Giftcode Nhận Thưởng"><i class="fa-solid fa-gift"></i></button>
-    <button onclick="openMenu('fishing')" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.35)" title="Câu Cá & Dụng Cụ"><i class="fa-solid fa-fish"></i></button>
-    <button onclick="openMenu('mounts')" class="glass hud-btn" style="color:#38bdf8;border-color:rgba(56,189,248,.35)" title="Nhà Xe & Thú Cưỡi"><i class="fa-solid fa-motorcycle"></i></button>
-    <button onclick="openMenu('bag')"  class="glass hud-btn" style="color:#fbbf24;border-color:rgba(251,191,36,.3)" title="Túi đồ"><i class="fa-solid fa-bag-shopping"></i></button>
-    <button onclick="openMenu('cook')" class="glass hud-btn" style="color:#fb923c;border-color:rgba(251,146,60,.3)" title="Nấu ăn"><i class="fa-solid fa-fire-burner"></i></button>
-    <button onclick="openMenu('pets')" class="glass hud-btn" style="color:#a78bfa;border-color:rgba(167,139,250,.3)" title="Thú bảo"><i class="fa-solid fa-paw"></i></button>
-    <button onclick="openMenu('shop')" class="glass hud-btn" style="color:#34d399;border-color:rgba(52,211,153,.3)" title="Cửa hàng"><i class="fa-solid fa-store"></i></button>
-    <button onclick="openMenu('guide')" class="glass hud-btn" style="color:#60a5fa;border-color:rgba(96,165,250,.3)" title="Hướng dẫn tân thủ"><i class="fa-solid fa-book"></i></button>
-    <button onclick="saveGame()" class="glass hud-btn" style="color:#4ade80;border-color:rgba(74,222,128,.3)" title="Lưu game"><i class="fa-solid fa-floppy-disk"></i></button>
+
+  <!-- GÓC PHẢI TRÊN: CÁC NÚT ICON GAME APP CÓ NHÃN CHỮ RÕ RÀNG -->
+  <div id="hud-top-right" style="display:flex;gap:7px;pointer-events:auto;align-items:flex-start">
+    <button onclick="openMenu('bag')" class="app-icon-btn" title="Túi Đồ & Kho Nông Sản">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#f59e0b,#b45309)">🎒</div>
+      <span class="app-icon-label">Túi Đồ</span>
+    </button>
+    <button onclick="openMenu('pets')" class="app-icon-btn" title="Chuồng Linh Thú">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6)">🐾</div>
+      <span class="app-icon-label">Linh Thú</span>
+    </button>
+    <button onclick="openMenu('shop')" class="app-icon-btn" title="Chợ Phiên Hạt Giống & Nơm">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#10b981,#047857)">🛒</div>
+      <span class="app-icon-label">Chợ Phiên</span>
+    </button>
+    <button onclick="openMenu('cook')" class="app-icon-btn desktop-only-app" title="Bếp Nấu Bà Tư">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#f97316,#c2410c)">🍳</div>
+      <span class="app-icon-label">Bếp Nấu</span>
+    </button>
+    <button onclick="openMenu('fishing')" class="app-icon-btn desktop-only-app" title="Đồ Nghề Câu Cá">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">🎣</div>
+      <span class="app-icon-label">Câu Cá</span>
+    </button>
+    <button onclick="openMenu('mounts')" class="app-icon-btn desktop-only-app" title="Nhà Xe & Thú Cưỡi">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#06b6d4,#0e7490)">🛵</div>
+      <span class="app-icon-label">Nhà Xe</span>
+    </button>
+    <button id="btn-orient" onclick="toggleMobileOrientation()" class="app-icon-btn" title="Xoay Ngang / Dọc Màn Hình">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#0284c7,#1e3a8a)">🔄</div>
+      <span class="app-icon-label" id="btn-orient-label">Xoay Màn</span>
+    </button>
+    <button onclick="openMenu('app-menu')" class="app-icon-btn" title="Tất Cả Chức Năng Game">
+      <div class="app-icon-box" style="background:linear-gradient(135deg,#eab308,#a16207);border-color:#fef08a">⊞</div>
+      <span class="app-icon-label" style="color:#fde047;border-color:rgba(250,204,21,0.45)">Menu</span>
+    </button>
   </div>
 </div>
 
@@ -288,51 +398,52 @@
   </div>
 </div>
 
+<!-- BỘ ĐIỀU KHIỂN NỔI CHUẨN GAME APP MOBILE (TRONG SUỐT, CÓ NHÃN CHỮ RÕ RÀNG) -->
 <div id="mobile-controls">
-  <!-- Cần Gạt Analog 360° + D-Pad Hybrid Bên Trái -->
-  <div id="mobile-dpad" style="position:absolute;bottom:20px;left:20px;width:128px;height:128px;pointer-events:auto;touch-action:none">
-    <div id="joy-base" style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle, rgba(30,41,59,0.72) 0%, rgba(15,23,42,0.92) 100%);border:2px solid rgba(148,163,184,0.28);box-shadow:0 8px 24px rgba(0,0,0,0.55), inset 0 0 18px rgba(56,189,248,0.12)">
-      <i class="fa-solid fa-caret-up" style="position:absolute;top:6px;left:50%;transform:translateX(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
-      <i class="fa-solid fa-caret-down" style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
-      <i class="fa-solid fa-caret-left" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
-      <i class="fa-solid fa-caret-right" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);color:rgba(148,163,184,0.55);font-size:13px"></i>
+  <!-- Góc Dưới Trái: Cần Gạt Analog 360° Trong Suốt Mượt Mà -->
+  <div id="mobile-dpad" style="position:absolute;bottom:22px;left:20px;width:128px;height:128px;pointer-events:auto;touch-action:none;opacity:0.85">
+    <div id="joy-base" style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle, rgba(15,23,42,0.45) 0%, rgba(15,23,42,0.82) 100%);border:2px solid rgba(125,211,252,0.38);box-shadow:0 8px 24px rgba(0,0,0,0.5), inset 0 0 20px rgba(56,189,248,0.18)">
+      <i class="fa-solid fa-chevron-up" style="position:absolute;top:7px;left:50%;transform:translateX(-50%);color:rgba(186,230,253,0.65);font-size:11px"></i>
+      <i class="fa-solid fa-chevron-down" style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);color:rgba(186,230,253,0.65);font-size:11px"></i>
+      <i class="fa-solid fa-chevron-left" style="position:absolute;left:7px;top:50%;transform:translateY(-50%);color:rgba(186,230,253,0.65);font-size:11px"></i>
+      <i class="fa-solid fa-chevron-right" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);color:rgba(186,230,253,0.65);font-size:11px"></i>
     </div>
-    <div id="joy-knob" style="position:absolute;top:50%;left:50%;width:52px;height:52px;margin-left:-26px;margin-top:-26px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #38bdf8, #0284c7);border:2px solid rgba(255,255,255,0.75);box-shadow:0 4px 16px rgba(2,132,199,0.65);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform 0.04s linear">
-      <i class="fa-solid fa-arrows-up-down-left-right" style="color:rgba(255,255,255,0.85);font-size:15px"></i>
+    <div id="joy-knob" style="position:absolute;top:50%;left:50%;width:54px;height:54px;margin-left:-27px;margin-top:-27px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #7dd3fc, #0284c7 65%, #0369a1);border:2.5px solid rgba(255,255,255,0.88);box-shadow:0 6px 18px rgba(2,132,199,0.75);display:flex;align-items:center;justify-content:center;pointer-events:none;transition:transform 0.04s linear">
+      <i class="fa-solid fa-gamepad" style="color:rgba(255,255,255,0.92);font-size:16px"></i>
     </div>
   </div>
 
-  <!-- Bảng Trung Tâm Khi Cầm Dọc (Hiển thị mục tiêu gần & Phím tắt nhanh) -->
-  <div id="mobile-center-dock">
-    <div id="mobile-context-badge" style="background:rgba(15,23,42,0.9);border:1px solid rgba(56,189,248,0.35);padding:5px 10px;border-radius:14px;font-size:11px;font-weight:700;color:#e2e8f0;text-align:center;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+  <!-- Thanh Trạng Thái Mục Tiêu Nhỏ Gọn Giữa Dưới -->
+  <div id="mobile-center-dock" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);pointer-events:none">
+    <div id="mobile-context-badge" style="background:rgba(15,23,42,0.86);backdrop-filter:blur(8px);border:1px solid rgba(56,189,248,0.4);padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:800;color:#f8fafc;text-align:center;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,0.5)">
       🏡 Nông Trại
     </div>
-    <div style="display:flex;gap:8px">
-      <button onclick="toggleMobileOrientation()" class="btn" style="background:rgba(2,132,199,0.3);border:1px solid rgba(56,189,248,0.45);color:#7dd3fc;padding:5px 10px;border-radius:12px;font-size:10.5px;font-weight:700;display:flex;align-items:center;gap:4px">
-        <i class="fa-solid fa-rotate"></i> Xoay Ngang
-      </button>
-    </div>
   </div>
 
-  <!-- Cụm Nút Hành Động Thông Minh Bên Phải (RPG Skill Wheel Layout) -->
-  <div id="mobile-act-container" style="position:absolute;bottom:18px;right:18px;width:136px;height:132px;pointer-events:none">
-    <!-- Nút vệ tinh 1: Đổi Xe Nhanh (Bên trái dưới) -->
-    <button id="btn-quick-mount" onclick="quickToggleMount()" class="touch-btn" style="position:absolute;bottom:6px;left:0;width:42px;height:42px;font-size:17px;background:rgba(15,23,42,0.88);border-color:rgba(56,189,248,0.45)" title="Lên / Xuống Xe Nhanh">
-      🛵
-    </button>
-    <!-- Nút vệ tinh 2: Mở Túi Đồ Nhanh (Ở giữa chéo) -->
-    <button id="btn-quick-bag" onclick="openMenu('bag')" class="touch-btn" style="position:absolute;top:14px;left:16px;width:42px;height:42px;font-size:16px;background:rgba(15,23,42,0.88);border-color:rgba(251,191,36,0.45)" title="Mở Túi Đồ">
-      🎒
-    </button>
-    <!-- Nút vệ tinh 3: Bếp Nấu / Cửa Hàng Nhanh (Phía trên phải) -->
-    <button id="btn-quick-shop" onclick="openMenu('shop')" class="touch-btn" style="position:absolute;top:0;right:12px;width:42px;height:42px;font-size:16px;background:rgba(15,23,42,0.88);border-color:rgba(52,211,153,0.45)" title="Mở Chợ Phiên">
-      🛒
+  <!-- Góc Dưới Phải: Cụm Nút Kỹ Năng & Tương Tác Chuẩn Game App (Mỗi nút đều có tên rõ ràng) -->
+  <div id="mobile-act-container" style="position:absolute;bottom:18px;right:18px;width:156px;height:150px;pointer-events:none">
+    <!-- Nút Vệ Tinh 1 (Trái Dưới): Xe Cưỡi Nhanh -->
+    <button id="btn-quick-mount" onclick="quickToggleMount()" class="skill-sat-btn" style="position:absolute;bottom:6px;left:2px;border-color:rgba(56,189,248,0.55)" title="Lên / Xuống Xe Nhanh">
+      <span class="skill-sat-icon">🛵</span>
+      <span class="skill-sat-label">Xe Cưỡi</span>
     </button>
 
-    <!-- Nút Tương Tác Chính (Tự động đổi icon theo ngữ cảnh) -->
-    <button id="btn-act" class="touch-btn" style="position:absolute;bottom:14px;right:4px;width:72px;height:72px;background:linear-gradient(135deg,#0284c7,#0369a1);border:2px solid rgba(56,189,248,.75);box-shadow:0 8px 24px rgba(2,132,199,.5);flex-direction:column;gap:1px" title="Tương Tác Thông Minh">
-      <span id="btn-act-icon" style="font-size:24px;line-height:1">✋</span>
-      <span id="btn-act-label" style="font-size:8.5px;font-weight:800;color:#fff;letter-spacing:0.3px;text-shadow:0 1px 3px #000">TƯƠNG TÁC</span>
+    <!-- Nút Vệ Tinh 2 (Giữa Chéo): Đồ Nghề Câu Cá / Mua Mồi -->
+    <button id="btn-quick-fish" onclick="openMenu('fishing')" class="skill-sat-btn" style="position:absolute;top:24px;left:22px;border-color:rgba(56,189,248,0.55)" title="Mở Đồ Nghề Câu Cá & Mua Mồi">
+      <span class="skill-sat-icon">🎣</span>
+      <span class="skill-sat-label" style="color:#7dd3fc;border-color:rgba(56,189,248,0.45)">Đồ Câu</span>
+    </button>
+
+    <!-- Nút Vệ Tinh 3 (Trên Phải): Bếp Bà Tư / Cho Thú Ăn -->
+    <button id="btn-quick-cook" onclick="openMenu('cook')" class="skill-sat-btn" style="position:absolute;top:2px;right:14px;border-color:rgba(251,146,60,0.55)" title="Mở Bếp Bà Tư & Cho Thú Ăn">
+      <span class="skill-sat-icon">🍳</span>
+      <span class="skill-sat-label" style="color:#fdba74;border-color:rgba(251,146,60,0.45)">Bếp Nấu</span>
+    </button>
+
+    <!-- Nút Hành Động Chính Khổ Lớn (Đổi màu & nhãn theo ngữ cảnh) -->
+    <button id="btn-act" class="touch-btn" style="position:absolute;bottom:8px;right:4px;width:80px;height:80px;background:linear-gradient(135deg,#0284c7,#0369a1);border:3px solid rgba(125,211,252,0.85);box-shadow:0 8px 26px rgba(2,132,199,0.65), inset 0 2px 4px rgba(255,255,255,0.35);flex-direction:column;gap:2px" title="Nút Hành Động Chính">
+      <span id="btn-act-icon" style="font-size:30px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.45))">✋</span>
+      <span id="btn-act-label" style="font-size:9.5px;font-weight:900;color:#fff;background:rgba(15,23,42,0.88);padding:1.5px 7px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);letter-spacing:0.3px;text-shadow:0 1px 2px #000;white-space:nowrap">TƯƠNG TÁC</span>
     </button>
   </div>
 </div>
@@ -345,6 +456,78 @@
 
 <!-- OVERLAY & MODALS -->
 <div id="overlay" onclick="closeAllMenus()" style="position:absolute;inset:0;background:rgba(0,0,0,.72);z-index:40;display:none"></div>
+
+<!-- MENU CHÍNH DẠNG LƯỚI ICON APP GAME (3x3 LAUNCHPAD) -->
+<div id="modal-app-menu" class="glass modal-box" style="width:420px;max-width:94vw">
+  <div class="modal-header">
+    <h3 style="color:#fde047"><i class="fa-solid fa-grip"></i> Menu Chức Năng Game</h3>
+    <button onclick="closeAllMenus()">×</button>
+  </div>
+  <div class="scrollbar modal-content" style="max-height:74vh">
+    <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;padding:4px 2px">
+      <div onclick="openMenu('bag')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#f59e0b,#b45309)">🎒</div>
+        <b style="font-size:12.5px;color:#f8fafc">Túi Đồ</b>
+        <span style="font-size:10px;color:#94a3b8">Kho & Bán đồ</span>
+      </div>
+      <div onclick="openMenu('pets')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#8b5cf6,#5b21b6)">🐾</div>
+        <b style="font-size:12.5px;color:#f8fafc">Chuồng Thú</b>
+        <span style="font-size:10px;color:#94a3b8">Đội hình Pet</span>
+      </div>
+      <div onclick="openMenu('shop')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#10b981,#047857)">🛒</div>
+        <b style="font-size:12.5px;color:#f8fafc">Chợ Phiên</b>
+        <span style="font-size:10px;color:#94a3b8">Hạt giống & Nơm</span>
+      </div>
+      <div onclick="openMenu('cook')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#f97316,#c2410c)">🍳</div>
+        <b style="font-size:12.5px;color:#f8fafc">Bếp Bà Tư</b>
+        <span style="font-size:10px;color:#94a3b8">Nấu ăn hồi HP</span>
+      </div>
+      <div onclick="openMenu('fishing')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">🎣</div>
+        <b style="font-size:12.5px;color:#f8fafc">Đồ Câu Cá</b>
+        <span style="font-size:10px;color:#94a3b8">Mua mồi & Cần</span>
+      </div>
+      <div onclick="openMenu('mounts')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#06b6d4,#0e7490)">🛵</div>
+        <b style="font-size:12.5px;color:#f8fafc">Nhà Xe</b>
+        <span style="font-size:10px;color:#94a3b8">Xe & Thú cưỡi</span>
+      </div>
+      <div onclick="openMenu('giftcode')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#ec4899,#be185d)">🎁</div>
+        <b style="font-size:12.5px;color:#f472b6">Giftcode</b>
+        <span style="font-size:10px;color:#94a3b8">Nhập mã nhận 💎</span>
+      </div>
+      <div onclick="closeAllMenus();cycleCameraZoom()" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#eab308,#a16207)">🔍</div>
+        <b style="font-size:12.5px;color:#fde047">Góc Nhìn</b>
+        <span style="font-size:10px;color:#94a3b8">Phóng to / Thu nhỏ</span>
+      </div>
+      <div onclick="closeAllMenus();toggleMobileOrientation()" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8)">🔄</div>
+        <b style="font-size:12.5px;color:#7dd3fc">Xoay Màn Hình</b>
+        <span style="font-size:10px;color:#94a3b8">Đổi Dọc / Ngang</span>
+      </div>
+      <div onclick="openMenu('guide')" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#6366f1,#4338ca)">📖</div>
+        <b style="font-size:12.5px;color:#c7d2fe">Cẩm Nang</b>
+        <span style="font-size:10px;color:#94a3b8">Hướng dẫn chơi</span>
+      </div>
+      <div onclick="closeAllMenus();saveGame()" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#22c55e,#15803d)">💾</div>
+        <b style="font-size:12.5px;color:#86efac">Lưu Game</b>
+        <span style="font-size:10px;color:#94a3b8">Lưu tiến trình</span>
+      </div>
+      <div onclick="resetSaveGame()" class="app-grid-card">
+        <div class="app-grid-icon" style="background:linear-gradient(135deg,#ef4444,#991b1b)">🧹</div>
+        <b style="font-size:12.5px;color:#fca5a5">Chơi Lại</b>
+        <span style="font-size:10px;color:#94a3b8">Xóa dữ liệu cũ</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="modal-bag" class="glass modal-box">
   <div class="modal-header">
@@ -785,19 +968,32 @@ function updateCamera(){
   const effZoom = cam.zoom || 1.0;
   const visW = VIEW_W / effZoom;
   const visH = VIEW_H / effZoom;
+  const isPortrait = VIEW_H > VIEW_W;
+
+  // Tâm camera ưu tiên đặt nhân vật ở vùng thoáng giữa màn hình (tránh bị HUD trên hoặc Joystick dưới che)
+  const offsetY = isPortrait ? 18 : 0;
   const targetX = (P.px + TS/2) - visW / 2;
-  const targetY = (P.py + TS/2) - visH / 2;
-  const maxCamX = Math.max(0, CW - visW);
-  const maxCamY = Math.max(0, CH - visH);
-  const clampedX = Math.max(0, Math.min(maxCamX, targetX));
-  const clampedY = Math.max(0, Math.min(maxCamY, targetY));
-  cam.x += (clampedX - cam.x) * 0.2;
-  cam.y += (clampedY - cam.y) * 0.2;
+  const targetY = (P.py + TS/2 + offsetY) - visH / 2;
+
+  const padX = isPortrait ? 48 : 32;
+  const padTop = isPortrait ? 88 : 36;
+  const padBot = isPortrait ? 136 : 48;
+
+  const minCamX = -padX;
+  const maxCamX = Math.max(minCamX, CW - visW + padX);
+  const minCamY = -padTop;
+  const maxCamY = Math.max(minCamY, CH - visH + padBot);
+
+  const clampedX = Math.max(minCamX, Math.min(maxCamX, targetX));
+  const clampedY = Math.max(minCamY, Math.min(maxCamY, targetY));
+
+  cam.x += (clampedX - cam.x) * 0.22;
+  cam.y += (clampedY - cam.y) * 0.22;
   if(Math.abs(clampedX - cam.x) < 0.4) cam.x = clampedX;
   if(Math.abs(clampedY - cam.y) < 0.4) cam.y = clampedY;
 }
 
-// Tự động căn chỉnh kích thước Canvas chuẩn theo màn hình Mobile (Dọc & Xoay Ngang) & Desktop
+// Tự động căn chỉnh kích thước Canvas chuẩn Fullscreen 100% như Game App thực thụ (Cả Dọc & Ngang)
 function resizeGameView(){
   const wrapEl = document.getElementById('wrap');
   const rawW = window.innerWidth, rawH = window.innerHeight;
@@ -808,8 +1004,8 @@ function resizeGameView(){
     wrapEl.classList.toggle('force-landscape-rot', rotated90);
   }
 
-  const w = rotated90 ? rawH : rawW;
-  const h = rotated90 ? rawW : rawH;
+  const w = Math.max(240, rotated90 ? rawH : rawW);
+  const h = Math.max(240, rotated90 ? rawW : rawH);
   const isPortrait = (!forceLandscape) && (h > w) && (w <= 820);
 
   if(wrapEl){
@@ -817,23 +1013,30 @@ function resizeGameView(){
     wrapEl.classList.toggle('landscape-mobile', !isPortrait && isTouchOrSmall);
   }
 
+  const orientLabel = document.getElementById('btn-orient-label');
+  if(orientLabel){
+    orientLabel.textContent = isPortrait ? 'Xoay Ngang' : (forceLandscape ? 'Xoay Dọc' : 'Xoay Màn');
+  }
+
   if(isPortrait){
-    if(cam.mode === 'full'){
-      VIEW_W = CW; VIEW_H = CH; cam.zoom = 1.0;
-    } else if(cam.mode === 'close'){
-      VIEW_W = 480; VIEW_H = 544; cam.zoom = 1.38;
-    } else {
-      VIEW_W = 480; VIEW_H = 544; cam.zoom = 1.15;
-    }
+    // Màn hình Dọc: Fullscreen 100% tràn viền theo đúng tỉ lệ màn hình điện thoại
+    VIEW_W = 420;
+    VIEW_H = Math.max(544, Math.min(980, Math.round(420 * (h / w))));
+    if(cam.mode === 'full') cam.zoom = 0.92;
+    else if(cam.mode === 'close') cam.zoom = 1.38;
+    else cam.zoom = 1.15;
+  } else if(isTouchOrSmall){
+    // Màn hình Ngang trên Mobile: Fullscreen 100% tràn viền theo tỉ lệ màn hình ngang
+    VIEW_H = 510;
+    VIEW_W = Math.max(680, Math.min(1160, Math.round(510 * (w / h))));
+    if(cam.mode === 'full') cam.zoom = 1.0;
+    else if(cam.mode === 'close') cam.zoom = 1.36;
+    else cam.zoom = 1.12;
   } else {
-    VIEW_W = CW; VIEW_H = CH;
-    if(cam.mode === 'close'){
-      cam.zoom = 1.38;
-    } else if(cam.mode === 'auto' && isTouchOrSmall && w < 920){
-      cam.zoom = 1.16;
-    } else {
-      cam.zoom = 1.0;
-    }
+    // Máy tính (Desktop)
+    VIEW_W = CW;
+    VIEW_H = CH;
+    cam.zoom = (cam.mode === 'close') ? 1.35 : 1.0;
   }
 
   if(canvas.width !== VIEW_W * DPR || canvas.height !== VIEW_H * DPR){
@@ -843,12 +1046,9 @@ function resizeGameView(){
     ctx.imageSmoothingQuality = 'high';
   }
 
-  if(isPortrait){
-    const availW = Math.max(260, w - 12);
-    const availH = Math.max(240, h - 252);
-    const scale = Math.min(availW / VIEW_W, availH / VIEW_H);
-    canvas.style.width = Math.round(VIEW_W * scale) + 'px';
-    canvas.style.height = Math.round(VIEW_H * scale) + 'px';
+  if(isPortrait || isTouchOrSmall){
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
   } else {
     const scale = Math.min(w / VIEW_W, h / VIEW_H);
     canvas.style.width = Math.round(VIEW_W * scale) + 'px';
@@ -1232,11 +1432,12 @@ function hpBar(c,x,y,w,h,hp,maxHp){
 
 function drawTiles(){
   const bg=MAPS[G.map].bg, m=G.map, t=Date.now()/1000;
-  for(let ty=0;ty<ROWS;ty++) for(let tx=0;tx<COLS;tx++){
-    const px=tx*TS, py=ty*TS, n=NOISE[ty*COLS+tx];
-    if(tx===0||tx===COLS-1||ty===0||ty===ROWS-1){
+  // Vẽ cả vùng viền rừng / biển mở rộng quanh bản đồ để màn hình Fullscreen Mobile tràn viền không bao giờ có viền đen
+  for(let ty=-8;ty<ROWS+8;ty++) for(let tx=-8;tx<COLS+8;tx++){
+    const px=tx*TS, py=ty*TS;
+    if(tx<=0||tx>=COLS-1||ty<=0||ty>=ROWS-1){
       ctx.fillStyle = m==='mines'?'#0f172a':m==='mountain'?'#292524':m==='sea'?'#0369a1':'#14532d';
-      ctx.fillRect(px,py,TS,TS);
+      ctx.fillRect(px,py,TS+0.5,TS+0.5);
       // Viền cây cối / vách đá tự nhiên quanh bản đồ
       ctx.fillStyle = m==='mines'?'#334155':m==='mountain'?'#44403c':m==='sea'?'#0284c7':'#166534';
       ctx.beginPath(); ctx.arc(px+16,py+16,13+Math.sin(tx*3+ty)*2,0,Math.PI*2); ctx.fill();
@@ -1245,6 +1446,7 @@ function drawTiles(){
       }
       continue;
     }
+    const n=NOISE[ty*COLS+tx];
     const v=bg[n<0.45?0:(n<0.8?1:2)];
     ctx.fillStyle=`rgb(${v[0]},${v[1]},${v[2]})`; ctx.fillRect(px,py,TS+0.5,TS+0.5);
 
@@ -2356,10 +2558,10 @@ function spawnBattleVFX(type, el, sx, sy, tx, ty, text, col){
 
 function getBattleLayout(){
   const isCompact = (VIEW_W < 700);
-  const bx = isCompact ? 10 : 55;
-  const by = isCompact ? 10 : 22;
-  const bw = VIEW_W - bx * 2;
-  const bh = VIEW_H - by * 2;
+  const bw = isCompact ? (VIEW_W - 20) : Math.min(850, VIEW_W - 80);
+  const bh = isCompact ? Math.min(490, VIEW_H - 28) : Math.min(496, VIEW_H - 32);
+  const bx = Math.round((VIEW_W - bw) / 2);
+  const by = Math.max(12, Math.round((VIEW_H - bh) / 2));
   const cardW = isCompact ? Math.floor((bw - 30) / 2) : 290;
   const cardH = isCompact ? 196 : 200;
   const cardY = isCompact ? (by + 58) : (by + 44);
@@ -2687,22 +2889,15 @@ function getNearbyContext(){
 
 function updateMobileContextUI(){
   const ctrlEl = document.getElementById('mobile-controls');
-  const wrapEl = document.getElementById('wrap');
-  const isPortrait = wrapEl && wrapEl.classList.contains('portrait-mode');
 
   if(ctrlEl){
     if(battle.active){
-      if(isPortrait){
-        ctrlEl.style.opacity = '0.25';
-        ctrlEl.style.pointerEvents = 'none';
-      } else {
-        ctrlEl.style.display = 'none';
-      }
+      ctrlEl.style.display = 'none';
       return;
     } else {
       ctrlEl.style.opacity = '1';
       ctrlEl.style.display = '';
-      ctrlEl.style.pointerEvents = isPortrait ? 'auto' : 'none';
+      ctrlEl.style.pointerEvents = 'none';
     }
   }
 
@@ -3252,7 +3447,7 @@ function openMenu(id){
 }
 function closeAllMenus(){
   document.getElementById('overlay').style.display='none';
-  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode'].forEach(id=>{
+  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu'].forEach(id=>{
     const el=document.getElementById('modal-'+id);
     if(el) el.style.display='none';
   });
@@ -3385,13 +3580,32 @@ function updateHUD(){
   document.getElementById('hud-gold').textContent=G.gold;
   const dEl = document.getElementById('hud-diamond');
   if(dEl) dEl.textContent = G.diamond ?? 0;
-  document.getElementById('hud-petcount').textContent=`🐾 Thú bảo: ${G.pets.length}`;
+  const pcEl = document.getElementById('hud-petcount');
+  if(pcEl) pcEl.textContent=`🐾 Thú bảo: ${G.pets.length}`;
   const ap=G.pets[G.activeIdx];
   const elBox=document.getElementById('hud-active-pet');
   if(ap && elBox){
     const hpPct = Math.max(0, Math.min(100, Math.round((ap.hp/ap.maxHp)*100)));
     const expPct = Math.max(0, Math.min(100, Math.round((ap.exp/ap.expNext)*100)));
-    elBox.innerHTML = `<span style="font-size:14px">${ap.icon}</span><div style="display:flex;flex-direction:column;gap:2px;min-width:95px"><div style="display:flex;justify-content:space-between;font-size:10px;font-weight:800;color:#e2e8f0"><span>${ap.name}</span><span style="color:${POTS[ap.pot].col}">[${ap.pot}] C.${ap.level}</span></div><div style="height:4px;background:#1e293b;border-radius:2px;overflow:hidden"><div style="width:${hpPct}%;height:100%;background:#22c55e"></div></div><div style="height:2px;background:#1e293b;border-radius:1px;overflow:hidden"><div style="width:${expPct}%;height:100%;background:#a855f7"></div></div></div>`;
+    const pCol = elCol(ap.el);
+    elBox.innerHTML = `
+      <div style="position:relative;width:36px;height:36px;border-radius:11px;background:radial-gradient(circle,${pCol}44,rgba(0,0,0,0.65));border:1.5px solid ${pCol};display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px ${pCol}44">
+        ${ap.icon}
+        <span style="position:absolute;bottom:-4px;right:-4px;background:#0f172a;border:1px solid ${pCol};color:#f8fafc;font-size:8.5px;font-weight:900;padding:0 4px;border-radius:6px">Lv.${ap.level}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2.5px;min-width:108px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:10.5px;font-weight:800;color:#f8fafc;gap:6px">
+          <span style="white-space:nowrap">${ap.name}</span>
+          <span style="color:${POTS[ap.pot].col};font-size:9.5px;background:rgba(255,255,255,0.08);padding:0 4px;border-radius:5px">[${ap.pot}]</span>
+        </div>
+        <div style="position:relative;height:10px;background:#0f172a;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,0.12)">
+          <div style="width:${hpPct}%;height:100%;background:linear-gradient(90deg,#16a34a,#4ade80)"></div>
+          <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#fff;text-shadow:0 1px 2px #000">❤️ ${ap.hp}/${ap.maxHp}</span>
+        </div>
+        <div style="height:3px;background:#0f172a;border-radius:2px;overflow:hidden">
+          <div style="width:${expPct}%;height:100%;background:#a855f7"></div>
+        </div>
+      </div>`;
   }
 }
 function notify(msg){ let el=document.querySelector('.notif'); if(!el){ el=document.createElement('div'); el.className='notif'; document.body.appendChild(el); } el.textContent=msg; el.style.animation='none'; void el.offsetWidth; el.style.animation='popIn .2s ease'; setTimeout(()=>el.remove(),2600); }
@@ -4107,7 +4321,9 @@ function drawFishingWorldPrompt(){
 function drawFishingScreenPrompt(){
   if(battle.active || !fishingState.active) return;
   const btnW = 180, btnH = 44;
-  const btnX = VIEW_W / 2 - btnW / 2, btnY = VIEW_H - 58;
+  const isPortrait = VIEW_H > VIEW_W;
+  const btnX = VIEW_W / 2 - btnW / 2;
+  const btnY = isPortrait ? (VIEW_H - 185) : (VIEW_H - 64);
   const isBiting = (fishingState.state === 'bite');
 
   ctx.save();
