@@ -3748,22 +3748,45 @@ function startBattle(wp){
 }
 
 function endBattle(res){
+  const isPvP = !!battle.isPvP;
+  const oppName = battle.pvpOpponent || 'Đối thủ';
   battle.active=false;
   battle.busy=false;
+  battle.isPvP=false;
+  battle.pvpOpponent=null;
   canvas._btns=[];
   const ap=G.pets[G.activeIdx];
+
+  if(isPvP){
+    if(res==='win'){
+      G.gold += 100;
+      if(ap) { ap.hp = Math.max(1, battle.playerHP); gainExp(ap, 60); }
+      updateHUD();
+      notify(`🏆 CHIẾN THẮNG TUYỆT ĐỐI trước [${oppName}]! +100 Tiền Vàng & +60 EXP!`);
+      saveGame(true);
+    } else {
+      if(ap) { ap.hp = Math.max(1, Math.floor(ap.maxHp * 0.3)); }
+      notify(`💀 Thú của bạn bị đối thủ [${oppName}] đánh bại! Hãy hồi phục tại Bếp nghen.`);
+      updateHUD();
+      saveGame(true);
+    }
+    return;
+  }
+
   if(res==='win'){
     G.gold+=50;
-    battle.wildRef.alive=false;
-    ap.hp=battle.playerHP;
-    gainExp(ap, 25);
+    if(battle.wildRef) battle.wildRef.alive=false;
+    if(ap){
+      ap.hp=battle.playerHP;
+      gainExp(ap, 25);
+    }
     updateHUD();
     notify('🏆 Thắng trận! +50 Tiền');
     saveGame(true);
   }
   else if(res==='caught'){
     const pot = battle.enemy.pot || getRandPot();
-    ap.hp=battle.playerHP;
+    if(ap) ap.hp=battle.playerHP;
     G.pets.push({
       uid:'p'+Date.now(),
       name:battle.enemy.name,
@@ -3777,14 +3800,14 @@ function endBattle(res){
       maxHp:battle.enemyMaxHP,
       atk:battle.enemy.atk
     });
-    battle.wildRef.alive=false;
-    gainExp(ap, 40);
+    if(battle.wildRef) battle.wildRef.alive=false;
+    if(ap) gainExp(ap, 40);
     updateHUD();
     notify(`🎉 Thu phục thành công ${battle.enemy.name} [Tư chất ${pot}]!`);
     saveGame(true);
   }
   else if(res==='lose'){
-    ap.hp=Math.max(1,Math.floor(ap.maxHp*0.25));
+    if(ap) ap.hp=Math.max(1,Math.floor(ap.maxHp*0.25));
     notify('💀 Thú bảo trọng thương, đành phải rút lui!');
     saveGame(true);
   }
@@ -3842,6 +3865,10 @@ function doBattleSkill(){
 
 function doBattleCatch(){
   if(!battle.active || battle.turn!=='player' || battle.busy) return;
+  if(battle.isPvP){
+    notify('❌ Không thể dùng nơm bắt Linh Thú của người chơi khác nghen!');
+    return;
+  }
   battle.busy = true;
 
   if(battle.skillCooldown > 0) battle.skillCooldown--;
@@ -3870,6 +3897,11 @@ function doBattleCatch(){
 function doBattleRun(){
   if(!battle.active || battle.turn!=='player' || battle.busy) return;
   battle.busy = true;
+  if(battle.isPvP){
+    notify(`🏳️ Bạn đã chủ động xin thua trước [${battle.pvpOpponent || 'Đối thủ'}]!`);
+    endBattle('lose');
+    return;
+  }
 
   if(battle.wildRef){
     const dx = battle.wildRef.px - P.px;
@@ -4067,6 +4099,17 @@ function getCurrentUser(){
 
 function normalizeUsername(raw){
   return (raw || '').trim().toLowerCase().replace(/\s+/g, '_');
+}
+
+function getMyOnlineId(){
+  const cur = getCurrentUser();
+  if(cur && cur.trim()) return normalizeUsername(cur);
+  let guest = localStorage.getItem('MIEN_TAY_RPG_GUEST_ID');
+  if(!guest){
+    guest = 'nongdan_' + (P.charSeed || Math.floor(100 + Math.random() * 900));
+    localStorage.setItem('MIEN_TAY_RPG_GUEST_ID', guest);
+  }
+  return normalizeUsername(guest);
 }
 
 function toFirebaseAuthEmail(username){
@@ -5080,7 +5123,8 @@ async function syncOnlineHeartbeat(){
   lastHeartbeatTime = Date.now();
   lastHeartbeatPos = { x: P.px, y: P.py, map: G.map };
 
-  const cleanUser = normalizeUsername(getCurrentUser()) || ('NongDan_' + (P.charSeed || 100));
+  const cleanUser = getMyOnlineId();
+  const cleanNorm = normalizeUsername(cleanUser);
   const activePetObj = (G.pets && G.pets[G.activeIdx]) ? {
     name: G.pets[G.activeIdx].name,
     lv: G.pets[G.activeIdx].lv || 1,
@@ -5132,10 +5176,12 @@ async function syncOnlineHeartbeat(){
           const f = doc.fields || {};
           const u = f.username ? f.username.stringValue : '';
           const docId = doc.name ? doc.name.split('/').pop() : '';
+          const docIdNorm = normalizeUsername(docId);
+          const uNorm = normalizeUsername(u);
           const uTime = f.updatedAt ? Number(f.updatedAt.integerValue || f.updatedAt.stringValue || 0) : 0;
 
           // Kiểm tra xem chính mình có nhận được lời mời PK / Giao dịch từ người khác không
-          const isMe = (u === cleanUser) || (normalizeUsername(u) === cleanUser) || (docId === cleanUser);
+          const isMe = (cleanNorm === docIdNorm) || (cleanNorm === uNorm);
           if(isMe){
             if(f.incomingAction && f.incomingAction.stringValue){
               try {
@@ -5153,7 +5199,8 @@ async function syncOnlineHeartbeat(){
                 }
               } catch(e){}
             }
-          } else if(u && (now - uTime < 45000)){
+          } else if((u || docId) && (now - uTime < 45000)){
+            const opKey = docIdNorm || uNorm;
             const oMap = f.map ? f.map.stringValue : 'farm';
             const ox = f.x ? Number(f.x.integerValue || f.x.stringValue || 0) : 0;
             const oy = f.y ? Number(f.y.integerValue || f.y.stringValue || 0) : 0;
@@ -5172,9 +5219,10 @@ async function syncOnlineHeartbeat(){
               try { oSpeechBubble = JSON.parse(f.speechBubble.stringValue); } catch(e){}
             }
 
-            if(!onlinePlayers[u]){
-              onlinePlayers[u] = {
-                username: u, map: oMap, x: ox, y: oy, targetX: ox, targetY: oy,
+            if(!onlinePlayers[opKey]){
+              onlinePlayers[opKey] = {
+                id: opKey,
+                username: u || docId, map: oMap, x: ox, y: oy, targetX: ox, targetY: oy,
                 title: oTitle,
                 activePet: pName ? { name: pName, lv: pLv, pot: pPot, el: pEl } : null,
                 holdingFish: oHoldingFish,
@@ -5183,14 +5231,15 @@ async function syncOnlineHeartbeat(){
                 moving: false
               };
             } else {
-              onlinePlayers[u].map = oMap;
-              onlinePlayers[u].targetX = ox;
-              onlinePlayers[u].targetY = oy;
-              onlinePlayers[u].title = oTitle;
-              onlinePlayers[u].activePet = pName ? { name: pName, lv: pLv, pot: pPot, el: pEl } : null;
-              onlinePlayers[u].holdingFish = oHoldingFish;
-              onlinePlayers[u].speechBubble = oSpeechBubble;
-              onlinePlayers[u].updatedAt = uTime;
+              onlinePlayers[opKey].username = u || docId;
+              onlinePlayers[opKey].map = oMap;
+              onlinePlayers[opKey].targetX = ox;
+              onlinePlayers[opKey].targetY = oy;
+              onlinePlayers[opKey].title = oTitle;
+              onlinePlayers[opKey].activePet = pName ? { name: pName, lv: pLv, pot: pPot, el: pEl } : null;
+              onlinePlayers[opKey].holdingFish = oHoldingFish;
+              onlinePlayers[opKey].speechBubble = oSpeechBubble;
+              onlinePlayers[opKey].updatedAt = uTime;
             }
           }
         });
@@ -5598,7 +5647,12 @@ function openPKPreparationModal(oppInfo, onConfirmStart){
 
   renderPKPrepPetList();
 
-  if(modal) modal.style.display = 'block';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'block';
+  if(modal){
+    modal.style.display = 'flex';
+    modal.style.zIndex = '99999';
+  }
 
   if(pkPrepTimer) clearInterval(pkPrepTimer);
   pkPrepTimer = setInterval(() => {
@@ -5657,6 +5711,8 @@ function confirmPKPrepAndStart(){
   }
   const modal = document.getElementById('modal-pk-prep');
   if(modal) modal.style.display = 'none';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'none';
 
   if(typeof pkPrepCustomCallback === 'function'){
     const cb = pkPrepCustomCallback;
@@ -5837,8 +5893,8 @@ async function triggerPvPWithSelected(){
   }
 
   // Nếu là người chơi Online thật (Gửi dữ liệu qua Firestore)
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
-  const targetUser = normalizeUsername(op.username);
+  const cleanMe = getMyOnlineId();
+  const targetUser = normalizeUsername(op.id || op.username);
   notify(`⚔️ Đang gửi lời khiêu chiến PK tới [${op.username}]...`);
   try {
     const actionPayload = {
@@ -5882,19 +5938,22 @@ function handleIncomingOnlineAction(act){
   const btnAcc = document.getElementById('btn-pvp-accept');
   const btnDec = document.getElementById('btn-pvp-decline');
 
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'block';
+
   if(act.type === 'pvp_invite'){
     if(icon) icon.textContent = '⚔️';
     if(title) title.textContent = `Thách Đấu PK Từ [${act.from}]!`;
     const pInfo = act.pet || { name: 'Linh Thú', lv: 1, el: 'Lôi' };
     if(desc) desc.innerHTML = `Người chơi <b>[${act.from}]</b> muốn khiêu chiến linh thú với bạn!<br><span style="color:#fde047">🐾 ${pInfo.name}</span> (Cấp ${pInfo.lv} - Hệ ${pInfo.el})`;
-    if(m) m.style.display = 'flex';
+    if(m){ m.style.display = 'flex'; m.style.zIndex = '99999'; }
     if(btnAcc) btnAcc.onclick = () => acceptPvPInvite(act);
     if(btnDec) btnDec.onclick = () => declinePvPInvite(act);
   } else if(act.type === 'trade_invite'){
     if(icon) icon.textContent = '🤝';
     if(title) title.textContent = `Lời Mời Giao Dịch Từ [${act.from}]!`;
     if(desc) desc.innerHTML = `Người chơi <b>[${act.from}]</b> muốn mở sàn trao đổi Tiền Vàng & Vật Phẩm với bạn!`;
-    if(m) m.style.display = 'flex';
+    if(m){ m.style.display = 'flex'; m.style.zIndex = '99999'; }
     if(btnAcc) btnAcc.onclick = () => acceptTradeInvite(act);
     if(btnDec) btnDec.onclick = () => declineTradeInvite(act);
   }
@@ -5902,7 +5961,7 @@ function handleIncomingOnlineAction(act){
 
 // Xử lý phản hồi từ người kia gửi về máy mình
 function handleIncomingOnlineResponse(resp){
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const cleanMe = getMyOnlineId();
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingResponse`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -5927,8 +5986,10 @@ function handleIncomingOnlineResponse(resp){
 async function acceptPvPInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'none';
 
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const cleanMe = getMyOnlineId();
   const targetUser = normalizeUsername(act.from);
   const myPet = (G.pets && G.pets[G.activeIdx]) ? G.pets[G.activeIdx] : { name: 'Gà Đá Chọi', lv: 1, pot: 'B', el: 'Lôi' };
 
@@ -5976,7 +6037,9 @@ async function acceptPvPInvite(act){
 function declinePvPInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'none';
+  const cleanMe = getMyOnlineId();
   const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
@@ -6002,6 +6065,8 @@ function startPvPBattle(op){
   const ap = G.pets[G.activeIdx] || { name: 'Gà Đá Chọi', lv: 1, pot: 'B', el: 'Lôi', hp: 100, maxHp: 100, atk: 25, def: 10, spd: 12 };
   const petObj = op.activePet || { name: 'Gà Đá Chọi', lv: 6, pot: 'A', el: 'Lôi' };
   const rawName = petObj.name || 'Gà Đá Chọi';
+  const oppHp = petObj.maxHp || petObj.hp || ((petObj.lv || 1) * 85 + 150);
+  const oppAtk = petObj.atk || ((petObj.lv || 1) * 16 + 28);
   const oppPetTmpl = {
     name: `${rawName} (${op.username})`,
     petName: rawName,
@@ -6011,9 +6076,9 @@ function startPvPBattle(op){
     pot: petObj.pot || 'S',
     level: petObj.lv || 1,
     lv: petObj.lv || 1,
-    hp: (petObj.lv || 1) * 85 + 150,
-    maxHp: (petObj.lv || 1) * 85 + 150,
-    atk: (petObj.lv || 1) * 16 + 28,
+    hp: oppHp,
+    maxHp: oppHp,
+    atk: oppAtk,
     def: 12,
     spd: 15,
     desc: `Linh thú của cao thủ ${op.username}`
@@ -6039,6 +6104,29 @@ function startPvPBattle(op){
 
 // 2. Giao Dịch Tài Nguyên (Trừ Kim Cương, Realtime 2 Người chơi)
 let tradeRole = 'A'; // 'A' hoặc 'B'
+let tradeSwapDone = false;
+
+function getTradeItemMeta(id){
+  if(!id) return { name: 'Không có vật phẩm', icon: '📦' };
+  if(typeof FISHING_LOOT !== 'undefined' && FISHING_LOOT[id]) return FISHING_LOOT[id];
+  if(typeof CROPS !== 'undefined' && CROPS[id]) return CROPS[id];
+  if(typeof FOODS !== 'undefined' && FOODS[id]) return FOODS[id];
+  const bagMap = {
+    seed_rice: { name:'Hạt Giống Lúa', icon:'🌾' },
+    seed_corn: { name:'Hạt Bắp Nếp', icon:'🌽' },
+    seed_banana: { name:'Cây Chuối Con', icon:'🍌' },
+    seed_lotus: { name:'Hạt Sen Hồng', icon:'🪷' },
+    fertilizer: { name:'Phân Bón Thần Tốc', icon:'🧪' },
+    rare_net: { name:'Nơm Bắt Thần Kỳ', icon:'🕸️' },
+    exp_pill: { name:'Đan Dược Tu Vi', icon:'💊' },
+    pot_stone: { name:'Thuốc Nâng Tư Chất', icon:'🔮' },
+    dep_to_ong: { name:'Dép Tổ Ong', icon:'🩴' },
+    vo_oc: { name:'Vỏ Ốc Biển Lấp Lánh', icon:'🐚' }
+  };
+  if(bagMap[id]) return bagMap[id];
+  return { name: id, icon: '📦' };
+}
+
 async function triggerTradeWithSelected(){
   if(!selectedOnlinePlayer){ closeAllMenus(); return; }
   const op = selectedOnlinePlayer;
@@ -6051,8 +6139,8 @@ async function triggerTradeWithSelected(){
     return;
   }
 
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
-  const targetUser = normalizeUsername(op.username);
+  const cleanMe = getMyOnlineId();
+  const targetUser = normalizeUsername(op.id || op.username);
   const sId = [cleanMe, targetUser].sort().join('__');
   notify(`🤝 Đang gửi lời mời giao dịch tới [${op.username}]...`);
 
@@ -6082,7 +6170,9 @@ async function triggerTradeWithSelected(){
 async function acceptTradeInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'none';
+  const cleanMe = getMyOnlineId();
   const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
@@ -6115,7 +6205,9 @@ async function acceptTradeInvite(act){
 function declineTradeInvite(act){
   const m = document.getElementById('modal-pvp-invite');
   if(m) m.style.display = 'none';
-  const cleanMe = normalizeUsername(getCurrentUser()) || 'Nông Dân';
+  const ov = document.getElementById('overlay');
+  if(ov) ov.style.display = 'none';
+  const cleanMe = getMyOnlineId();
   const targetUser = normalizeUsername(act.from);
 
   fetch(`${FIRESTORE_BASE_URL}/online_players/${encodeURIComponent(cleanMe)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=incomingAction`, {
@@ -6138,6 +6230,7 @@ function declineTradeInvite(act){
 }
 
 function openRealtimeTradeModal(partnerName, sessionId, role){
+  closeAllMenus(true);
   activeTradeSessionId = sessionId;
   tradeRole = role;
   currentTradePartner = { username: partnerName };
@@ -6149,10 +6242,11 @@ function openRealtimeTradeModal(partnerName, sessionId, role){
   tradeOppGold = 0;
   tradeOppItemId = '';
   tradeOppItemQty = 0;
+  tradeSwapDone = false;
 
-  // Khởi tạo phiên giao dịch trên Firestore nếu chưa có
-  const initMask = `updateMask.fieldPaths=gold_${role}&updateMask.fieldPaths=item_${role}&updateMask.fieldPaths=qty_${role}&updateMask.fieldPaths=locked_${role}&updateMask.fieldPaths=confirmed_${role}&updateMask.fieldPaths=updatedAt`;
-  const initFields = { updatedAt: { integerValue: Date.now() } };
+  // Khởi tạo phiên giao dịch trên Firestore
+  const initMask = `updateMask.fieldPaths=gold_${role}&updateMask.fieldPaths=item_${role}&updateMask.fieldPaths=qty_${role}&updateMask.fieldPaths=locked_${role}&updateMask.fieldPaths=confirmed_${role}&updateMask.fieldPaths=cancelled&updateMask.fieldPaths=updatedAt`;
+  const initFields = { updatedAt: { integerValue: Date.now() }, cancelled: { booleanValue: false } };
   initFields[`gold_${role}`] = { integerValue: 0 };
   initFields[`item_${role}`] = { stringValue: '' };
   initFields[`qty_${role}`] = { integerValue: 0 };
@@ -6164,7 +6258,9 @@ function openRealtimeTradeModal(partnerName, sessionId, role){
     body: JSON.stringify({ fields: initFields })
   }).catch(()=>{});
 
-  openMenu('trade');
+  document.getElementById('overlay').style.display = 'block';
+  const m = document.getElementById('modal-trade');
+  if(m) m.style.display = 'flex';
   renderTradeUI();
 
   if(tradeSyncTimer) clearInterval(tradeSyncTimer);
@@ -6172,13 +6268,20 @@ function openRealtimeTradeModal(partnerName, sessionId, role){
 }
 
 async function syncLiveTradeSession(){
-  if(!activeTradeSessionId) return;
+  if(!activeTradeSessionId || tradeSwapDone) return;
   try {
     const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}`;
     const res = await fetch(url);
     if(res.ok){
       const data = await res.json();
       const f = data.fields || {};
+
+      if(f.cancelled && f.cancelled.booleanValue){
+        notify('❌ Đối phương đã đóng phiên giao dịch.');
+        closeAllMenus();
+        return;
+      }
+
       const oppRole = (tradeRole === 'A') ? 'B' : 'A';
 
       tradeOppGold = f[`gold_${oppRole}`] ? Number(f[`gold_${oppRole}`].integerValue || 0) : 0;
@@ -6190,7 +6293,7 @@ async function syncLiveTradeSession(){
       const myConfirmed = f[`confirmed_${tradeRole}`] ? !!f[`confirmed_${tradeRole}`].booleanValue : false;
       const oppConfirmed = f[`confirmed_${oppRole}`] ? !!f[`confirmed_${oppRole}`].booleanValue : false;
 
-      if(myConfirmed && oppConfirmed){
+      if(myConfirmed && oppConfirmed && !tradeSwapDone){
         executeFinalTradeSwap();
         return;
       }
@@ -6202,6 +6305,7 @@ async function syncLiveTradeSession(){
 
 function openTradeModal(){
   if(!currentTradePartner) return;
+  closeAllMenus(false);
   activeTradeSessionId = null;
   tradeMyGold = 0;
   tradeMyItemId = '';
@@ -6214,7 +6318,9 @@ function openTradeModal(){
   tradeOppItemId = oppItemsPool[Math.floor(Math.random() * oppItemsPool.length)];
   tradeOppItemQty = Math.floor(Math.random() * 3) + 1;
 
-  openMenu('trade');
+  document.getElementById('overlay').style.display = 'block';
+  const m = document.getElementById('modal-trade');
+  if(m) m.style.display = 'flex';
   renderTradeUI();
 }
 
@@ -6243,18 +6349,17 @@ function renderTradeUI(){
     let optHtml = '<option value="">-- Không gửi đồ vật --</option>';
     Object.keys(G.inv || {}).forEach(k => {
       if(k === 'diamond' || k === 'diamond_gem' || (G.inv[k] || 0) <= 0) return;
-      const itName = (FISHING_LOOT[k] && FISHING_LOOT[k].name) || (CROPS[k] && CROPS[k].name) || (FOODS[k] && FOODS[k].name) || k;
-      const itIcon = (FISHING_LOOT[k] && FISHING_LOOT[k].icon) || (CROPS[k] && CROPS[k].icon) || (FOODS[k] && FOODS[k].icon) || '📦';
-      optHtml += `<option value="${k}" ${k===tradeMyItemId?'selected':''}>${itIcon} ${itName} (Hiện có: ${G.inv[k]})</option>`;
+      const itInfo = getTradeItemMeta(k);
+      optHtml += `<option value="${k}" ${k===tradeMyItemId?'selected':''}>${itInfo.icon || '📦'} ${itInfo.name} (Hiện có: ${G.inv[k]})</option>`;
     });
     myItemSelect.innerHTML = optHtml;
   }
 
-  const oppItemInfo = FISHING_LOOT[tradeOppItemId] || CROPS[tradeOppItemId] || { name: tradeOppItemId, icon: '📦' };
+  const oppItemInfo = getTradeItemMeta(tradeOppItemId);
   if(oppGoldBox) oppGoldBox.textContent = `🪙 +${tradeOppGold.toLocaleString()} Vàng`;
   if(oppItemBox) oppItemBox.textContent = tradeOppItemId ? `📦 +${tradeOppItemQty}x ${oppItemInfo.icon || ''} ${oppItemInfo.name}` : '📦 Không đưa vật phẩm';
   if(oppStatus){
-    oppStatus.textContent = tradeOppLocked ? '🔒 Đối phương ĐÃ KHÓA giao dịch!' : '⏳ Đối phương đang cân nhắc...';
+    oppStatus.textContent = tradeOppLocked ? '🔒 Đối phương ĐÃ KHÓA đề xuất!' : '⏳ Đối phương đang chọn đồ...';
     oppStatus.style.color = tradeOppLocked ? '#86efac' : '#94a3b8';
   }
 
@@ -6287,8 +6392,13 @@ function onTradeOfferChange(){
   myQtyInput.value = valQty;
   tradeMyItemQty = valQty;
 
+  if(tradeMyLocked){
+    tradeMyLocked = false;
+  }
+
   // Đẩy đề xuất của mình lên Firestore session nếu đang Online
   pushMyTradeOfferToFirestore();
+  renderTradeUI();
 }
 
 function pushMyTradeOfferToFirestore(){
@@ -6340,7 +6450,7 @@ function confirmTradeAction(){
 
   // Nếu là session Online thật
   if(activeTradeSessionId){
-    notify('⏳ Đã bấm xác nhận! Đang đợi đối phương xác nhận...');
+    notify('⏳ Đã bấm xác nhận! Đang đợi đối phương bấm xác nhận...');
     const url = `${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=confirmed_${tradeRole}`;
     const fields = {};
     fields[`confirmed_${tradeRole}`] = { booleanValue: true };
@@ -6356,6 +6466,9 @@ function confirmTradeAction(){
 }
 
 function executeFinalTradeSwap(){
+  if(tradeSwapDone) return;
+  tradeSwapDone = true;
+
   if(tradeSyncTimer){ clearInterval(tradeSyncTimer); tradeSyncTimer = null; }
   activeTradeSessionId = null;
 
@@ -6376,12 +6489,12 @@ function executeFinalTradeSwap(){
   closeAllMenus();
 
   const oppName = currentTradePartner ? currentTradePartner.username : 'Người chơi';
-  notify(`🎉 Giao dịch thành công với [${oppName}]! Nhận +${tradeOppGold} Vàng & ${tradeOppItemQty}x vật phẩm!`);
+  notify(`🎉 GIAO DỊCH THÀNH CÔNG với [${oppName}]! Nhận +${tradeOppGold} Vàng & ${tradeOppItemQty}x vật phẩm!`);
 }
 
 // UI RENDERING
 function openMenu(id){
-  closeAllMenus();
+  closeAllMenus(id === 'trade');
   document.getElementById('overlay').style.display='block';
   const m = document.getElementById('modal-'+id);
   if(m) m.style.display='flex';
@@ -6395,11 +6508,20 @@ function openMenu(id){
   else if(id==='leaderboard') openLeaderboardModal();
   else if(id==='trade') renderTradeUI();
 }
-function closeAllMenus(){
-  if(tradeSyncTimer){ clearInterval(tradeSyncTimer); tradeSyncTimer = null; }
-  activeTradeSessionId = null;
+function closeAllMenus(keepTrade = false){
+  if(!keepTrade){
+    if(activeTradeSessionId){
+      fetch(`${FIRESTORE_BASE_URL}/online_trades/${encodeURIComponent(activeTradeSessionId)}?key=${FIREBASE_CONFIG.apiKey}&updateMask.fieldPaths=cancelled`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: { cancelled: { booleanValue: true } } })
+      }).catch(()=>{});
+    }
+    if(tradeSyncTimer){ clearInterval(tradeSyncTimer); tradeSyncTimer = null; }
+    activeTradeSessionId = null;
+  }
   document.getElementById('overlay').style.display='none';
-  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu','account','leaderboard','player-interact','trade','pvp-invite'].forEach(id=>{
+  ['bag','cook','pets','shop','guide','seed-select','pet-inspect','mounts','fishing','giftcode','app-menu','account','leaderboard','player-interact','trade','pvp-invite','pk-prep'].forEach(id=>{
     const el=document.getElementById('modal-'+id);
     if(el) el.style.display='none';
   });
@@ -6575,7 +6697,7 @@ function renderBag(){
     cu_sen_ngan_nam: { name:'Củ Sen Ngàn Năm', icon:'🪷', desc:'Hồi đầy 100% Max HP cho Linh Thú xuất trận', useFn:'useCuSenNganNam()', sellPrice:800 },
     rare_net: { name:'Nơm Bắt Thần Kỳ', icon:'🕸️', desc:'Đem theo trong trận PK để tăng 40% tỉ lệ bắt thú', useFn:null, sellPrice:50 },
     exp_pill: { name:'Đan Dược Tu Vi', icon:'💊', desc:'Cho Pet xuất trận ăn lập tức nhận +150 EXP', useFn:'useExpPill()', sellPrice:30 },
-    pot_stone: { name:'Thuốc Nâng Tư Chất', icon:'🔮', desc:'Tẩy luyện tư chất ngẫu nhiên theo tỉ lệ E-S', useFn:'usePotStone()', sellPrice:100 },
+    pot_stone: { name:'Thuốc Nâng Tư Chất', icon:'🔮', desc:'Tăng trực tiếp 1 bậc tư chất cho Linh Thú xuất chiến (E ➔ D ➔ C ➔ B ➔ A ➔ S)!', useFn:'usePotStone()', sellPrice:100 },
     dep_to_ong: { name:'Dép Tổ Ong', icon:'🩴', desc:'Dép tổ ong huyền thoại trôi sông, bán được 10 Vàng', useFn:null, sellPrice:10 },
     vo_oc: { name:'Vỏ Ốc Biển Lấp Lánh', icon:'🐚', desc:'Vỏ ốc ngũ sắc quý hiếm, bán được 500 Vàng', useFn:null, sellPrice:500 }
   };
@@ -6712,7 +6834,7 @@ const DIAMOND_SHOP_ITEMS = [
   { id:'fertilizer', type:'item', name:'Phân Bón Thần Tốc', icon:'🧪', price:5, desc:'Rút ngắn 50% thời gian lớn của cả ruộng lúa!' },
   { id:'rare_net', type:'item', name:'Nơm Bắt Thần Kỳ', icon:'🕸️', price:8, desc:'Tăng 40% tỉ lệ tóm gọn Thú Hiếm & Boss trong trận PK!' },
   { id:'exp_pill', type:'item', name:'Đan Dược Tu Vi', icon:'💊', price:6, desc:'Tăng ngay 150 EXP cấp tốc cho Thú xuất trận!' },
-  { id:'pot_stone', type:'item', name:'Thuốc Nâng Tư Chất', icon:'🔮', price:50, desc:'Tẩy luyện tư chất mới theo tỉ lệ chuẩn (E:5%, D:24%, C:40%, B:20%, A:10%, S:1%)!' },
+  { id:'pot_stone', type:'item', name:'Thuốc Nâng Tư Chất', icon:'🔮', price:50, desc:'Thăng cấp trực tiếp +1 bậc phẩm chất cho Pet xuất trận (E ➔ D ➔ C ➔ B ➔ A ➔ S)! Không ngẫu nhiên!' },
   { id:'gold_pack', type:'item', name:'Túi 500 Tiền Vàng', icon:'💰', price:4, desc:'Đổi 4 Kim Cương lấy ngay +500 Tiền tiêu xài!' }
 ];
 
@@ -6974,18 +7096,24 @@ function usePotStone(){
   if((G.inv['pot_stone']||0) <= 0) return;
   const ap = G.pets[G.activeIdx];
   if(!ap) return;
+  const POT_ORDER = ['E', 'D', 'C', 'B', 'A', 'S'];
+  const curIdx = POT_ORDER.indexOf(ap.pot);
+  if(curIdx >= POT_ORDER.length - 1 || ap.pot === 'S'){
+    notify(`⭐ ${ap.name} đã đạt tư chất tối thượng [S] (Cực phẩm), không thể nâng thêm được nữa!`);
+    return;
+  }
   G.inv['pot_stone']--;
-  // Tỉ lệ xuất hiện tư chất theo thứ tự EDCBAS: E:5%, D:24%, C:40%, B:20%, A:10%, S:1%
-  const newPot = getRandPot();
-  const oldPot = ap.pot;
+  const oldPot = ap.pot || 'E';
+  const nextIdx = (curIdx >= 0) ? curIdx + 1 : 1;
+  const newPot = POT_ORDER[nextIdx];
   ap.pot = newPot;
-  const potObj = POTS[newPot] || {rate:1.0};
+  const potObj = POTS[newPot] || {rate:1.0, text:'Cực phẩm'};
   const oldObj = POTS[oldPot] || {rate:1.0};
-  // Cập nhật lại chỉ số theo tư chất mới
+  // Cập nhật lại chỉ số theo tư chất mới tăng tiến
   ap.maxHp = Math.max(10, Math.floor(ap.maxHp * (potObj.rate / oldObj.rate)));
   ap.hp = Math.min(ap.maxHp, ap.hp);
   ap.atk = Math.max(5, Math.floor(ap.atk * (potObj.rate / oldObj.rate)));
-  notify(`🔮 Uống Thuốc Nâng Tư Chất! Phẩm cấp ${ap.name} chuyển từ [${oldPot}] ➔ [${newPot}] (${potObj.text})!`);
+  notify(`✨ THĂNG CẤP TƯ CHẤT! ${ap.name} đã thăng cấp tư chất từ [${oldPot}] ➔ [${newPot}] (${potObj.text})!`);
   updateHUD();
   renderBag();
   saveGame(true);
